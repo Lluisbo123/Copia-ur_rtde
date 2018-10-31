@@ -38,9 +38,12 @@ class RTDE
   void disconnect();
   bool isConnected();
 
+  bool negotiateProtocolVersion();
   void getControllerVersion();
   void receive();
+  void receiveData();
   void sendAll(std::uint8_t command, std::string payload="");
+  void sendStart();
   bool sendOutputSetup(std::vector<std::string> output_names, std::vector<std::string> output_types, int frequency);
 
  private:
