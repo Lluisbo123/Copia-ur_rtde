@@ -41,15 +41,16 @@ class RTDE
   bool negotiateProtocolVersion();
   void getControllerVersion();
   void receive();
-  void receiveData();
   void sendAll(std::uint8_t command, std::string payload="");
   void sendStart();
-  bool sendOutputSetup(std::vector<std::string> output_names, std::vector<std::string> output_types, int frequency);
+  void sendPause();
+  bool sendOutputSetup(std::string output_names, double frequency);
 
  private:
   std::string hostname_;
   int port_;
   ConnectionState conn_state_;
+  std::vector<std::string> output_types_;
   std::shared_ptr<boost::asio::io_service> io_service_;
   std::shared_ptr<boost::asio::ip::tcp::socket> socket_;
   std::shared_ptr<boost::asio::ip::tcp::resolver> resolver_;

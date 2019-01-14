@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.5)
 project(rtde)
-set(CMAKE_C_COMPILER /usr/bin/gcc-7)
-set(CMAKE_C_COMPILER /usr/bin/g++-7)
+#set(CMAKE_C_COMPILER /usr/bin/gcc-7)
+#set(CMAKE_C_COMPILER /usr/bin/g++-7)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -14,15 +14,11 @@ IF(Boost_FOUND)
     LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 ENDIF(Boost_FOUND)
 
-# Find required protobuf package
-#include(FindProtobuf)
-#find_package(Protobuf REQUIRED)
+#include_directories()
 
-include_directories(/home/prier/cppystruct/include) #${PROTOBUF_INCLUDE_DIR}
-
-set(LIB_SOURCE_FILES rtde.cpp rtde.h) # rtde_config.pb.cc rtde_config.pb.h
-add_library(rtde SHARED ${LIB_SOURCE_FILES} /home/prier/cppystruct/include) # ${PROTOBUF_INCLUDE_DIRS}
+set(LIB_SOURCE_FILES rtde.cpp rtde.h rtde_utility.h)
+add_library(rtde SHARED ${LIB_SOURCE_FILES})
 
 set(CLIENT_SOURCE_FILES rtde_client.cpp)
 add_executable(rtde_client ${CLIENT_SOURCE_FILES})
-target_link_libraries(rtde_client rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY}) #  ${PROTOBUF_LIBRARIES}
+target_link_libraries(rtde_client rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})

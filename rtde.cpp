@@ -1,23 +1,27 @@
 #include "rtde.h"
+#include "rtde_utility.h"
 #include <iostream>
 #include <fstream>
-#include <typeinfo>
-#include <tuple>
-#include <iostream>
+#include <iomanip>
 #include <string>
-#include <stdexcept>
-#include "cppystruct.h"
+#include <cstdint>
+#include <cstdio>
+#include <chrono>
 
-using boost::asio::ip::tcp;
+#include <boost/numeric/conversion/cast.hpp>
+#include <boost/asio.hpp>
+
 const unsigned HEADER_SIZE = 3;
 #define RTDE_PROTOCOL_VERSION 2
-#define DEBUG_OUTPUT false
+#define DEBUG_OUTPUT true
 
 #if DEBUG_OUTPUT
-#define DEBUG(a) {std::cerr << "RTDE:" << __LINE__ << ": " << a << std::endl;}
+#define DEBUG(a) {std::cout << "RTDE:" << __LINE__ << ": " << a << std::endl;}
 #else
 #define DEBUG(a) {}
 #endif
+
+using boost::asio::ip::tcp;
 
 RTDE::RTDE(std::string hostname, int port)
     : hostname_(std::move(hostname)), port_(port), conn_state_(ConnectionState::DISCONNECTED)
@@ -55,55 +59,57 @@ bool RTDE::isConnected()
     return true;
 }
 
-template <typename T, std::size_t N1, std::size_t N2>
-constexpr std::array<T, N1 + N2> concat(std::array<T, N1> lhs, std::array<T, N2> rhs)
-{
-  std::array<T, N1 + N2> result{};
-  std::size_t index = 0;
-
-  for (auto& el : lhs) {
-    result[index] = std::move(el);
-    ++index;
-  }
-  for (auto& el : rhs) {
-    result[index] = std::move(el);
-    ++index;
-  }
-
-  return result;
-}
-
 bool RTDE::negotiateProtocolVersion()
 {
   std::uint8_t cmd = RTDE_REQUEST_PROTOCOL_VERSION;
-  auto cmd_packed = pystruct::pack(PY_STRING(">HB"), pystruct::calcsize(PY_STRING(">HBH")), cmd);
-  auto payload_packed = pystruct::pack(PY_STRING(">H"), RTDE_PROTOCOL_VERSION);
-  std::array<char, cmd_packed.size()+payload_packed.size()> all = concat(cmd_packed, payload_packed);
-  boost::asio::write(*socket_, boost::asio::buffer(all, sizeof(all)));
+  // Pack RTDE_PROTOCOL_VERSION into payload
+  uint8_t null_byte = 0;
+  uint8_t version = RTDE_PROTOCOL_VERSION;
+  std::vector<char> buffer;
+  buffer.push_back(null_byte);
+  buffer.push_back(version);
+  std::string payload(buffer.begin(), buffer.end());
+  sendAll(cmd, payload);
   DEBUG("Done sending RTDE_REQUEST_PROTOCOL_VERSION");
   receive();
 }
 
-bool RTDE::sendOutputSetup(std::vector<std::string> output_names, std::vector<std::string> output_types, int frequency)
+bool RTDE::sendOutputSetup(std::string output_names, double frequency)
 {
   std::uint8_t cmd = RTDE_CONTROL_PACKAGE_SETUP_OUTPUTS;
-  auto freq_packed = pystruct::pack(PY_STRING(">d"), frequency);
-  std::vector<char> var_vec(freq_packed.begin(), freq_packed.end());
-  std::string variables = "actual_q";
-  std::copy(variables.begin(), variables.end(), std::back_inserter(var_vec));
-  std::string var_vec_str(std::begin(var_vec), std::end(var_vec));
-  sendAll(cmd, var_vec_str);
+
+  std::string freq_as_hexstr = RTDEUtility::double2hexstr(frequency);
+  std::vector<char> freq_packed = RTDEUtility::hexToBytes(freq_as_hexstr);
+  std::copy(output_names.begin(), output_names.end(), std::back_inserter(freq_packed));
+  std::string payload(std::begin(freq_packed), std::end(freq_packed));
+  sendAll(cmd, payload);
   DEBUG("Done sending RTDE_CONTROL_PACKAGE_SETUP_OUTPUTS");
   receive();
 }
 
 void RTDE::sendAll(std::uint8_t command, std::string payload)
 {
-  auto cmd_packed = pystruct::pack(PY_STRING(">HB"), pystruct::calcsize(PY_STRING(">HB")) + payload.length(), command);
+  DEBUG("Payload size is: " << payload.size());
+  // Pack size and command into header
+  uint16_t size = htons(HEADER_SIZE + payload.size());
+  uint8_t type = command;
 
-  std::vector<char> cmd_packed_vec(cmd_packed.begin(), cmd_packed.end());
-  std::copy(payload.begin(), payload.end(), std::back_inserter(cmd_packed_vec));
-  boost::asio::write(*socket_, boost::asio::buffer(cmd_packed_vec, sizeof(cmd_packed_vec)));
+  char buffer[3];
+  memcpy(buffer+0, &size, sizeof(size));
+  memcpy(buffer+2, &type, sizeof(type));
+
+  // Create vector<char> that includes the header
+  std::vector<char> header_packed;
+  std::copy(buffer, buffer+sizeof(buffer), std::back_inserter(header_packed));
+
+  // Add the payload to the header_packed vector
+  std::copy(payload.begin(), payload.end(), std::back_inserter(header_packed));
+
+  std::string sent(header_packed.begin(), header_packed.end());
+  //hex_dump(std::cout, sent.data(), sent.size());
+  DEBUG("SENDING buf containing: " << sent << " with len: " << sent.size());
+
+  boost::asio::write(*socket_, boost::asio::buffer(header_packed, header_packed.size()));
 }
 
 void RTDE::sendStart()
@@ -114,17 +120,12 @@ void RTDE::sendStart()
   receive();
 }
 
-void RTDE::receiveData()
+void RTDE::sendPause()
 {
-  DEBUG("Receiving Data...");
-  // Read Header
-  std::vector<char> data(4096);
-  size_t reply_length = boost::asio::read(*socket_, boost::asio::buffer(data));
-  DEBUG("Reply length is: " << reply_length);
-  auto [msg_size, msg_cmd] = pystruct::unpack(PY_STRING(">HB"), data);
-  DEBUG("ControlHeader: ");
-  DEBUG("size is: " << msg_size);
-  DEBUG("command is: " << static_cast<int>(msg_cmd));
+  std::uint8_t cmd = RTDE_CONTROL_PACKAGE_PAUSE;
+  sendAll(cmd, "");
+  DEBUG("Done sending RTDE_CONTROL_PACKAGE_PAUSE");
+  receive();
 }
 
 void RTDE::receive()
@@ -133,21 +134,20 @@ void RTDE::receive()
   // Read Header
   std::vector<char> data(HEADER_SIZE);
   size_t reply_length = boost::asio::read(*socket_, boost::asio::buffer(data));
-
   DEBUG("Reply length is: " << reply_length);
-  auto [msg_size, msg_cmd] = pystruct::unpack(PY_STRING(">HB"), data);
+  uint32_t message_offset = 0;
+  uint16_t msg_size = RTDEUtility::getUInt16(data, message_offset);
+  uint8_t msg_cmd = data.at(2);
+
   DEBUG("ControlHeader: ");
   DEBUG("size is: " << msg_size);
   DEBUG("command is: " << static_cast<int>(msg_cmd));
 
   // Read Body
   data.resize(msg_size-HEADER_SIZE);
-
   boost::asio::read(*socket_, boost::asio::buffer(data));
 
-  auto cmd = static_cast<uint8_t>(msg_cmd);
-
-  switch(cmd)
+  switch(msg_cmd)
   {
     case RTDE_REQUEST_PROTOCOL_VERSION:
     {
@@ -157,8 +157,7 @@ void RTDE::receive()
 
     case RTDE_TEXT_MESSAGE:
     {
-      int offset = 0;
-      auto [msg_length] = pystruct::unpack(PY_STRING(">B"), data);
+      uint8_t msg_length = data.at(0);
       for (int i = 1; i < msg_length; i++)
       {
         std::cout << data[i];
@@ -169,27 +168,30 @@ void RTDE::receive()
     case RTDE_GET_URCONTROL_VERSION:
     {
       DEBUG("ControlVersion: ");
-      auto [v_major, v_minor, v_bugfix, v_build] = pystruct::unpack(PY_STRING(">IIII"), data);
+      std::uint32_t message_offset = 0;
+      std::uint32_t v_major = RTDEUtility::getUInt32(data, message_offset);
+      std::uint32_t v_minor = RTDEUtility::getUInt32(data, message_offset);
+      std::uint32_t v_bugfix = RTDEUtility::getUInt32(data, message_offset);
+      std::uint32_t v_build = RTDEUtility::getUInt32(data, message_offset);
       DEBUG(v_major << "." << v_minor << "." << v_bugfix << "." << v_build);
       break;
     }
 
     case RTDE_CONTROL_PACKAGE_SETUP_OUTPUTS:
     {
-      auto [id] = pystruct::unpack(PY_STRING(">B"), data);
-
+      char id = data.at(0);
       DEBUG("ID:" << id);
-      std::string datatype(std::begin(data), std::end(data));
-      DEBUG("Datatype:" << datatype);
-
+      std::string datatypes(std::begin(data)+1, std::end(data));
+      DEBUG("Datatype:" << datatypes);
+      output_types_ = RTDEUtility::split(datatypes, ',');
       break;
     }
 
     case RTDE_CONTROL_PACKAGE_START:
     {
-      auto [success] = pystruct::unpack(PY_STRING(">B"), data);
+      char success = data.at(0);
       DEBUG("success: " << static_cast<bool>(success));
-      bool rtde_success = static_cast<bool>(success);
+      auto rtde_success = static_cast<bool>(success);
       if (rtde_success)
       {
         conn_state_ = ConnectionState::STARTED;
@@ -200,11 +202,76 @@ void RTDE::receive()
       break;
     }
 
+    case RTDE_CONTROL_PACKAGE_PAUSE:
+    {
+      char success = data.at(0);
+      auto pause_success = static_cast<bool>(success);
+      DEBUG("success: " << pause_success);
+      if (pause_success)
+      {
+        conn_state_ = ConnectionState::PAUSED;
+        std::cout << "RTDE synchronization paused!" << std::endl;
+      }
+      else
+        std::cerr << "Unable to pause synchronization" << std::endl;
+      break;
+    }
+
     case RTDE_DATA_PACKAGE:
     {
-      auto [id, q1, q2, q3, q4, q5, q6] = pystruct::unpack(PY_STRING(">Bdddddd"), data);
-      DEBUG("ID is: " << id);
-      std::cout << q1 << " " << q2 << " " << q3 << " " << q4 << " " << q5 << " " << q6 << std::endl;
+      // Read ID
+      std::uint32_t message_offset = 0;
+      unsigned char id = RTDEUtility::getUChar(data, message_offset);
+
+      // Read all the datatypes reported by the controller.
+      for (const auto &datatype : output_types_)
+      {
+        if(datatype == "VECTOR6D")
+        {
+          std::vector<double> vector_6d = RTDEUtility::unpackVector6d(data, message_offset);
+          std::cout << datatype << ": ";
+          for(const auto &d : vector_6d)
+            std::cout << d << " ";
+          std::cout << std::endl;
+        }
+        else if(datatype == "VECTOR6INT32")
+        {
+          std::vector<int32_t> vector_6_int32 = RTDEUtility::unpackVector6Int32(data, message_offset);
+          std::cout << datatype << ": ";
+          for(const auto &d : vector_6_int32)
+            std::cout << d << " ";
+          std::cout << std::endl;
+        }
+        else if (datatype == "VECTOR3D")
+        {
+          std::vector<double> vector_3d = RTDEUtility::unpackVector3d(data, message_offset);
+          std::cout << datatype << ": ";
+          for(const auto &d : vector_3d)
+            std::cout << d << " ";
+          std::cout << std::endl;
+        }
+        else if (datatype == "UINT32")
+        {
+          uint32_t uint32_value = RTDEUtility::getUInt32(data, message_offset);
+          std::cout << datatype << ": " << uint32_value << std::endl;
+        }
+        else if (datatype == "INT32")
+        {
+          int32_t int32_value = RTDEUtility::getInt32(data, message_offset);
+          std::cout << datatype << ": " << int32_value << std::endl;
+        }
+        else if (datatype == "UINT64")
+        {
+          uint64_t uint64_value = RTDEUtility::getUInt64(data, message_offset);
+          std::cout << datatype << ": " << uint64_value << std::endl;
+        }
+        else if (datatype == "DOUBLE")
+        {
+          double double_value = RTDEUtility::getDouble(data, message_offset);
+          std::cout << datatype << ": " << double_value << std::endl;
+        }
+      }
+
       break;
     }
 

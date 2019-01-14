@@ -7,14 +7,14 @@ using namespace std::chrono;
 
 int main (int argc, char *argv[])
 {
-  int frequency = 1000;
+  double frequency = 500;
   int samples = 10;
   RTDE rtde("127.0.0.1");
   rtde.connect();
   rtde.negotiateProtocolVersion();
   rtde.getControllerVersion();
-  std::vector<std::string> test_vector;
-  rtde.sendOutputSetup(test_vector, test_vector, frequency);
+  std::string variables = "target_q,actual_q,joint_temperatures,actual_TCP_pose,safety_mode,robot_mode";
+  rtde.sendOutputSetup(variables, frequency);
   rtde.sendStart();
 
   std::vector<int> durations;
@@ -47,7 +47,7 @@ int main (int argc, char *argv[])
   double average = sum / durations.size();
   std::cout << "Average sample acquisition rate: " << average << "us" << std::endl;
 
-
+  rtde.sendPause();
   rtde.disconnect();
   return 0;
 }
