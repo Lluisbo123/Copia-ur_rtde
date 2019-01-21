@@ -1,0 +1,38 @@
+# Universal Robots RTDE C++ client #
+A client for sending and receiving data to/from a UR robot using the Real-Time Data Exchange (RTDE). See more information about this 
+interface here [RTDE Guide](https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/real-time-data-exchange-rtde-guide-22229/)
+
+### Build Status on Ubuntu 16.04 (xenial) ###
+[![build status](https://gitlab.com/prier/ur_rtde/badges/master/build.svg)](https://gitlab.com/prier/ur_rtde/commits/master)
+
+### Dependencies ###
+*  Boost
+
+### Compatible Robots ###
+
+*  All CB-Series from CB3/CB3.1 software 3.3
+*  All e-Series
+
+### Compatible Operating Systems ###
+Currently tested on:
+
+*  Ubuntu 16.04 (Xenial Xerus)
+*  Ubuntu 18.04 (Bionic Beaver)
+
+### Build Instructions ###
+    mkdir build
+    cd build
+    cmake ..
+    make
+    
+### Test ###
+In order to test the client, download the most recent UR simulator for your robot from here [UR Download](https://www.universal-robots.com/download/). Once installed
+run the simulator with:
+
+    ./start-ursim.sh
+
+When the simulator is running initialize the robot by first clicking the **'ON'** button, and next clicking the **'START'** button. The *rtde_receive_client* can
+now be launched with:
+
+    ./rtde_receive_client
+

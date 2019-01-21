@@ -1,0 +1,17 @@
+image: sstrakh/xenial-boost-clang
+
+before_script:
+    # Install build dependencies
+    - apt-get update && apt-get -y install cmake
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+    
