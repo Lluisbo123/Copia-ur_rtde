@@ -1,6 +1,7 @@
 #ifndef RTDE_LIBRARY_H
 #define RTDE_LIBRARY_H
 
+#include "robot_state.h"
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -9,7 +10,7 @@
 class RTDE
 {
  public:
-  explicit RTDE(std::string hostname, int port = 30004);
+  explicit RTDE(const std::string hostname, int port = 30004);
 
   virtual ~RTDE();
 
@@ -41,16 +42,20 @@ class RTDE
   bool negotiateProtocolVersion();
   void getControllerVersion();
   void receive();
-  void sendAll(std::uint8_t command, std::string payload="");
+  void receiveData(RobotState& robot_state);
+  void send(std::vector<double> vector_6d);
+  void sendAll(const std::uint8_t& command, std::string payload="");
   void sendStart();
   void sendPause();
-  bool sendOutputSetup(std::string output_names, double frequency);
+  bool sendOutputSetup(const std::vector<std::string>& output_names, double frequency);
+  bool sendInputSetup(const std::vector<std::string>& input_names);
 
  private:
   std::string hostname_;
   int port_;
   ConnectionState conn_state_;
   std::vector<std::string> output_types_;
+  std::vector<std::string> output_names_;
   std::shared_ptr<boost::asio::io_service> io_service_;
   std::shared_ptr<boost::asio::ip::tcp::socket> socket_;
   std::shared_ptr<boost::asio::ip::tcp::resolver> resolver_;

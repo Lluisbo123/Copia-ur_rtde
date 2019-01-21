@@ -8,6 +8,35 @@
 class RTDEUtility
 {
  public:
+  static inline std::vector<char> packVector6d(std::vector<double> vector_6d)
+  {
+    std::vector<char> output;
+
+    for (auto d : vector_6d)
+    {
+      union temp
+      {
+        double value;
+        char c[8];
+      } in{}, out{};
+
+      in.value = d;
+      out.c[0] = in.c[7];
+      out.c[1] = in.c[6];
+      out.c[2] = in.c[5];
+      out.c[3] = in.c[4];
+      out.c[4] = in.c[3];
+      out.c[5] = in.c[2];
+      out.c[6] = in.c[1];
+      out.c[7] = in.c[0];
+
+      for (auto const& character : out.c)
+        output.push_back(character);
+    }
+
+    return output;
+  }
+
   static inline std::vector<double> unpackVector3d(const std::vector<char>& data, uint32_t& message_offset)
   {
     std::vector<double> vector_3d;
@@ -30,7 +59,7 @@ class RTDEUtility
     return vector_6d;
   }
 
-  static inline std::vector<int32_t > unpackVector6Int32(const std::vector<char>& data, uint32_t& message_offset)
+  static inline std::vector<int32_t> unpackVector6Int32(const std::vector<char>& data, uint32_t& message_offset)
   {
     std::vector<int32_t> vector_6_int32;
     for (unsigned int i = 0; i < 6; i++)
@@ -138,7 +167,7 @@ class RTDEUtility
     for (unsigned int i = 0; i < hex.length(); i += 2)
     {
       std::string byteString = hex.substr(i, 2);
-      char byte = (char)strtol(byteString.c_str(), NULL, 16);
+      char byte = (char)strtol(byteString.c_str(), nullptr, 16);
       bytes.push_back(byte);
     }
 

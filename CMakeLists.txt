@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 project(rtde)
-#set(CMAKE_C_COMPILER /usr/bin/gcc-7)
-#set(CMAKE_C_COMPILER /usr/bin/g++-7)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,9 +14,13 @@ ENDIF(Boost_FOUND)
 
 #include_directories()
 
-set(LIB_SOURCE_FILES rtde.cpp rtde.h rtde_utility.h)
+set(LIB_SOURCE_FILES rtde.cpp rtde.h rtde_utility.h dashboard_client.cpp dashboard_client.h robot_state.h)
 add_library(rtde SHARED ${LIB_SOURCE_FILES})
 
-set(CLIENT_SOURCE_FILES rtde_client.cpp)
-add_executable(rtde_client ${CLIENT_SOURCE_FILES})
-target_link_libraries(rtde_client rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
+set(RTDE_RECEIVE_CLIENT_SOURCE_FILES rtde_receive_client.cpp)
+add_executable(rtde_receive_client ${RTDE_RECEIVE_CLIENT_SOURCE_FILES})
+target_link_libraries(rtde_receive_client rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
+
+set(RTDE_SEND_CLIENT_SOURCE_FILES rtde_send_client.cpp)
+add_executable(rtde_send_client ${RTDE_SEND_CLIENT_SOURCE_FILES})
+target_link_libraries(rtde_send_client rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})

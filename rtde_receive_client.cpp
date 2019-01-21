@@ -1,11 +1,12 @@
 #include "rtde.h"
+#include "robot_state.h"
 #include <iostream>
 #include <chrono>
 #include <numeric>
 
 using namespace std::chrono;
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   double frequency = 500;
   int samples = 10;
@@ -13,13 +14,16 @@ int main (int argc, char *argv[])
   rtde.connect();
   rtde.negotiateProtocolVersion();
   rtde.getControllerVersion();
-  std::string variables = "target_q,actual_q,joint_temperatures,actual_TCP_pose,safety_mode,robot_mode";
+  std::vector<std::string> variables = {"joint_temperatures", "target_q",    "actual_q",
+                                        "actual_TCP_pose",    "safety_mode", "robot_mode"};
   rtde.sendOutputSetup(variables, frequency);
   rtde.sendStart();
 
   std::vector<int> durations;
 
-  int i=1;
+  RobotState robot_state;
+
+  int i = 1;
   bool keep_running = true;
   while (keep_running)
   {
@@ -35,11 +39,15 @@ int main (int argc, char *argv[])
 
     // Receive data
     auto start = high_resolution_clock::now();
-    rtde.receive();
+    rtde.receiveData(robot_state);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
-    //std::cout << "Getting a sample took: " << duration.count() << "us" << std::endl;
+    // std::cout << "Getting a sample took: " << duration.count() << "us" << std::endl;
     durations.push_back(duration.count());
+
+    for(const auto &d : robot_state.joint_temperatures)
+      std::cout << d << " ";
+    std::cout << std::endl;
     i += 1;
   }
 
