@@ -8,11 +8,36 @@
 class RTDEUtility
 {
  public:
-  static inline std::vector<char> packVector6d(std::vector<double> vector_6d)
+
+  static inline std::vector<char> packInt32(int32_t int32)
+  {
+    std::vector<char> result;
+    result.push_back(int32 >> 24);
+    result.push_back(int32 >> 16);
+    result.push_back(int32 >>  8);
+    result.push_back(int32);
+    return result;
+  }
+
+  static inline std::vector<char> packVectorNInt32(std::vector<int32_t> vector_n_int32)
+  {
+    std::vector<char> result;
+    for (auto i : vector_n_int32)
+    {
+      result.push_back(i >> 24);
+      result.push_back(i >> 16);
+      result.push_back(i >>  8);
+      result.push_back(i);
+    }
+
+    return result;
+  }
+
+  static inline std::vector<char> packVectorNd(std::vector<double> vector_nd)
   {
     std::vector<char> output;
 
-    for (auto d : vector_6d)
+    for (auto d : vector_nd)
     {
       union temp
       {

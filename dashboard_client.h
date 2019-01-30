@@ -19,6 +19,7 @@ class DashboardClient
 
  public:
   void connect();
+  bool isConnected();
   void disconnect();
   void send(const std::string& str);
   void loadURP(const std::string& urp_name);

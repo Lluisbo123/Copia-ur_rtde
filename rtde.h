@@ -14,7 +14,46 @@ class RTDE
 
   virtual ~RTDE();
 
-  enum Command
+  class RobotCommand
+  {
+   public:
+    enum Type
+    {
+      NO_CMD = 0,
+      MOVEJ = 1,
+      MOVEJ_IK = 2,
+      MOVEL = 3,
+      MOVEL_FK = 4,
+      MOVEC = 5,
+      FORCE_MODE_START = 6,
+      FORCE_MODE_UPDATE = 7,
+      FORCE_MODE_STOP = 8,
+      ZERO_FT_SENSOR = 9,
+      STOP = 255
+    };
+
+    enum Recipe
+    {
+      RECIPE_1 = 1,
+      RECIPE_2 = 2,
+      RECIPE_3 = 3,
+      RECIPE_4 = 4,
+      RECIPE_5 = 5
+    };
+
+    RobotCommand() : type_(NO_CMD), recipe_id_(1)
+    {
+    }
+
+    Type type_ = NO_CMD;
+    std::uint8_t recipe_id_;
+    std::vector<double> val_;
+    std::vector<int> selection_vector_;
+    std::int32_t movec_mode_;
+    std::int32_t force_mode_type_;
+  };
+
+  enum RTDECommand
   {
     RTDE_REQUEST_PROTOCOL_VERSION = 86,       // ascii V
     RTDE_GET_URCONTROL_VERSION = 118,         // ascii v
@@ -40,11 +79,11 @@ class RTDE
   bool isConnected();
 
   bool negotiateProtocolVersion();
-  void getControllerVersion();
+  std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> getControllerVersion();
   void receive();
-  void receiveData(RobotState& robot_state);
-  void send(std::vector<double> vector_6d);
-  void sendAll(const std::uint8_t& command, std::string payload="");
+  void receiveData(std::shared_ptr<RobotState>& robot_state);
+  void send(const RobotCommand& robot_cmd);
+  void sendAll(const std::uint8_t& command, std::string payload = "");
   void sendStart();
   void sendPause();
   bool sendOutputSetup(const std::vector<std::string>& output_names, double frequency);

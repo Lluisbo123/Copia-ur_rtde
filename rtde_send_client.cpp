@@ -1,71 +1,77 @@
-#include "rtde.h"
-#include "dashboard_client.h"
-#include <iostream>
-#include <chrono>
+#include "rtde_control_interface.h"
 #include <thread>
-#include <numeric>
+#include <chrono>
 
-using namespace std::chrono;
-
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-  double frequency = 500;
-  RTDE rtde("127.0.0.1");
-  rtde.connect();
-  rtde.negotiateProtocolVersion();
-  rtde.getControllerVersion();
-
-  // Create a connection to the dashboard server
-  DashboardClient db_client("127.0.0.1");
-  db_client.connect();
+  RTDEControlInterface rtde_control("127.0.0.1");
 
   // Data to be sent
-  std::vector<double> tcp_pose1 = {-0.12, -0.43, 0.14, 0, 3.11, 0.04};
-  std::vector<double> tcp_pose2 = {-0.12, -0.51, 0.21, 0, 3.11, 0.04};
+  double velocity = 0.5;
+  double acceleration = 0.5;
+  int movec_mode = 0;
+  std::vector<double> tcp_pose1 = {-0.143, -0.435, 0.20, -0.001, 3.12, 0.04};
+  std::vector<double> tcp_pose2 = {-0.143, -0.51, 0.21, -0.001, 3.12, 0.04};
 
-  // Setup output
-  std::vector<std::string> state_names = {"target_q", "target_qd", "output_int_register_0"};
-  rtde.sendOutputSetup(state_names, frequency);
+  std::vector<double> circ_pose_via = {-0.143, -0.435, 0.20, -0.001, 3.12, 0.04};
+  std::vector<double> circ_pose_to = {-0.343, -0.435, 0.20, -0.001, 3.12, 0.04};
 
-  // Setup input
-  std::vector<std::string> setp_names = {"input_double_register_0", "input_double_register_1",
-                                         "input_double_register_2", "input_double_register_3",
-                                         "input_double_register_4", "input_double_register_5"};
-  rtde.sendInputSetup(setp_names);
+  std::vector<double> joint_q1 = {-1.54, -1.83, -2.28, -0.59, 1.60, 0.023};
+  std::vector<double> joint_q2 = {-0.69, -2.37, -1.79, -0.37, 1.93, 0.87};
 
-  // std::string watchdog_names = "input_int_register_0";
-  // rtde.sendInputSetup(watchdog_names);
+  std::vector<double> path_pose1 = {-0.143, -0.435, 0.20, -0.001, 3.12, 0.04, velocity, acceleration, 0};
+  std::vector<double> path_pose2 = {-0.143, -0.51, 0.21, -0.001, 3.12, 0.04, velocity, acceleration, 0.02};
+  std::vector<double> path_pose3 = {-0.32, -0.61, 0.31, -0.001, 3.12, 0.04, velocity, acceleration, 0};
 
-  rtde.sendStart();
+  std::vector<std::vector<double>> path;
+  path.push_back(path_pose1);
+  path.push_back(path_pose2);
+  path.push_back(path_pose3);
 
-  // Clear registers with tcp pose of zeroes
-  std::vector<double> tcp_pose = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  rtde.send(tcp_pose);
+  // Send a linear path with blending in between - (currently uses separate script)
+  rtde_control.moveL(path);
 
-  // Execute script on UR Controller through the dashboard server
-  db_client.play();
+  // Send a linear movement
+  rtde_control.moveL(tcp_pose1, velocity, acceleration);
 
-  RobotState robot_state;
+  // Send joint movements
+  rtde_control.moveJ(joint_q1, velocity, acceleration);
+  rtde_control.moveJ(joint_q2, velocity, acceleration);
+  rtde_control.moveJ(joint_q1, velocity, acceleration);
 
-  bool keep_running = true;
-  while (keep_running)
-  {
-    // Receive data
-    rtde.receiveData(robot_state);
+  // Use the inverse kinematics of the robot to perform joint movements from a pose
+  rtde_control.moveJ_IK(tcp_pose1, velocity, acceleration);
+  rtde_control.moveJ_IK(tcp_pose2, velocity, acceleration);
+  rtde_control.moveJ_IK(tcp_pose1, velocity, acceleration);
 
-    if (robot_state.output_int_register_0 != 0)
-    {
-      if (tcp_pose != tcp_pose1)
-        tcp_pose = tcp_pose1;
-      else if (tcp_pose != tcp_pose2)
-        tcp_pose = tcp_pose2;
-      // Send data
-      rtde.send(tcp_pose);
-    }
-  }
+  // Use forward kinematics of the robot to perform linear movements from a joint configuration
+  rtde_control.moveL_FK(joint_q1, velocity, acceleration);
+  rtde_control.moveL_FK(joint_q2, velocity, acceleration);
+  rtde_control.moveL_FK(joint_q1, velocity, acceleration);
 
-  rtde.sendPause();
-  rtde.disconnect();
-  db_client.disconnect();
+  // Send a linear movement
+  rtde_control.moveL(tcp_pose1, velocity, acceleration);
+
+  // Send a circular movement
+  //rtde_control.moveC(circ_pose_via, circ_pose_to, velocity, acceleration, movec_mode);
+
+  // Test force mode
+  std::vector<double> task_frame = {0, 0, 0, 0, 0, 0};
+  std::vector<int> selection_vector = {0, 0, 1, 0, 0, 0};
+  std::vector<double> wrench_down = {0, 0, -20, 0, 0, 0};
+  std::vector<double> wrench_up = {0, 0, 20, 0, 0, 0};
+  int force_type = 2;
+  std::vector<double> limits = {2, 2, 1.5, 1, 1, 1};
+
+  rtde_control.forceModeStart(task_frame, selection_vector, wrench_down, force_type, limits);
+  std::cout << std::endl << "Going Down!" << std::endl;
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  std::cout << std::endl << "Going Up!" << std::endl << std::endl;
+  rtde_control.forceModeUpdate(wrench_up);
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  rtde_control.forceModeStop();
+
+  rtde_control.stopRobot();
+
   return 0;
 }

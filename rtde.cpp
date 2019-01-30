@@ -3,17 +3,19 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <tuple>
 #include <string>
 #include <cstdint>
 #include <cstdio>
 #include <chrono>
+#include <iterator>
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/asio.hpp>
 
 const unsigned HEADER_SIZE = 3;
 #define RTDE_PROTOCOL_VERSION 2
-#define DEBUG_OUTPUT true
+#define DEBUG_OUTPUT false
 
 #if DEBUG_OUTPUT
 #define DEBUG(a) {std::cout << "RTDE:" << __LINE__ << ": " << a << std::endl;}
@@ -51,13 +53,12 @@ void RTDE::disconnect()
   // Close socket
   socket_->close();
   conn_state_ = ConnectionState::DISCONNECTED;
-  std::cout << "RTDE -Socket disconnected" << std::endl;
+  std::cout << "RTDE - Socket disconnected" << std::endl;
 }
 
 bool RTDE::isConnected()
 {
-  if (conn_state_ != ConnectionState::DISCONNECTED)
-    return true;
+  return conn_state_ == ConnectionState::CONNECTED;
 }
 
 bool RTDE::negotiateProtocolVersion()
@@ -108,16 +109,51 @@ bool RTDE::sendOutputSetup(const std::vector<std::string>& output_names, double 
   receive();
 }
 
-void RTDE::send(std::vector<double> vector_6d)
+void RTDE::send(const RobotCommand& robot_cmd)
 {
   std::uint8_t command = RTDE_DATA_PACKAGE;
-  std::uint8_t recipe_id = 1;
-  std::vector<char> vector_6d_packed = RTDEUtility::packVector6d(vector_6d);
-  vector_6d_packed.insert(vector_6d_packed.begin(), recipe_id);
-  // Pack size and command into header
-  //uint16_t size = htons(HEADER_SIZE + vector_6d_packed.size());
-  //uint8_t type = command;
-  std::string sent(vector_6d_packed.begin(), vector_6d_packed.end());
+  std::vector<char> cmd_packed = RTDEUtility::packInt32(robot_cmd.type_);
+
+  if(robot_cmd.type_ == RobotCommand::FORCE_MODE_START)
+  {
+    std::vector<char> force_mode_type_packed = RTDEUtility::packInt32(robot_cmd.force_mode_type_);
+    cmd_packed.insert(
+        cmd_packed.end(),
+        std::make_move_iterator(force_mode_type_packed.begin()),
+        std::make_move_iterator(force_mode_type_packed.end())
+    );
+
+    std::vector<char> sel_vector_packed = RTDEUtility::packVectorNInt32(robot_cmd.selection_vector_);
+    cmd_packed.insert(
+        cmd_packed.end(),
+        std::make_move_iterator(sel_vector_packed.begin()),
+        std::make_move_iterator(sel_vector_packed.end())
+    );
+  }
+
+  if(robot_cmd.recipe_id_ != 5)
+  {
+    std::vector<char> vector_nd_packed = RTDEUtility::packVectorNd(robot_cmd.val_);
+    cmd_packed.insert(
+        cmd_packed.end(),
+        std::make_move_iterator(vector_nd_packed.begin()),
+        std::make_move_iterator(vector_nd_packed.end())
+    );
+  }
+
+  if(robot_cmd.type_ == RobotCommand::MOVEC)
+  {
+    std::vector<char> movec_mode_packed = RTDEUtility::packInt32(robot_cmd.movec_mode_);
+    cmd_packed.insert(
+        cmd_packed.end(),
+        std::make_move_iterator(movec_mode_packed.begin()),
+        std::make_move_iterator(movec_mode_packed.end())
+    );
+  }
+
+  cmd_packed.insert(cmd_packed.begin(), robot_cmd.recipe_id_);
+  std::string sent(cmd_packed.begin(), cmd_packed.end());
+
   //RTDEUtility::hexDump(std::cout, sent.data(), sent.size());
   //boost::asio::write(*socket_, boost::asio::buffer(vector_6d_packed, vector_6d_packed.size()));
   sendAll(command, sent);
@@ -333,7 +369,7 @@ void RTDE::receive()
 
 }
 
-void RTDE::receiveData(RobotState &robot_state)
+void RTDE::receiveData(std::shared_ptr<RobotState>& robot_state)
 {
   DEBUG("Receiving...");
   // Read Header
@@ -367,170 +403,170 @@ void RTDE::receiveData(RobotState &robot_state)
     case RTDE_DATA_PACKAGE:
     {
       // Read ID
-      std::uint32_t message_offset = 0;
+      message_offset = 0;
       unsigned char id = RTDEUtility::getUChar(data, message_offset);
 
       // Read all the variables specified by the user.
       for (const auto &output_name : output_names_)
       {
         if(output_name == "timestamp")
-          robot_state.timestamp = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setTimestamp(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "target_q")
-          robot_state.target_q = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setTarget_q(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "target_qd")
-          robot_state.target_qd = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setTarget_qd(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "target_qdd")
-          robot_state.target_qdd = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setTarget_qdd(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "target_current")
-          robot_state.target_current = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setTarget_current(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "target_moment")
-          robot_state.target_moment = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setTarget_moment(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "actual_q")
-          robot_state.actual_q = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setActual_q(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "actual_qd")
-          robot_state.actual_qd = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setActual_qd(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "actual_current")
-          robot_state.actual_current = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setActual_current(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "joint_control_output")
-          robot_state.joint_control_output = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setJoint_control_output(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "actual_TCP_pose")
-          robot_state.actual_TCP_pose = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setActual_TCP_pose(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "actual_TCP_speed")
-          robot_state.actual_TCP_speed = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setActual_TCP_speed(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "actual_TCP_force")
-          robot_state.actual_TCP_force = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setActual_TCP_force(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "target_TCP_pose")
-          robot_state.target_TCP_pose = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setTarget_TCP_pose(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "target_TCP_speed")
-          robot_state.target_TCP_speed = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setTarget_TCP_speed(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "actual_digital_input_bits")
-          robot_state.actual_digital_input_bits = RTDEUtility::getUInt64(data, message_offset);
+          robot_state->setActual_digital_input_bits(RTDEUtility::getUInt64(data, message_offset));
         else if(output_name == "joint_temperatures")
-          robot_state.joint_temperatures = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setJoint_temperatures(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "actual_execution_time")
-          robot_state.actual_execution_time = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setActual_execution_time(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "robot_mode")
-          robot_state.robot_mode = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setRobot_mode(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "joint_mode")
-          robot_state.joint_mode = RTDEUtility::unpackVector6Int32(data, message_offset);
+          robot_state->setJoint_mode(RTDEUtility::unpackVector6Int32(data, message_offset));
         else if(output_name == "safety_mode")
-          robot_state.safety_mode = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setSafety_mode(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "actual_tool_accelerometer")
-          robot_state.actual_tool_accelerometer = RTDEUtility::unpackVector3d(data, message_offset);
+          robot_state->setActual_tool_accelerometer(RTDEUtility::unpackVector3d(data, message_offset));
         else if(output_name == "speed_scaling")
-          robot_state.speed_scaling = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setSpeed_scaling(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "target_speed_fraction")
-          robot_state.target_speed_fraction = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setTarget_speed_fraction(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "actual_momentum")
-          robot_state.actual_momentum = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setActual_momentum(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "actual_main_voltage")
-          robot_state.actual_main_voltage = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setActual_main_voltage(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "actual_robot_voltage")
-          robot_state.actual_robot_voltage = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setActual_robot_voltage(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "actual_robot_current")
-          robot_state.actual_robot_current = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setActual_robot_current(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "actual_joint_voltage")
-          robot_state.actual_joint_voltage = RTDEUtility::unpackVector6d(data, message_offset);
+          robot_state->setActual_joint_voltage(RTDEUtility::unpackVector6d(data, message_offset));
         else if(output_name == "actual_digital_output_bits")
-          robot_state.actual_digital_output_bits = RTDEUtility::getUInt64(data, message_offset);
+          robot_state->setActual_digital_output_bits(RTDEUtility::getUInt64(data, message_offset));
         else if(output_name == "runtime_state")
-          robot_state.runtime_state = RTDEUtility::getUInt32(data, message_offset);
+          robot_state->setRuntime_state(RTDEUtility::getUInt32(data, message_offset));
         else if(output_name == "output_int_register_0")
-          robot_state.output_int_register_0 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_0(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_1")
-          robot_state.output_int_register_1 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_1(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_2")
-          robot_state.output_int_register_2 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_2(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_3")
-          robot_state.output_int_register_3 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_3(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_4")
-          robot_state.output_int_register_4 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_4(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_5")
-          robot_state.output_int_register_5 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_5(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_6")
-          robot_state.output_int_register_6 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_6(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_7")
-          robot_state.output_int_register_7 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_7(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_8")
-          robot_state.output_int_register_8 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_8(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_9")
-          robot_state.output_int_register_9 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_9(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_10")
-          robot_state.output_int_register_10 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_10(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_11")
-          robot_state.output_int_register_11 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_11(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_12")
-          robot_state.output_int_register_12 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_12(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_13")
-          robot_state.output_int_register_13 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_13(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_14")
-          robot_state.output_int_register_14 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_14(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_15")
-          robot_state.output_int_register_15 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_15(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_16")
-          robot_state.output_int_register_16 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_16(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_17")
-          robot_state.output_int_register_17 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_17(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_18")
-          robot_state.output_int_register_18 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_18(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_19")
-          robot_state.output_int_register_19 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_19(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_20")
-          robot_state.output_int_register_20 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_20(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_21")
-          robot_state.output_int_register_21 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_21(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_22")
-          robot_state.output_int_register_22 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_22(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_int_register_23")
-          robot_state.output_int_register_23 = RTDEUtility::getInt32(data, message_offset);
+          robot_state->setOutput_int_register_23(RTDEUtility::getInt32(data, message_offset));
         else if(output_name == "output_double_register_0")
-          robot_state.output_double_register_0 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_0(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_1")
-          robot_state.output_double_register_1 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_1(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_2")
-          robot_state.output_double_register_2 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_2(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_3")
-          robot_state.output_double_register_3 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_3(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_4")
-          robot_state.output_double_register_4 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_4(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_5")
-          robot_state.output_double_register_5 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_5(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_6")
-          robot_state.output_double_register_6 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_6(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_7")
-          robot_state.output_double_register_7 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_7(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_8")
-          robot_state.output_double_register_8 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_8(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_9")
-          robot_state.output_double_register_9 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_9(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_10")
-          robot_state.output_double_register_10 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_10(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_11")
-          robot_state.output_double_register_11 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_11(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_12")
-          robot_state.output_double_register_12 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_12(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_13")
-          robot_state.output_double_register_13 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_13(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_14")
-          robot_state.output_double_register_14 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_14(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_15")
-          robot_state.output_double_register_15 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_15(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_16")
-          robot_state.output_double_register_16 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_16(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_17")
-          robot_state.output_double_register_17 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_17(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_18")
-          robot_state.output_double_register_18 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_18(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_19")
-          robot_state.output_double_register_19 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_19(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_20")
-          robot_state.output_double_register_20 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_20(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_21")
-          robot_state.output_double_register_21 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_21(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_22")
-          robot_state.output_double_register_22 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_22(RTDEUtility::getDouble(data, message_offset));
         else if(output_name == "output_double_register_23")
-          robot_state.output_double_register_23 = RTDEUtility::getDouble(data, message_offset);
+          robot_state->setOutput_double_register_23(RTDEUtility::getDouble(data, message_offset));
         else
           DEBUG("Unknown variable name: " << output_name << " please verify the output setup!");
       }
@@ -596,13 +632,38 @@ void RTDE::receiveData(RobotState &robot_state)
       std::cout << "Unknown Command: " << static_cast<int>(msg_cmd) << std::endl;
       break;
   }
-
 }
 
-void RTDE::getControllerVersion()
+std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> RTDE::getControllerVersion()
 {
   std::uint8_t cmd = RTDE_GET_URCONTROL_VERSION;
   sendAll(cmd, "");
   DEBUG("Done sending RTDE_GET_URCONTROL_VERSION");
-  receive();
+  std::vector<char> data(HEADER_SIZE);
+  size_t reply_length = boost::asio::read(*socket_, boost::asio::buffer(data));
+  uint32_t message_offset = 0;
+  uint16_t msg_size = RTDEUtility::getUInt16(data, message_offset);
+  uint8_t msg_cmd = data.at(2);
+  // Read Body
+  data.resize(msg_size-HEADER_SIZE);
+  boost::asio::read(*socket_, boost::asio::buffer(data));
+
+  if(msg_cmd == RTDE_GET_URCONTROL_VERSION)
+  {
+    message_offset = 0;
+    std::uint32_t v_major = RTDEUtility::getUInt32(data, message_offset);
+    std::uint32_t v_minor = RTDEUtility::getUInt32(data, message_offset);
+    std::uint32_t v_bugfix = RTDEUtility::getUInt32(data, message_offset);
+    std::uint32_t v_build = RTDEUtility::getUInt32(data, message_offset);
+    DEBUG(v_major << "." << v_minor << "." << v_bugfix << "." << v_build);
+    return std::make_tuple(v_major, v_minor, v_bugfix, v_build);
+  }
+  else
+  {
+    std::uint32_t v_major = 0;
+    std::uint32_t v_minor = 0;
+    std::uint32_t v_bugfix = 0;
+    std::uint32_t v_build = 0;
+    return std::make_tuple(v_major, v_minor, v_bugfix, v_build);
+  }
 }

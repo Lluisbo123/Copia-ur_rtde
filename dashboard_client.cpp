@@ -26,6 +26,11 @@ void DashboardClient::connect()
   std::cout << "Connected successfully to UR dashboard server: " << hostname_ << " at " << port_ << std::endl;
 }
 
+bool DashboardClient::isConnected()
+{
+  return conn_state_ == ConnectionState::CONNECTED;
+}
+
 void DashboardClient::disconnect()
 {
   // Close socket
