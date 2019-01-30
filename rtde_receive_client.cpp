@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
   rtde.sendStart();
 
   std::vector<int> durations;
-
-  RobotState robot_state;
+  // Init Robot state
+  std::shared_ptr<RobotState> robot_state = std::make_shared<RobotState>();
 
   int i = 1;
   bool keep_running = true;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     // std::cout << "Getting a sample took: " << duration.count() << "us" << std::endl;
     durations.push_back(duration.count());
 
-    for(const auto &d : robot_state.joint_temperatures)
+    for(const auto &d : robot_state->getJoint_temperatures())
       std::cout << d << " ";
     std::cout << std::endl;
     i += 1;
