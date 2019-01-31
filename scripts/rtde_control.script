@@ -158,8 +158,85 @@ def rtde_control():
             end_force_mode()
             stopl(10)
             textmsg("force_mode stopped")
+        elif cmd == 9:
+            textmsg("zero_ftsensor")
+            zero_ftsensor()
+            textmsg("ftsensor zeroed")
+        elif cmd == 10:
+            textmsg("speedj")
+            qd = [0, 0, 0, 0, 0, 0]
+            qd[0] = read_input_float_register(0)
+            qd[1] = read_input_float_register(1)
+            qd[2] = read_input_float_register(2)
+            qd[3] = read_input_float_register(3)
+            qd[4] = read_input_float_register(4)
+            qd[5] = read_input_float_register(5)
+            acceleration = read_input_float_register(6)
+            time = read_input_float_register(7)
+            if time > 0:
+                speedj(qd, acceleration, time)
+            else:
+                speedj(qd, acceleration)
+            end
+            stopj(10)
+            textmsg("speedj done")
+        elif cmd == 11:
+            textmsg("speedl")
+            xd = [0, 0, 0, 0, 0, 0]
+            xd[0] = read_input_float_register(0)
+            xd[1] = read_input_float_register(1)
+            xd[2] = read_input_float_register(2)
+            xd[3] = read_input_float_register(3)
+            xd[4] = read_input_float_register(4)
+            xd[5] = read_input_float_register(5)
+            acceleration = read_input_float_register(6)
+            time = read_input_float_register(7)
+            if time > 0:
+                speedl(xd, acceleration, time)
+            else:
+                speedl(xd, acceleration)
+            end
+            stopl(10)
+            textmsg("speedl done")
+        elif cmd == 12:
+            textmsg("servoj")
+            joints = [0, 0, 0, 0, 0, 0]
+            joints[0] = read_input_float_register(0)
+            joints[1] = read_input_float_register(1)
+            joints[2] = read_input_float_register(2)
+            joints[3] = read_input_float_register(3)
+            joints[4] = read_input_float_register(4)
+            joints[5] = read_input_float_register(5)
+            velocity = read_input_float_register(6)
+            acceleration = read_input_float_register(7)
+            time = read_input_float_register(8)
+            lookahead_time = read_input_float_register(9)
+            gain = read_input_float_register(10)
+            textmsg("Target position in joints:")
+            textmsg(joints)
+            servoj(joints, a=acceleration, v=velocity, t=time, lookahead_time=lookahead_time, gain=gain)
+            stopj(20)
+            textmsg("servoj done")
+        elif cmd == 13:
+            textmsg("servoc")
+            pos = p[0, 0, 0, 0, 0, 0]
+            pos[0] = read_input_float_register(0)
+            pos[1] = read_input_float_register(1)
+            pos[2] = read_input_float_register(2)
+            pos[3] = read_input_float_register(3)
+            pos[4] = read_input_float_register(4)
+            pos[5] = read_input_float_register(5)
+            velocity = read_input_float_register(6)
+            acceleration = read_input_float_register(7)
+            blend = read_input_float_register(8)
+            textmsg("Target position:")
+            textmsg(pos)
+            servoc(pos, a=acceleration, v=velocity, r=blend)
+            stopj(20)
+            textmsg("servoc done")
 
         elif cmd == 255:
+            stopj(20)
             textmsg("Received stop!")
         end
 

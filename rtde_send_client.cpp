@@ -1,6 +1,7 @@
 #include "rtde_control_interface.h"
 #include <thread>
 #include <chrono>
+#include <iostream>
 
 int main(int argc, char* argv[])
 {
@@ -29,7 +30,7 @@ int main(int argc, char* argv[])
   path.push_back(path_pose3);
 
   // Send a linear path with blending in between - (currently uses separate script)
-  rtde_control.moveL(path);
+  /*rtde_control.moveL(path);
 
   // Send a linear movement
   rtde_control.moveL(tcp_pose1, velocity, acceleration);
@@ -70,6 +71,26 @@ int main(int argc, char* argv[])
   rtde_control.forceModeUpdate(wrench_up);
   std::this_thread::sleep_for(std::chrono::seconds(1));
   rtde_control.forceModeStop();
+
+  std::vector<double> joint_speed = {0.2, 0.3, 0.1, 0.05, 0, 0};
+  std::vector<double> tool_speed = {0.5, 0.4, 0.0, 1.57, 0, 0};
+  double time = 0.5;
+  rtde_control.speedJ(joint_speed, acceleration, time);
+  rtde_control.speedL(tool_speed, acceleration, time);
+
+  // Test servoJ
+  double time = 0.2;
+  double lookahead_time = 0.1;
+  double gain = 300;
+  for (unsigned int i=0; i<20; i++)
+  {
+    rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    rtde_control.servoJ(joint_q2, velocity, acceleration, time, lookahead_time, gain);
+  }
+
+  // Test servoC
+  rtde_control.servoC(tcp_pose1, velocity, acceleration, 0.01);*/
 
   rtde_control.stopRobot();
 

@@ -29,6 +29,10 @@ class RTDE
       FORCE_MODE_UPDATE = 7,
       FORCE_MODE_STOP = 8,
       ZERO_FT_SENSOR = 9,
+      SPEEDJ = 10,
+      SPEEDL = 11,
+      SERVOJ = 12,
+      SERVOC = 13,
       STOP = 255
     };
 
@@ -38,7 +42,8 @@ class RTDE
       RECIPE_2 = 2,
       RECIPE_3 = 3,
       RECIPE_4 = 4,
-      RECIPE_5 = 5
+      RECIPE_5 = 5,
+      RECIPE_6 = 6
     };
 
     RobotCommand() : type_(NO_CMD), recipe_id_(1)

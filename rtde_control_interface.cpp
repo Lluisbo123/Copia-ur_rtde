@@ -65,6 +65,13 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   std::vector<std::string> no_cmd_input = {"input_int_register_0"};
   rtde_->sendInputSetup(no_cmd_input);
 
+  // Recipe 6
+  std::vector<std::string> servoc_input = {
+      "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
+      "input_double_register_7", "input_double_register_8"};
+  rtde_->sendInputSetup(servoc_input);
+
   // Start RTDE data synchronization
   rtde_->sendStart();
 
@@ -311,6 +318,81 @@ void RTDEControlInterface::forceModeStop()
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_STOP;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  pushCommand(robot_cmd);
+  sendCommand();
+}
+
+void RTDEControlInterface::zeroFtSensor()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::ZERO_FT_SENSOR;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  pushCommand(robot_cmd);
+  sendCommand();
+}
+
+void RTDEControlInterface::speedJ(const std::vector<double>& qd, double acceleration, double time)
+{
+  verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
+
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SPEEDJ;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_1;
+  robot_cmd.val_ = qd;
+  robot_cmd.val_.push_back(acceleration);
+  robot_cmd.val_.push_back(time);
+  pushCommand(robot_cmd);
+  sendCommand();
+}
+
+void RTDEControlInterface::speedL(const std::vector<double>& xd, double acceleration, double time)
+{
+  verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
+
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SPEEDL;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_1;
+  robot_cmd.val_ = xd;
+  robot_cmd.val_.push_back(acceleration);
+  robot_cmd.val_.push_back(time);
+  pushCommand(robot_cmd);
+  sendCommand();
+}
+
+void RTDEControlInterface::servoJ(const std::vector<double>& q, double speed, double acceleration, double time,
+                                  double lookahead_time, double gain)
+{
+  verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
+  verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
+  verifyValueIsWithin(lookahead_time, UR_SERVO_LOOKAHEAD_TIME_MIN, UR_SERVO_LOOKAHEAD_TIME_MAX);
+  verifyValueIsWithin(gain, UR_SERVO_GAIN_MIN, UR_SERVO_GAIN_MAX);
+
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SERVOJ;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_3;
+  robot_cmd.val_ = q;
+  robot_cmd.val_.push_back(speed);
+  robot_cmd.val_.push_back(acceleration);
+  robot_cmd.val_.push_back(time);
+  robot_cmd.val_.push_back(lookahead_time);
+  robot_cmd.val_.push_back(gain);
+  pushCommand(robot_cmd);
+  sendCommand();
+}
+
+void RTDEControlInterface::servoC(const std::vector<double> &pose, double speed, double acceleration, double blend)
+{
+  verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
+  verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
+  verifyValueIsWithin(blend, UR_BLEND_MIN, UR_BLEND_MAX);
+
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SERVOC;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
+  robot_cmd.val_ = pose;
+  robot_cmd.val_.push_back(speed);
+  robot_cmd.val_.push_back(acceleration);
+  robot_cmd.val_.push_back(blend);
   pushCommand(robot_cmd);
   sendCommand();
 }

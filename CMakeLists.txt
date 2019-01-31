@@ -13,8 +13,6 @@ IF(Boost_FOUND)
     LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 ENDIF(Boost_FOUND)
 
-#include_directories()
-
 set(LIB_SOURCE_FILES rtde.cpp rtde.h rtde_utility.h dashboard_client.cpp dashboard_client.h robot_state.h script_client.cpp script_client.h rtde_control_interface.cpp rtde_control_interface.h)
 add_library(rtde SHARED ${LIB_SOURCE_FILES})
 
@@ -25,3 +23,4 @@ target_link_libraries(rtde_receive_client rtde ${Boost_FILESYSTEM_LIBRARY} ${Boo
 set(RTDE_SEND_CLIENT_SOURCE_FILES rtde_send_client.cpp)
 add_executable(rtde_send_client ${RTDE_SEND_CLIENT_SOURCE_FILES})
 target_link_libraries(rtde_send_client rtde ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
+

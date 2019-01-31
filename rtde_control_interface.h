@@ -10,16 +10,20 @@
 #include <condition_variable>
 #include <queue>
 #include <sstream>
-#include <boost/thread.hpp>
 
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3
+
 #define UR_VELOCITY_MAX 1.0
 #define UR_VELOCITY_ABSOLUTE_MAX 3.14
 #define UR_VELOCITY_MIN 0
 #define UR_ACCELERATION_MAX 2.0
 #define UR_ACCELERATION_ABSOLUTE_MAX 5.0
 #define UR_ACCELERATION_MIN 0
+#define UR_SERVO_LOOKAHEAD_TIME_MAX 0.2
+#define UR_SERVO_LOOKAHEAD_TIME_MIN 0.03
+#define UR_SERVO_GAIN_MAX 2000
+#define UR_SERVO_GAIN_MIN 100
 #define UR_BLEND_MAX 2.0
 #define UR_BLEND_MIN 0.0
 
@@ -48,9 +52,9 @@ class RTDEControlInterface
   void moveC(const std::vector<double>& pose_via, const std::vector<double>& pose_to, double speed, double acceleration,
              int mode);
 
-  void speedJ(const std::vector<double>& qd, double acceleration, double time);
+  void speedJ(const std::vector<double>& qd, double acceleration, double time=0.0);
 
-  void speedL(const std::vector<double>& xd, double acceleration, double time);
+  void speedL(const std::vector<double>& xd, double acceleration, double time=0.0);
 
   void servoJ(const std::vector<double>& q, double speed, double acceleration, double time, double lookahead_time,
               double gain);
