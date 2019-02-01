@@ -6,6 +6,10 @@ def rtde_control():
     global wrench = [0, 0, 0, 0, 0, 0]
     global limits = [0, 0, 0, 0, 0, 0]
 
+    def signal_ready():
+        write_output_integer_register(0, 2)
+    end
+
     def set_executing_cmd():
         write_output_integer_register(0, 0)
     end
@@ -23,66 +27,66 @@ def rtde_control():
 
         if cmd == 1:
             textmsg("movej")
-            joints = [0, 0, 0, 0, 0, 0]
-            joints[0] = read_input_float_register(0)
-            joints[1] = read_input_float_register(1)
-            joints[2] = read_input_float_register(2)
-            joints[3] = read_input_float_register(3)
-            joints[4] = read_input_float_register(4)
-            joints[5] = read_input_float_register(5)
+            q = [0, 0, 0, 0, 0, 0]
+            q[0] = read_input_float_register(0)
+            q[1] = read_input_float_register(1)
+            q[2] = read_input_float_register(2)
+            q[3] = read_input_float_register(3)
+            q[4] = read_input_float_register(4)
+            q[5] = read_input_float_register(5)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
-            textmsg("Target position in joints:")
-            textmsg(joints)
-            movej(joints, a=acceleration, v=velocity)
+            textmsg("Target q:")
+            textmsg(q)
+            movej(q, a=acceleration, v=velocity)
             textmsg("movej done")
         elif cmd == 2:
             textmsg("movej_ik")
-            pos = p[0, 0, 0, 0, 0, 0]
-            pos[0] = read_input_float_register(0)
-            pos[1] = read_input_float_register(1)
-            pos[2] = read_input_float_register(2)
-            pos[3] = read_input_float_register(3)
-            pos[4] = read_input_float_register(4)
-            pos[5] = read_input_float_register(5)
+            pose = p[0, 0, 0, 0, 0, 0]
+            pose[0] = read_input_float_register(0)
+            pose[1] = read_input_float_register(1)
+            pose[2] = read_input_float_register(2)
+            pose[3] = read_input_float_register(3)
+            pose[4] = read_input_float_register(4)
+            pose[5] = read_input_float_register(5)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
-            textmsg("Target position:")
-            textmsg(pos)
-            joints = get_inverse_kin(pos)
-            textmsg("Target position in joints:")
-            textmsg(joints)
-            movej(joints, a=acceleration, v=velocity)
+            textmsg("Target pose:")
+            textmsg(pose)
+            q = get_inverse_kin(pose)
+            textmsg("Target q:")
+            textmsg(q)
+            movej(q, a=acceleration, v=velocity)
             textmsg("movej_ik done")
         elif cmd == 3:
             textmsg("movel")
-            pos = p[0, 0, 0, 0, 0, 0]
-            pos[0] = read_input_float_register(0)
-            pos[1] = read_input_float_register(1)
-            pos[2] = read_input_float_register(2)
-            pos[3] = read_input_float_register(3)
-            pos[4] = read_input_float_register(4)
-            pos[5] = read_input_float_register(5)
+            pose = p[0, 0, 0, 0, 0, 0]
+            pose[0] = read_input_float_register(0)
+            pose[1] = read_input_float_register(1)
+            pose[2] = read_input_float_register(2)
+            pose[3] = read_input_float_register(3)
+            pose[4] = read_input_float_register(4)
+            pose[5] = read_input_float_register(5)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
-            textmsg("Target position:")
-            textmsg(pos)
-            movel(pos, a=acceleration, v=velocity)
+            textmsg("Target pose:")
+            textmsg(pose)
+            movel(pose, a=acceleration, v=velocity)
             textmsg("movel done")
         elif cmd == 4:
             textmsg("movel_fk")
-            joints = [0, 0, 0, 0, 0, 0]
-            joints[0] = read_input_float_register(0)
-            joints[1] = read_input_float_register(1)
-            joints[2] = read_input_float_register(2)
-            joints[3] = read_input_float_register(3)
-            joints[4] = read_input_float_register(4)
-            joints[5] = read_input_float_register(5)
+            q = [0, 0, 0, 0, 0, 0]
+            q[0] = read_input_float_register(0)
+            q[1] = read_input_float_register(1)
+            q[2] = read_input_float_register(2)
+            q[3] = read_input_float_register(3)
+            q[4] = read_input_float_register(4)
+            q[5] = read_input_float_register(5)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
-            textmsg("Target position in joints")
-            textmsg(joints)
-            movel(joints, a=acceleration, v=velocity)
+            textmsg("Target q:")
+            textmsg(q)
+            movel(q, a=acceleration, v=velocity)
             textmsg("movel_fk done")
         elif cmd == 5:
             textmsg("movec")
@@ -200,38 +204,38 @@ def rtde_control():
             textmsg("speedl done")
         elif cmd == 12:
             textmsg("servoj")
-            joints = [0, 0, 0, 0, 0, 0]
-            joints[0] = read_input_float_register(0)
-            joints[1] = read_input_float_register(1)
-            joints[2] = read_input_float_register(2)
-            joints[3] = read_input_float_register(3)
-            joints[4] = read_input_float_register(4)
-            joints[5] = read_input_float_register(5)
+            q = [0, 0, 0, 0, 0, 0]
+            q[0] = read_input_float_register(0)
+            q[1] = read_input_float_register(1)
+            q[2] = read_input_float_register(2)
+            q[3] = read_input_float_register(3)
+            q[4] = read_input_float_register(4)
+            q[5] = read_input_float_register(5)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
             time = read_input_float_register(8)
             lookahead_time = read_input_float_register(9)
             gain = read_input_float_register(10)
-            textmsg("Target position in joints:")
-            textmsg(joints)
-            servoj(joints, a=acceleration, v=velocity, t=time, lookahead_time=lookahead_time, gain=gain)
+            textmsg("Target q:")
+            textmsg(q)
+            servoj(q, a=acceleration, v=velocity, t=time, lookahead_time=lookahead_time, gain=gain)
             stopj(20)
             textmsg("servoj done")
         elif cmd == 13:
             textmsg("servoc")
-            pos = p[0, 0, 0, 0, 0, 0]
-            pos[0] = read_input_float_register(0)
-            pos[1] = read_input_float_register(1)
-            pos[2] = read_input_float_register(2)
-            pos[3] = read_input_float_register(3)
-            pos[4] = read_input_float_register(4)
-            pos[5] = read_input_float_register(5)
+            pose = p[0, 0, 0, 0, 0, 0]
+            pose[0] = read_input_float_register(0)
+            pose[1] = read_input_float_register(1)
+            pose[2] = read_input_float_register(2)
+            pose[3] = read_input_float_register(3)
+            pose[4] = read_input_float_register(4)
+            pose[5] = read_input_float_register(5)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
             blend = read_input_float_register(8)
-            textmsg("Target position:")
-            textmsg(pos)
-            servoc(pos, a=acceleration, v=velocity, r=blend)
+            textmsg("Target pose:")
+            textmsg(pose)
+            servoc(pose, a=acceleration, v=velocity, r=blend)
             stopj(20)
             textmsg("servoc done")
 
@@ -254,9 +258,9 @@ def rtde_control():
 
     keep_running = True
     executing_cmd = False
+    signal_ready()
 
     while keep_running:
-        # If there is no RTDE command available yet, clear executing status.
         if rtde_cmd() == 0:
             clear_executing_cmd()
             executing_cmd = False

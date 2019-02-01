@@ -30,10 +30,10 @@ int main(int argc, char* argv[])
   path.push_back(path_pose3);
 
   // Send a linear path with blending in between - (currently uses separate script)
-  /*rtde_control.moveL(path);
+  //rtde_control.moveL(path);
 
   // Send a linear movement
-  rtde_control.moveL(tcp_pose1, velocity, acceleration);
+  /*rtde_control.moveL(tcp_pose1, velocity, acceleration);
 
   // Send joint movements
   rtde_control.moveJ(joint_q1, velocity, acceleration);
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
   rtde_control.moveL(tcp_pose1, velocity, acceleration);
 
   // Send a circular movement
-  //rtde_control.moveC(circ_pose_via, circ_pose_to, velocity, acceleration, movec_mode);
+  //rtde_control.moveC(circ_pose_via, circ_pose_to, velocity, acceleration, movec_mode);*/
 
   // Test force mode
   std::vector<double> task_frame = {0, 0, 0, 0, 0, 0};
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
   std::this_thread::sleep_for(std::chrono::seconds(1));
   rtde_control.forceModeStop();
 
-  std::vector<double> joint_speed = {0.2, 0.3, 0.1, 0.05, 0, 0};
+  /*std::vector<double> joint_speed = {0.2, 0.3, 0.1, 0.05, 0, 0};
   std::vector<double> tool_speed = {0.5, 0.4, 0.0, 1.57, 0, 0};
   double time = 0.5;
   rtde_control.speedJ(joint_speed, acceleration, time);

@@ -1,5 +1,4 @@
 #include "rtde_control_interface.h"
-
 #include <iostream>
 
 RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hostname_(std::move(hostname)), port_(port)
@@ -75,17 +74,21 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   // Start RTDE data synchronization
   rtde_->sendStart();
 
-  // Signal the controller to get ready for commands
-  RTDE::RobotCommand clear_cmd;
-  clear_cmd.type_ = RTDE::RobotCommand::NO_CMD;
-  clear_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
-  rtde_->send(clear_cmd);
-
   // Send script to the UR Controller
   script_client_->sendScript("../scripts/rtde_control.script");
 
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
+
+  // Receive RobotState
+  rtde_->receiveData(robot_state_);
+
+  // Wait until the controller is ready for commands
+  while (robot_state_->getOutput_int_register_0() == UR_CONTROLLER_READY)
+  {
+    // Receive RobotState
+    rtde_->receiveData(robot_state_);
+  }
 }
 
 RTDEControlInterface::~RTDEControlInterface()
@@ -114,8 +117,7 @@ void RTDEControlInterface::stopRobot()
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::STOP;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::verifyValueIsWithin(const double& value, const double& min, const double& max)
@@ -191,8 +193,7 @@ void RTDEControlInterface::moveJ(const std::vector<double>& joints, double speed
   robot_cmd.val_ = joints;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::moveJ_IK(const std::vector<double>& transform, double speed, double acceleration)
@@ -206,8 +207,7 @@ void RTDEControlInterface::moveJ_IK(const std::vector<double>& transform, double
   robot_cmd.val_ = transform;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::moveL(const std::vector<std::vector<double>>& path)
@@ -218,14 +218,12 @@ void RTDEControlInterface::moveL(const std::vector<std::vector<double>>& path)
   // Send motions
   script_client_->sendScriptCommand(prepareCmdScript(path, "movel(p"));
 
-  rtde_->receiveData(robot_state_);
-
-  // Wait until the controller has finished executing motions
-  while (robot_state_->getOutput_int_register_0() == 0)
+  while (getControlScriptState() != UR_CONTROLLER_EXECUTING)
   {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
+    // Wait until the controller has finished executing
   }
+
+  sendClearCommand();
 
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript("../scripts/rtde_control.script");
@@ -242,8 +240,7 @@ void RTDEControlInterface::moveL(const std::vector<double>& transform, double sp
   robot_cmd.val_ = transform;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::moveL_FK(const std::vector<double>& joints, double speed, double acceleration)
@@ -257,8 +254,7 @@ void RTDEControlInterface::moveL_FK(const std::vector<double>& joints, double sp
   robot_cmd.val_ = joints;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::moveC(const std::vector<double>& pose_via, const std::vector<double>& pose_to, double speed,
@@ -277,8 +273,7 @@ void RTDEControlInterface::moveC(const std::vector<double>& pose_via, const std:
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
   robot_cmd.movec_mode_ = mode;
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::forceModeStart(const std::vector<double>& task_frame,
@@ -297,8 +292,7 @@ void RTDEControlInterface::forceModeStart(const std::vector<double>& task_frame,
 
   robot_cmd.selection_vector_ = selection_vector;
   robot_cmd.force_mode_type_ = type;
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::forceModeUpdate(const std::vector<double>& wrench)
@@ -309,8 +303,7 @@ void RTDEControlInterface::forceModeUpdate(const std::vector<double>& wrench)
   robot_cmd.val_ = wrench;
   robot_cmd.val_.push_back(0.0);
   robot_cmd.val_.push_back(0.0);
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::forceModeStop()
@@ -318,8 +311,7 @@ void RTDEControlInterface::forceModeStop()
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_STOP;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::zeroFtSensor()
@@ -327,8 +319,7 @@ void RTDEControlInterface::zeroFtSensor()
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::ZERO_FT_SENSOR;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::speedJ(const std::vector<double>& qd, double acceleration, double time)
@@ -341,8 +332,7 @@ void RTDEControlInterface::speedJ(const std::vector<double>& qd, double accelera
   robot_cmd.val_ = qd;
   robot_cmd.val_.push_back(acceleration);
   robot_cmd.val_.push_back(time);
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::speedL(const std::vector<double>& xd, double acceleration, double time)
@@ -355,8 +345,7 @@ void RTDEControlInterface::speedL(const std::vector<double>& xd, double accelera
   robot_cmd.val_ = xd;
   robot_cmd.val_.push_back(acceleration);
   robot_cmd.val_.push_back(time);
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::servoJ(const std::vector<double>& q, double speed, double acceleration, double time,
@@ -376,8 +365,7 @@ void RTDEControlInterface::servoJ(const std::vector<double>& q, double speed, do
   robot_cmd.val_.push_back(time);
   robot_cmd.val_.push_back(lookahead_time);
   robot_cmd.val_.push_back(gain);
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
 void RTDEControlInterface::servoC(const std::vector<double> &pose, double speed, double acceleration, double blend)
@@ -393,39 +381,46 @@ void RTDEControlInterface::servoC(const std::vector<double> &pose, double speed,
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
   robot_cmd.val_.push_back(blend);
-  pushCommand(robot_cmd);
-  sendCommand();
+  sendCommand(robot_cmd);
 }
 
-void RTDEControlInterface::sendCommand()
+int RTDEControlInterface::getControlScriptState()
 {
-  // Check if any commands are available in the command queue
-  if (!command_queue_.empty())
+  if(robot_state_ != nullptr)
   {
     // Receive RobotState
     rtde_->receiveData(robot_state_);
-
-    // Wait until the controller is ready for a command
-    while (robot_state_->getOutput_int_register_0() == 0)
-    {
-      // Receive RobotState
-      rtde_->receiveData(robot_state_);
-    }
-
-    RTDE::RobotCommand cmd = popCommand();
-    rtde_->send(cmd);
-
-    // Wait until the controller has finished executing
-    while (robot_state_->getOutput_int_register_0() != 0)
-    {
-      // Receive RobotState
-      rtde_->receiveData(robot_state_);
-    }
-
-    RTDE::RobotCommand clear_cmd;
-    clear_cmd.type_ = RTDE::RobotCommand::NO_CMD;
-    clear_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
-    // Tell the controller to clear executing status, since there is no command yet
-    rtde_->send(clear_cmd);
+    return robot_state_->getOutput_int_register_0();
   }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
+void RTDEControlInterface::sendCommand(const RTDE::RobotCommand& cmd)
+{
+  while (getControlScriptState() == UR_CONTROLLER_EXECUTING)
+  {
+    // Wait until the controller is ready for a command
+  }
+
+  // Send command to the controller
+  rtde_->send(cmd);
+
+  while (getControlScriptState() != UR_CONTROLLER_EXECUTING)
+  {
+    // Wait until the controller has finished executing
+  }
+
+  // Tell the controller to clear executing status and do nothing.
+  sendClearCommand();
+}
+
+void RTDEControlInterface::sendClearCommand()
+{
+  RTDE::RobotCommand clear_cmd;
+  clear_cmd.type_ = RTDE::RobotCommand::NO_CMD;
+  clear_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  rtde_->send(clear_cmd);
 }

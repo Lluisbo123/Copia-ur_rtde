@@ -5,14 +5,12 @@
 #include "dashboard_client.h"
 #include "script_client.h"
 #include <thread>
-#include <future>
-#include <mutex>
-#include <condition_variable>
-#include <queue>
 #include <sstream>
 
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3
+#define UR_CONTROLLER_READY 2
+#define UR_CONTROLLER_EXECUTING 0
 
 #define UR_VELOCITY_MAX 1.0
 #define UR_VELOCITY_ABSOLUTE_MAX 3.14
@@ -71,50 +69,15 @@ class RTDEControlInterface
   void zeroFtSensor();
 
  private:
-  void sendCommand();
+  void sendCommand(const RTDE::RobotCommand& cmd);
+
+  void sendClearCommand();
+
+  int getControlScriptState();
 
   void verifyValueIsWithin(const double& value, const double& min, const double& max);
 
   std::string prepareCmdScript(const std::vector<std::vector<double>>& path, const std::string& cmd);
-
-  RTDE::RobotCommand popCommand()
-  {
-    std::unique_lock<std::mutex> mlock(queue_mutex_);
-    while (command_queue_.empty())
-    {
-      cond_.wait(mlock);
-    }
-    auto item = command_queue_.front();
-    command_queue_.pop();
-    return item;
-  }
-
-  void popCommand(RTDE::RobotCommand& item)
-  {
-    std::unique_lock<std::mutex> mlock(queue_mutex_);
-    while (command_queue_.empty())
-    {
-      cond_.wait(mlock);
-    }
-    item = command_queue_.front();
-    command_queue_.pop();
-  }
-
-  void pushCommand(const RTDE::RobotCommand& item)
-  {
-    std::unique_lock<std::mutex> mlock(queue_mutex_);
-    command_queue_.push(item);
-    mlock.unlock();
-    cond_.notify_one();
-  }
-
-  void pushCommand(RTDE::RobotCommand&& item)
-  {
-    std::unique_lock<std::mutex> mlock(queue_mutex_);
-    command_queue_.push(std::move(item));
-    mlock.unlock();
-    cond_.notify_one();
-  }
 
  private:
   std::string hostname_;
@@ -123,9 +86,6 @@ class RTDEControlInterface
   std::shared_ptr<DashboardClient> db_client_;
   std::shared_ptr<ScriptClient> script_client_;
   std::shared_ptr<RobotState> robot_state_;
-  std::queue<RTDE::RobotCommand> command_queue_;
-  std::mutex queue_mutex_;
-  std::condition_variable cond_;
 };
 
 #endif  // RTDE_RTDE_CONTROL_INTERFACE_H
