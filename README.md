@@ -1,6 +1,10 @@
-# Universal Robots RTDE C++ client #
-A client for sending and receiving data to/from a UR robot using the Real-Time Data Exchange (RTDE). See more information about this 
-interface here [RTDE Guide](https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/real-time-data-exchange-rtde-guide-22229/)
+# Universal Robots RTDE C++ Interface #
+A C++ interface for sending and receiving data to/from a UR robot using the 
+[Real-Time Data Exchange (RTDE)](https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/real-time-data-exchange-rtde-guide-22229/)
+ interface of the robot. 
+ 
+### Documentation ###
+Documentation with examples and API resides at <https://prier.gitlab.io/ur_rtde/>
 
 ### Build Status on Ubuntu 16.04 (xenial) ###
 [![build status](https://gitlab.com/prier/ur_rtde/badges/master/build.svg)](https://gitlab.com/prier/ur_rtde/commits/master)
