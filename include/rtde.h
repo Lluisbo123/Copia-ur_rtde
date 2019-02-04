@@ -1,7 +1,7 @@
 #ifndef RTDE_LIBRARY_H
 #define RTDE_LIBRARY_H
 
-#include "robot_state.h"
+#include <robot_state.h>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -43,7 +43,8 @@ class RTDE
       RECIPE_3 = 3,
       RECIPE_4 = 4,
       RECIPE_5 = 5,
-      RECIPE_6 = 6
+      RECIPE_6 = 6,
+      RECIPE_7 = 7
     };
 
     RobotCommand() : type_(NO_CMD), recipe_id_(1)

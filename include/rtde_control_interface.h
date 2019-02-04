@@ -1,9 +1,9 @@
 #ifndef RTDE_RTDE_CONTROL_INTERFACE_H
 #define RTDE_RTDE_CONTROL_INTERFACE_H
 
-#include "rtde.h"
-#include "dashboard_client.h"
-#include "script_client.h"
+#include <rtde.h>
+#include <dashboard_client.h>
+#include <script_client.h>
 #include <thread>
 #include <sstream>
 
@@ -33,18 +33,53 @@ class RTDEControlInterface
 
   virtual ~RTDEControlInterface();
 
+  /**
+    * @brief This function will stop whatever the robot is doing, and terminate script on controller
+    */
   void stopRobot();
 
+  /**
+    * @brief Move to joint position (linear in joint-space)
+    * @param q joint positions
+    * @param speed joint speed of leading axis [rad/s]
+    * @param acceleration joint acceleration of leading axis [rad/s^2]
+    */
   void moveJ(const std::vector<double>& q, double speed, double acceleration);
 
+  /**
+    * @brief Move to each joint position specified in a path
+    * @param path with joint positions that includes acceleration, speed and blend for each position
+    */
   void moveJ(const std::vector<std::vector<double>>& path);
 
+  /**
+    * @brief Move to pose (linear in joint-space)
+    * @param pose target pose
+    * @param speed joint speed of leading axis [rad/s]
+    * @param acceleration joint acceleration of leading axis [rad/s^2]
+    */
   void moveJ_IK(const std::vector<double>& pose, double speed, double acceleration);
 
+  /**
+    * @brief Move to position (linear in tool-space)
+    * @param pose target pose
+    * @param speed tool speed [m/s]
+    * @param acceleration tool acceleration [m/s^2]
+    */
   void moveL(const std::vector<double>& pose, double speed, double acceleration);
 
+  /**
+    * @brief Move to each pose specified in a path
+    * @param path with tool poses that includes acceleration, speed and blend for each position
+    */
   void moveL(const std::vector<std::vector<double>>& path);
 
+  /**
+    * @brief Move to position (linear in tool-space)
+    * @param q joint positions
+    * @param speed tool speed [m/s]
+    * @param acceleration tool acceleration [m/s^2]
+  */
   void moveL_FK(const std::vector<double>& q, double speed, double acceleration);
 
   void moveC(const std::vector<double>& pose_via, const std::vector<double>& pose_to, double speed, double acceleration,
@@ -67,6 +102,8 @@ class RTDEControlInterface
   void forceModeStop();
 
   void zeroFtSensor();
+
+  void setStandardDigitalOut(int output_id, bool signal_level);
 
  private:
   void sendCommand(const RTDE::RobotCommand& cmd);

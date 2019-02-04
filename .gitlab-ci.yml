@@ -6,6 +6,8 @@ before_script:
 
 stages:
   - build
+  - doc
+  - deploy
 
 build:
   stage: build
@@ -14,4 +16,34 @@ build:
     - cd build
     - cmake ..
     - make
+
+sphinx_html:
+  stage: doc
+  image: git.mel.vin:5005/template/c/cicd/sphinx_html:1.4
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DCODE:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
+    - make doc
+  artifacts:
+    paths:
+      - build/doc/html
+
+pages:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+#  only:
+#    - tags@prier/ur_rtde
+  dependencies:
+    - sphinx_html
+  image: git.mel.vin:5005/template/c/cicd/coreutils:1.1
+  script:
+    - mv build/doc/html public
+    - mv build/coverage_report public/coverage
+  artifacts:
+    paths:
+      - public
+
+
     

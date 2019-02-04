@@ -1,4 +1,4 @@
-#include "rtde_control_interface.h"
+#include <rtde_control_interface.h>
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
   //rtde_control.moveC(circ_pose_via, circ_pose_to, velocity, acceleration, movec_mode);*/
 
   // Test force mode
-  std::vector<double> task_frame = {0, 0, 0, 0, 0, 0};
+  /*std::vector<double> task_frame = {0, 0, 0, 0, 0, 0};
   std::vector<int> selection_vector = {0, 0, 1, 0, 0, 0};
   std::vector<double> wrench_down = {0, 0, -20, 0, 0, 0};
   std::vector<double> wrench_up = {0, 0, 20, 0, 0, 0};
@@ -70,13 +70,13 @@ int main(int argc, char* argv[])
   std::cout << std::endl << "Going Up!" << std::endl << std::endl;
   rtde_control.forceModeUpdate(wrench_up);
   std::this_thread::sleep_for(std::chrono::seconds(1));
-  rtde_control.forceModeStop();
+  rtde_control.forceModeStop();*/
 
   /*std::vector<double> joint_speed = {0.2, 0.3, 0.1, 0.05, 0, 0};
   std::vector<double> tool_speed = {0.5, 0.4, 0.0, 1.57, 0, 0};
   double time = 0.5;
   rtde_control.speedJ(joint_speed, acceleration, time);
-  rtde_control.speedL(tool_speed, acceleration, time);
+  rtde_control.speedL(tool_speed, acceleration, time);*/
 
   // Test servoJ
   double time = 0.2;
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
   }
 
   // Test servoC
-  rtde_control.servoC(tcp_pose1, velocity, acceleration, 0.01);*/
+  //rtde_control.servoC(tcp_pose1, velocity, acceleration, 0.01);*/
 
   rtde_control.stopRobot();
 

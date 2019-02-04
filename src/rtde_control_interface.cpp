@@ -1,4 +1,4 @@
-#include "rtde_control_interface.h"
+#include <rtde_control_interface.h>
 #include <iostream>
 
 RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hostname_(std::move(hostname)), port_(port)
@@ -71,6 +71,12 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
       "input_double_register_7", "input_double_register_8"};
   rtde_->sendInputSetup(servoc_input);
 
+  // Recipe 7
+  std::vector<std::string> wrench_input = {
+      "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3", "input_double_register_4", "input_double_register_5"};
+  rtde_->sendInputSetup(wrench_input);
+
   // Start RTDE data synchronization
   rtde_->sendStart();
 
@@ -80,14 +86,9 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
 
-  // Receive RobotState
-  rtde_->receiveData(robot_state_);
-
-  // Wait until the controller is ready for commands
-  while (robot_state_->getOutput_int_register_0() == UR_CONTROLLER_READY)
+  while (getControlScriptState() == UR_CONTROLLER_READY)
   {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
+    // Wait until the controller is ready for commands
   }
 }
 
@@ -169,13 +170,9 @@ void RTDEControlInterface::moveJ(const std::vector<std::vector<double>>& path)
   // Send motions
   script_client_->sendScriptCommand(prepareCmdScript(path, "movej("));
 
-  rtde_->receiveData(robot_state_);
-
-  // Wait until the controller has finished executing motions
-  while (robot_state_->getOutput_int_register_0() == 0)
+  while (getControlScriptState() == UR_CONTROLLER_EXECUTING)
   {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
+    // Wait until the controller has finished executing
   }
 
   // Re-upload RTDE script to the UR Controller
@@ -218,7 +215,7 @@ void RTDEControlInterface::moveL(const std::vector<std::vector<double>>& path)
   // Send motions
   script_client_->sendScriptCommand(prepareCmdScript(path, "movel(p"));
 
-  while (getControlScriptState() != UR_CONTROLLER_EXECUTING)
+  while (getControlScriptState() == UR_CONTROLLER_EXECUTING)
   {
     // Wait until the controller has finished executing
   }
@@ -299,10 +296,8 @@ void RTDEControlInterface::forceModeUpdate(const std::vector<double>& wrench)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_UPDATE;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_1;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
   robot_cmd.val_ = wrench;
-  robot_cmd.val_.push_back(0.0);
-  robot_cmd.val_.push_back(0.0);
   sendCommand(robot_cmd);
 }
 
@@ -382,6 +377,11 @@ void RTDEControlInterface::servoC(const std::vector<double> &pose, double speed,
   robot_cmd.val_.push_back(acceleration);
   robot_cmd.val_.push_back(blend);
   sendCommand(robot_cmd);
+}
+
+void RTDEControlInterface::setStandardDigitalOut(int output_id, bool signal_level)
+{
+
 }
 
 int RTDEControlInterface::getControlScriptState()
