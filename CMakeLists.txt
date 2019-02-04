@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-project(ur_rtde VERSION 1.0.0)
 
 # options
 option(CODE "Build primary libraries and executables." ON)
@@ -9,23 +8,32 @@ if(NOT DEFINED DOC)
 			"The documentation type to generate." FORCE)
 endif()
 
+# disable base languages
+unset(PROJECT_LANGUAGES)
+
+if(${CODE})
+	set(PROJECT_LANGUAGES ${PROJECT_LANGUAGES} C CXX)
+	set(CMAKE_CXX_STANDARD 11)
+	set(CMAKE_CXX_STANDARD_REQUIRED ON)
+	set(CMAKE_CXX_EXTENSIONS OFF)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+endif()
+
+project(ur_rtde VERSION 1.0.0 LANGUAGES ${PROJECT_LANGUAGES})
 set(PROJECT_VERSION_SUFFIX "") # alpha/beta/rc, e.g. "-rc0"
 set(PROJECT_VERSION "${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX}")
 set(PROJECT_AUTHOR "Anders Prier Lindvig")
 set(PROJECT_COPYRIGHT "2019")
 set(PROJECT_MAIL "anpl@mmmi.sdu.dk")
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
-
-SET(Boost_USE_MULTITHREAD ON)
-FIND_PACKAGE(Boost REQUIRED COMPONENTS system thread regex filesystem)
-IF(Boost_FOUND)
-    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-    LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-ENDIF(Boost_FOUND)
+if(${CODE})
+	set(Boost_USE_MULTITHREAD ON)
+	find_package(Boost REQUIRED COMPONENTS system thread regex filesystem)
+	if(Boost_FOUND)
+	    include_directories(${Boost_INCLUDE_DIRS})
+	    link_directories(${Boost_LIBRARY_DIRS})
+	endif(Boost_FOUND)
+endif()
 
 set(LIB_SOURCE_FILES
         src/rtde.cpp
