@@ -28,6 +28,15 @@
 #
 # needs_sphinx = '1.0'
 
+import sphinx.environment
+from docutils.utils import get_source_line
+
+def _warn_node(self, msg, node, **kwargs):
+    if not msg.startswith('nonlocal image URI found:'):
+        self._warnfunc(msg, '%s:%s' % get_source_line(node), **kwargs)
+
+sphinx.environment.BuildEnvironment.warn_node = _warn_node
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
@@ -120,6 +129,9 @@ html_static_path = ['@DOC_SRC@/_static']
 html_context = {
     'css_files': ['_static/theme_overrides.css']
 }
+
+# Logo
+html_logo = "@DOC_SRC@/_static/robots.png"
 
 
 # Custom sidebar templates, must be a dictionary that maps document names

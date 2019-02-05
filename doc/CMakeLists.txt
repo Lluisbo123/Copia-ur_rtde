@@ -94,7 +94,7 @@ else()
 			"Generating sphinx ${DOC} documentation"
 		COMMAND "${CMAKE_COMMAND}" -E env "PYTHONPATH=${PYTHONPATH}"
 			"${PYTHON_EXECUTABLE}" -m sphinx -b "${DOC}"
-			-d "${DOC_TMP}/sphinx/doctrees" -j auto
+			-d "${DOC_TMP}/sphinx/doctrees" -j 4
 			-c "${DOC_TMP}/sphinx" -q ${SPHINX_WERROR}
 			"${DOC_SRC}" "${DOC_DEST}")
 
