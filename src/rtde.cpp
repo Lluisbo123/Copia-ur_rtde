@@ -130,11 +130,11 @@ void RTDE::send(const RobotCommand& robot_cmd)
                       std::make_move_iterator(sel_vector_packed.end()));
   }
 
-  if (robot_cmd.recipe_id_ != 5)
+  if (!robot_cmd.val_.empty())
   {
-    std::vector<char> vector_nd_packed = RTDEUtility::packVectorNd(robot_cmd.val_);
-    cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(vector_nd_packed.begin()),
-                      std::make_move_iterator(vector_nd_packed.end()));
+      std::vector<char> vector_nd_packed = RTDEUtility::packVectorNd(robot_cmd.val_);
+      cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(vector_nd_packed.begin()),
+                        std::make_move_iterator(vector_nd_packed.end()));
   }
 
   if (robot_cmd.type_ == RobotCommand::MOVEC)
@@ -142,6 +142,18 @@ void RTDE::send(const RobotCommand& robot_cmd)
     std::vector<char> movec_mode_packed = RTDEUtility::packInt32(robot_cmd.movec_mode_);
     cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(movec_mode_packed.begin()),
                       std::make_move_iterator(movec_mode_packed.end()));
+  }
+
+  if (robot_cmd.type_ == RobotCommand::SET_STD_DIGITAL_OUT)
+  {
+    cmd_packed.push_back(robot_cmd.std_digital_out_mask_);
+    cmd_packed.push_back(robot_cmd.std_digital_out_);
+  }
+
+  if(robot_cmd.type_ == RobotCommand::SET_TOOL_DIGITAL_OUT)
+  {
+    cmd_packed.push_back(robot_cmd.std_tool_out_mask_);
+    cmd_packed.push_back(robot_cmd.std_tool_out_);
   }
 
   cmd_packed.insert(cmd_packed.begin(), robot_cmd.recipe_id_);
@@ -219,6 +231,11 @@ void RTDE::receive()
       {
         std::cout << data[i];
       }
+      break;
+    }
+
+    case RTDE_REQUEST_PROTOCOL_VERSION:
+    {
       break;
     }
 

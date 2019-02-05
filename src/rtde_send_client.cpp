@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
   rtde_control.speedL(tool_speed, acceleration, time);*/
 
   // Test servoJ
-  double time = 0.2;
+  /*double time = 0.2;
   double lookahead_time = 0.1;
   double gain = 300;
   for (unsigned int i=0; i<20; i++)
@@ -87,10 +87,14 @@ int main(int argc, char* argv[])
     rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
     rtde_control.servoJ(joint_q2, velocity, acceleration, time, lookahead_time, gain);
-  }
+  }*/
 
   // Test servoC
   //rtde_control.servoC(tcp_pose1, velocity, acceleration, 0.01);*/
+
+  // Test standard and tool digital out
+  rtde_control.setStandardDigitalOut(0, true);
+  rtde_control.setToolDigitalOut(1, true);
 
   rtde_control.stopRobot();
 

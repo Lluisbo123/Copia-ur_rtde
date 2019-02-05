@@ -33,6 +33,8 @@ class RTDE
       SPEEDL = 11,
       SERVOJ = 12,
       SERVOC = 13,
+      SET_STD_DIGITAL_OUT = 14,
+      SET_TOOL_DIGITAL_OUT = 15,
       STOP = 255
     };
 
@@ -44,7 +46,9 @@ class RTDE
       RECIPE_4 = 4,
       RECIPE_5 = 5,
       RECIPE_6 = 6,
-      RECIPE_7 = 7
+      RECIPE_7 = 7,
+      RECIPE_8 = 8,
+      RECIPE_9 = 9
     };
 
     RobotCommand() : type_(NO_CMD), recipe_id_(1)
@@ -57,6 +61,10 @@ class RTDE
     std::vector<int> selection_vector_;
     std::int32_t movec_mode_;
     std::int32_t force_mode_type_;
+    std::uint8_t std_digital_out_;
+    std::uint8_t std_digital_out_mask_;
+    std::uint8_t std_tool_out_;
+    std::uint8_t std_tool_out_mask_;
   };
 
   enum RTDECommand

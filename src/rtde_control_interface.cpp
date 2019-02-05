@@ -1,5 +1,6 @@
 #include <rtde_control_interface.h>
 #include <iostream>
+#include <bitset>
 
 RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hostname_(std::move(hostname)), port_(port)
 {
@@ -23,7 +24,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   script_client_->connect();
 
   // Setup output
-  std::vector<std::string> state_names = {"target_q", "target_qd", "output_int_register_0"};
+  std::vector<std::string> state_names = {"output_int_register_0"};
   rtde_->sendOutputSetup(state_names, frequency);
 
   // Setup input recipes
@@ -76,6 +77,16 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
       "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
       "input_double_register_3", "input_double_register_4", "input_double_register_5"};
   rtde_->sendInputSetup(wrench_input);
+
+  // Recipe 8
+  std::vector<std::string> set_std_digital_out_input = {
+      "input_int_register_0", "standard_digital_output_mask", "standard_digital_output"};
+  rtde_->sendInputSetup(set_std_digital_out_input);
+
+  // Recipe 9
+  std::vector<std::string> set_tool_digital_out_input = {
+      "input_int_register_0", "tool_digital_output_mask", "tool_digital_output"};
+  rtde_->sendInputSetup(set_tool_digital_out_input);
 
   // Start RTDE data synchronization
   rtde_->sendStart();
@@ -379,9 +390,44 @@ void RTDEControlInterface::servoC(const std::vector<double> &pose, double speed,
   sendCommand(robot_cmd);
 }
 
-void RTDEControlInterface::setStandardDigitalOut(int output_id, bool signal_level)
+void RTDEControlInterface::setStandardDigitalOut(std::uint8_t output_id, bool signal_level)
 {
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SET_STD_DIGITAL_OUT;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_8;
 
+  if(signal_level)
+  {
+    robot_cmd.std_digital_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.std_digital_out_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+  }
+  else
+  {
+    robot_cmd.std_digital_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.std_digital_out_ = 0;
+  }
+
+  sendCommand(robot_cmd);
+}
+
+void RTDEControlInterface::setToolDigitalOut(std::uint8_t output_id, bool signal_level)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SET_TOOL_DIGITAL_OUT;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+
+  if(signal_level)
+  {
+    robot_cmd.std_tool_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.std_tool_out_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+  }
+  else
+  {
+    robot_cmd.std_tool_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.std_tool_out_ = 0;
+  }
+
+  sendCommand(robot_cmd);
 }
 
 int RTDEControlInterface::getControlScriptState()

@@ -103,7 +103,9 @@ class RTDEControlInterface
 
   void zeroFtSensor();
 
-  void setStandardDigitalOut(int output_id, bool signal_level);
+  void setStandardDigitalOut(std::uint8_t output_id, bool signal_level);
+
+  void setToolDigitalOut(std::uint8_t output_id, bool signal_level);
 
  private:
   void sendCommand(const RTDE::RobotCommand& cmd);
