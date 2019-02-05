@@ -37,6 +37,7 @@ extensions = ['breathe']
 breathe_default_project = "@PROJECT_NAME@"
 breathe_domain_by_extension = {"c": "c", "h": "c", "cpp": "cpp", "hpp": "cpp"}
 breathe_projects = {"@PROJECT_NAME@": "@DOXY_OUTPUT_DIR@/xml"}
+breathe_show_define_initializer = False
 
 # plantuml config
 #plantuml = '@PLANTUML_PATH@ -config "@PROJECT_SOURCE_DIR@/doc/plantuml.cfg"'
