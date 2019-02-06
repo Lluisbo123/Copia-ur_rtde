@@ -39,7 +39,8 @@ set(LIB_SOURCE_FILES
         src/rtde.cpp
         src/dashboard_client.cpp
         src/script_client.cpp
-        src/rtde_control_interface.cpp)
+        src/rtde_control_interface.cpp
+		src/rtde_receive_interface.cpp)
 
 set(LIB_HEADER_FILES
         include/rtde.h
@@ -47,7 +48,8 @@ set(LIB_HEADER_FILES
         include/dashboard_client.h
         include/robot_state.h
         include/script_client.h
-        include/rtde_control_interface.h)
+        include/rtde_control_interface.h
+		include/rtde_receive_interface.h)
 
 include_directories(
         include

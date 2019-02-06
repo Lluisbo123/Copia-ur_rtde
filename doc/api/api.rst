@@ -5,6 +5,7 @@ API Reference
 The ur_rtde library API consists of the following parts:
 
 * :ref:`rtde_control_interface.h <rtde-control-api>`: The RTDE control interface
+* :ref:`rtde_receive_interface.h <rtde-receive-api>`: The RTDE receive interface
 * :ref:`rtde.h <rtde-api>`: The RTDE class
 * :ref:`script_client.h <script-client-api>`: Script client
 * :ref:`dashboard_client.h <dashboard-client-api>`: Dashboard client
@@ -21,6 +22,17 @@ RTDE Control Interface API
    :private-members:
    :undoc-members:
 
+.. _rtde-receive-api:
+
+RTDE Receive Interface API
+==========================
+
+.. doxygenclass:: RTDEReceiveInterface
+      :project: ur_rtde
+      :members:
+      :protected-members:
+      :private-members:
+      :undoc-members:
 
 .. _rtde-api:
 
