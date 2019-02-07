@@ -92,7 +92,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   rtde_->sendStart();
 
   // Send script to the UR Controller
-  script_client_->sendScript("../scripts/rtde_control.script");
+  script_client_->sendScript();
 
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();

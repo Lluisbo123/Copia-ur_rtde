@@ -6,6 +6,9 @@
 #include <script_client.h>
 #include <thread>
 #include <sstream>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
 
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3
@@ -28,7 +31,6 @@
 class RTDEControlInterface
 {
  public:
-
   explicit RTDEControlInterface(std::string hostname, int port = 30004);
 
   virtual ~RTDEControlInterface();
@@ -85,9 +87,9 @@ class RTDEControlInterface
   void moveC(const std::vector<double>& pose_via, const std::vector<double>& pose_to, double speed, double acceleration,
              int mode);
 
-  void speedJ(const std::vector<double>& qd, double acceleration, double time=0.0);
+  void speedJ(const std::vector<double>& qd, double acceleration, double time = 0.0);
 
-  void speedL(const std::vector<double>& xd, double acceleration, double time=0.0);
+  void speedL(const std::vector<double>& xd, double acceleration, double time = 0.0);
 
   void servoJ(const std::vector<double>& q, double speed, double acceleration, double time, double lookahead_time,
               double gain);
@@ -126,5 +128,44 @@ class RTDEControlInterface
   std::shared_ptr<ScriptClient> script_client_;
   std::shared_ptr<RobotState> robot_state_;
 };
+
+namespace py = pybind11;
+
+PYBIND11_MODULE(rtde_control, m)
+{
+  m.doc() = "RTDE Control Interface";
+  py::class_<RTDEControlInterface>(m, "RTDEControlInterface")
+      .def(py::init<std::string>())
+      .def("stopRobot", &RTDEControlInterface::stopRobot)
+      .def("moveJ",
+           (void (RTDEControlInterface::*)(const std::vector<std::vector<double>>& path)) & RTDEControlInterface::moveJ,
+           "moveJ with path")
+      .def("moveJ",
+           (void (RTDEControlInterface::*)(const std::vector<double>& q, double speed, double acceleration)) & RTDEControlInterface::moveJ,
+           "moveJ without path")
+      .def("moveJ_IK", &RTDEControlInterface::moveJ_IK)
+      .def("moveL",
+           (void (RTDEControlInterface::*)(const std::vector<std::vector<double>>& path)) & RTDEControlInterface::moveL,
+           "moveL with path")
+      .def("moveL",
+           (void (RTDEControlInterface::*)(const std::vector<double>& pose, double speed, double acceleration)) & RTDEControlInterface::moveL,
+           "moveL without path")
+      .def("moveL_FK", &RTDEControlInterface::moveL_FK)
+      .def("moveC", &RTDEControlInterface::moveC)
+      .def("speedJ", &RTDEControlInterface::speedJ)
+      .def("speedL", &RTDEControlInterface::speedL)
+      .def("servoJ", &RTDEControlInterface::servoJ)
+      .def("servoC", &RTDEControlInterface::servoC)
+      .def("forceModeStart", &RTDEControlInterface::forceModeStart)
+      .def("forceModeUpdate", &RTDEControlInterface::forceModeUpdate)
+      .def("forceModeStop", &RTDEControlInterface::forceModeStop)
+      .def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor)
+      .def("setStandardDigitalOut", &RTDEControlInterface::setStandardDigitalOut)
+      .def("setToolDigitalOut", &RTDEControlInterface::setToolDigitalOut)
+      .def("__repr__", [](const RTDEControlInterface& a)
+           {
+        return "<rtde_py.RTDEControlInterface>";
+      });
+}
 
 #endif  // RTDE_RTDE_CONTROL_INTERFACE_H

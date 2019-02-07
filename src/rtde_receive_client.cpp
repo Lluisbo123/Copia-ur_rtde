@@ -6,10 +6,7 @@
 using namespace std::chrono;
 int main(int argc, char *argv[])
 {
-  std::vector<std::string> variables = {"joint_temperatures", "target_q",    "actual_q",
-                                        "actual_TCP_pose",    "safety_mode", "robot_mode"};
-
-  RTDEReceiveInterface rtde_receive(variables, "127.0.0.1");
+  RTDEReceiveInterface rtde_receive("127.0.0.1");
 
   while(1)
   {
