@@ -30,13 +30,9 @@ Currently tested on:
     make
     
 ### Test ###
-In order to test the client, download the most recent UR simulator for your robot from here [UR Download](https://www.universal-robots.com/download/). Once installed
+In order to test the interface, download the most recent UR simulator for your robot from here [UR Download](https://www.universal-robots.com/download/). Once installed
 run the simulator with:
 
     ./start-ursim.sh
 
-When the simulator is running initialize the robot by first clicking the **'ON'** button, and next clicking the **'START'** button. The *rtde_receive_client* can
-now be launched with:
-
-    ./rtde_receive_client
-
+When the simulator is running initialize the robot by first clicking the **'ON'** button, and next clicking the **'START'** button. You can now run the examples.
