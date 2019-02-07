@@ -1,8 +1,7 @@
 #include <rtde_receive_interface.h>
-#include <boost/thread.hpp>
 #include <iostream>
 
-RTDEReceiveInterface::RTDEReceiveInterface(std::vector<std::string> variables, std::string hostname, int port)
+RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables, int port)
     : variables_(std::move(variables)), hostname_(std::move(hostname)), port_(port)
 {
   rtde_ = std::make_shared<RTDE>(hostname_);
@@ -16,6 +15,20 @@ RTDEReceiveInterface::RTDEReceiveInterface(std::vector<std::string> variables, s
   if (major_version > CB3_MAJOR_VERSION)
     frequency = 500;
 
+  if (variables_.empty())
+  {
+    // Assume all variables
+    variables_ = {
+        "timestamp",            "target_q",                   "target_qd",            "target_qdd",
+        "target_current",       "target_moment",              "actual_q",             "actual_qd",
+        "actual_current",       "joint_control_output",       "actual_TCP_pose",      "actual_TCP_speed",
+        "actual_TCP_force",     "target_TCP_pose",            "target_TCP_speed",     "actual_digital_input_bits",
+        "joint_temperatures",   "actual_execution_time",      "robot_mode",           "joint_mode",
+        "safety_mode",          "actual_tool_accelerometer",  "speed_scaling",        "target_speed_fraction",
+        "actual_momentum",      "actual_main_voltage",        "actual_robot_voltage", "actual_robot_current",
+        "actual_joint_voltage", "actual_digital_output_bits", "runtime_state"};
+  }
+
   // Setup output
   rtde_->sendOutputSetup(variables_, frequency);
 
@@ -26,10 +39,9 @@ RTDEReceiveInterface::RTDEReceiveInterface(std::vector<std::string> variables, s
   robot_state_ = std::make_shared<RobotState>();
 
   // Start executing receiveCallback
-  boost::thread th(boost::bind(&RTDEReceiveInterface::receiveCallback, this));
-
+  th_ = std::make_shared<boost::thread>(boost::bind(&RTDEReceiveInterface::receiveCallback, this));
   // Wait until the first robot state has been received
-  std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 RTDEReceiveInterface::~RTDEReceiveInterface()
@@ -39,11 +51,16 @@ RTDEReceiveInterface::~RTDEReceiveInterface()
     if (rtde_->isConnected())
       rtde_->disconnect();
   }
+
+  // Stop the receive callback function
+  stop_thread = true;
+  th_->interrupt();
+  th_->join();
 }
 
 void RTDEReceiveInterface::receiveCallback()
 {
-  while (true)
+  while (!stop_thread)
   {
     // Receive and update the robot state
     rtde_->receiveData(robot_state_);

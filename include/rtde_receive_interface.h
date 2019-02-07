@@ -9,6 +9,10 @@
 #include <chrono>
 #include <sstream>
 #include <iostream>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
+#include <boost/thread.hpp>
 
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3
@@ -17,7 +21,7 @@ class RTDEReceiveInterface
 {
  public:
 
-  explicit RTDEReceiveInterface(std::vector<std::string> variables, std::string hostname, int port = 30004);
+  explicit RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables = {}, int port = 30004);
 
   virtual ~RTDEReceiveInterface();
 
@@ -111,7 +115,54 @@ class RTDEReceiveInterface
   std::string hostname_;
   int port_;
   std::shared_ptr<RTDE> rtde_;
+  std::atomic<bool> stop_thread {false};
+  std::shared_ptr<boost::thread> th_;
   std::shared_ptr<RobotState> robot_state_;
 };
+
+namespace py = pybind11;
+
+
+PYBIND11_MODULE(rtde_receive, m)
+{
+  m.doc() = "RTDE Receive Interface";
+  py::class_<RTDEReceiveInterface>(m, "RTDEReceiveInterface")
+      .def(py::init<std::string>())
+      .def("getTimestamp", &RTDEReceiveInterface::getTimestamp)
+      .def("getTargetQ", &RTDEReceiveInterface::getTargetQ)
+      .def("getTargetQd", &RTDEReceiveInterface::getTargetQd)
+      .def("getTargetQdd", &RTDEReceiveInterface::getTargetQdd)
+      .def("getTargetCurrent", &RTDEReceiveInterface::getTargetCurrent)
+      .def("getTargetMoment", &RTDEReceiveInterface::getTargetMoment)
+      .def("getActualQ", &RTDEReceiveInterface::getActualQ)
+      .def("getActualQd", &RTDEReceiveInterface::getActualQd)
+      .def("getActualCurrent", &RTDEReceiveInterface::getActualCurrent)
+      .def("getJointControlOutput", &RTDEReceiveInterface::getJointControlOutput)
+      .def("getActualTCPPose", &RTDEReceiveInterface::getActualTCPPose)
+      .def("getActualTCPSpeed", &RTDEReceiveInterface::getActualTCPSpeed)
+      .def("getActualTCPForce", &RTDEReceiveInterface::getActualTCPForce)
+      .def("getTargetTCPPose", &RTDEReceiveInterface::getTargetTCPPose)
+      .def("getTargetTCPSpeed", &RTDEReceiveInterface::getTargetTCPSpeed)
+      .def("getActualDigitalInputBits", &RTDEReceiveInterface::getActualDigitalInputBits)
+      .def("getJointTemperatures", &RTDEReceiveInterface::getJointTemperatures)
+      .def("getActualExecutionTime", &RTDEReceiveInterface::getActualExecutionTime)
+      .def("getRobotModes", &RTDEReceiveInterface::getRobotMode)
+      .def("getJointMode", &RTDEReceiveInterface::getJointMode)
+      .def("getSafetyMode", &RTDEReceiveInterface::getSafetyMode)
+      .def("getActualToolAccelerometer", &RTDEReceiveInterface::getActualToolAccelerometer)
+      .def("getSpeedScaling", &RTDEReceiveInterface::getSpeedScaling)
+      .def("getTargetSpeedFraction", &RTDEReceiveInterface::getTargetSpeedFraction)
+      .def("getActualMomentum", &RTDEReceiveInterface::getActualMomentum)
+      .def("getActualMainVoltage", &RTDEReceiveInterface::getActualMainVoltage)
+      .def("getActualRobotVoltage", &RTDEReceiveInterface::getActualRobotVoltage)
+      .def("getActualRobotCurrent", &RTDEReceiveInterface::getActualRobotCurrent)
+      .def("getActualJointVoltage", &RTDEReceiveInterface::getActualJointVoltage)
+      .def("getActualDigitalOutputBits", &RTDEReceiveInterface::getActualDigitalOutputBits)
+      .def("getRuntimeState", &RTDEReceiveInterface::getRuntimeState)
+      .def("__repr__", [](const RTDEReceiveInterface& a)
+      {
+        return "<rtde_py.RTDEReceiveInterface>";
+      });
+}
 
 #endif  // RTDE_RECEIVE_INTERFACE_H
