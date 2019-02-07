@@ -4,10 +4,10 @@ A C++ interface for sending and receiving data to/from a UR robot using the
  interface of the robot. 
  
 ### Documentation ###
-Documentation with examples and API resides at <https://prier.gitlab.io/ur_rtde/>
+Documentation with examples and API resides at <https://caro-sdu.gitlab.io/ur_rtde/>
 
 ### Build Status on Ubuntu 16.04 (xenial) ###
-[![build status](https://gitlab.com/prier/ur_rtde/badges/master/build.svg)](https://gitlab.com/prier/ur_rtde/commits/master)
+[![build status](https://gitlab.com/caro-sdu/ur_rtde/badges/master/build.svg)](https://gitlab.com/caro-sdu/ur_rtde/commits/master)
 
 ### Dependencies ###
 *  Boost
@@ -30,13 +30,12 @@ Currently tested on:
     make
     
 ### Test ###
-In order to test the client, download the most recent UR simulator for your robot from here [UR Download](https://www.universal-robots.com/download/). Once installed
+In order to test the interface, download the most recent UR simulator for your robot from here [UR Download](https://www.universal-robots.com/download/). Once installed
 run the simulator with:
 
     ./start-ursim.sh
 
-When the simulator is running initialize the robot by first clicking the **'ON'** button, and next clicking the **'START'** button. The *rtde_receive_client* can
-now be launched with:
+When the simulator is running initialize the robot by first clicking the **'ON'** button, and next clicking the **'START'** button. You can now run the examples.
 
-    ./rtde_receive_client
-
+### Contact ###
+If you have any questions or suggestions to the interface, feel free to contact <anpl@mmmi.sdu.dk>
