@@ -36,3 +36,6 @@ run the simulator with:
     ./start-ursim.sh
 
 When the simulator is running initialize the robot by first clicking the **'ON'** button, and next clicking the **'START'** button. You can now run the examples.
+
+### Contact ###
+If you have any questions or suggestions to the interface, feel free to contact <anpl@mmmi.sdu.dk>
