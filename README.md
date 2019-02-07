@@ -4,10 +4,10 @@ A C++ interface for sending and receiving data to/from a UR robot using the
  interface of the robot. 
  
 ### Documentation ###
-Documentation with examples and API resides at <https://prier.gitlab.io/ur_rtde/>
+Documentation with examples and API resides at <https://caro-sdu.gitlab.io/ur_rtde/>
 
 ### Build Status on Ubuntu 16.04 (xenial) ###
-[![build status](https://gitlab.com/prier/ur_rtde/badges/master/build.svg)](https://gitlab.com/prier/ur_rtde/commits/master)
+[![build status](https://gitlab.com/caro-sdu/ur_rtde/badges/master/build.svg)](https://gitlab.com/caro-sdu/ur_rtde/commits/master)
 
 ### Dependencies ###
 *  Boost
