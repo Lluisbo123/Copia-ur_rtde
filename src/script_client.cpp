@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <streambuf>
+#include "rtde_control_script.h"
 
 using boost::asio::ip::tcp;
 
@@ -57,11 +58,23 @@ bool ScriptClient::sendScriptCommand(const std::string &cmd_str)
   return true;
 }
 
+bool ScriptClient::sendScript()
+{
+  if(isConnected() && !UR_SCRIPT.empty())
+  {
+    boost::asio::write(*socket_, boost::asio::buffer(UR_SCRIPT));
+  }
+  else
+  {
+    std::cerr << "Please connect to the controller before calling sendScript()" << std::endl;
+    return false;
+  }
+
+  return true;
+}
+
 bool ScriptClient::sendScript(const std::string &file_name)
 {
-  //boost::filesystem::path full_path(boost::filesystem::current_path());
-  //std::cout << "Current path is : " << full_path << std::endl;
-
   // Read in the UR script file
   // Notice! We use this method as it allocates the memory up front, strictly for performance.
   std::string str;

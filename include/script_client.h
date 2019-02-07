@@ -22,7 +22,8 @@ class ScriptClient
   void connect();
   void disconnect();
   bool isConnected();
-  bool sendScript(const std::string& str);
+  bool sendScript();
+  bool sendScript(const std::string& file_name);
   bool sendScriptCommand(const std::string &cmd_str);
 
  private:
