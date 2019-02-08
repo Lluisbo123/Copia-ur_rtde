@@ -1,10 +1,11 @@
 #ifndef RTDE_DASHBOARD_CLIENT_H
 #define RTDE_DASHBOARD_CLIENT_H
 
+#include <rtde_export.h>
 #include <string>
 #include <boost/asio.hpp>
 
-class DashboardClient
+class RTDE_EXPORT DashboardClient
 {
  public:
   explicit DashboardClient(std::string hostname, int port = 29999);

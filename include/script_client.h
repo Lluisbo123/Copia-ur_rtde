@@ -1,11 +1,12 @@
 #ifndef RTDE_SCRIPT_CLIENT_H
 #define RTDE_SCRIPT_CLIENT_H
 
+#include <rtde_export.h>
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
 
-class ScriptClient
+class RTDE_EXPORT ScriptClient
 {
  public:
   explicit ScriptClient(std::string hostname, int port = 30002);

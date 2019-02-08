@@ -1,6 +1,7 @@
 #ifndef RTDE_RTDE_CONTROL_INTERFACE_H
 #define RTDE_RTDE_CONTROL_INTERFACE_H
 
+#include <rtde_export.h>
 #include <rtde.h>
 #include <dashboard_client.h>
 #include <script_client.h>
@@ -28,7 +29,7 @@
 #define UR_BLEND_MAX 2.0
 #define UR_BLEND_MIN 0.0
 
-class RTDEControlInterface
+class RTDE_EXPORT RTDEControlInterface
 {
  public:
   explicit RTDEControlInterface(std::string hostname, int port = 30004);

@@ -1,11 +1,12 @@
 #ifndef RTDE_RTDE_UTILITY_H
 #define RTDE_RTDE_UTILITY_H
 
+#include <rtde_export.h>
 #include <cstdint>
 #include <vector>
 #include <iomanip>
 
-class RTDEUtility
+class RTDE_EXPORT RTDEUtility
 {
  public:
 

@@ -1,13 +1,14 @@
 #ifndef RTDE_LIBRARY_H
 #define RTDE_LIBRARY_H
 
+#include <rtde_export.h>
 #include <robot_state.h>
 #include <cstdint>
 #include <string>
 #include <utility>
 #include <boost/asio.hpp>
 
-class RTDE
+class RTDE_EXPORT RTDE
 {
  public:
   explicit RTDE(const std::string hostname, int port = 30004);

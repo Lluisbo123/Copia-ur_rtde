@@ -1,11 +1,12 @@
 #ifndef RTDE_ROBOT_STATE_H
 #define RTDE_ROBOT_STATE_H
 
+#include <rtde_export.h>
 #include <vector>
 #include <cstdint>
 #include <mutex>
 
-class RobotState
+class RTDE_EXPORT RobotState
 {
  private:
   double timestamp;

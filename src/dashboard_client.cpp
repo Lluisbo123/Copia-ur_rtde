@@ -98,7 +98,7 @@ void DashboardClient::closePopup()
 
 std::string DashboardClient::programState()
 {
-  return std::__cxx11::string();
+  return std::string();
 }
 
 void DashboardClient::powerOn()

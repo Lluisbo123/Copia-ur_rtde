@@ -1,6 +1,7 @@
 #ifndef RTDE_RECEIVE_INTERFACE_H
 #define RTDE_RECEIVE_INTERFACE_H
 
+#include <rtde_export.h>
 #include <rtde.h>
 #include <dashboard_client.h>
 #include <script_client.h>
@@ -17,7 +18,7 @@
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3
 
-class RTDEReceiveInterface
+class RTDE_EXPORT RTDEReceiveInterface
 {
  public:
 
