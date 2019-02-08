@@ -32,6 +32,7 @@ set(PROJECT_MAIL "anpl@mmmi.sdu.dk")
 if(${CODE})
 	set(Boost_USE_MULTITHREAD ON)
 	find_package(Boost REQUIRED COMPONENTS system thread)
+	find_package(Threads)
 
 	add_subdirectory(pybind11)
 endif()
@@ -73,7 +74,7 @@ if(${CODE})
 			PRIVATE ${PYBIND11_INCLUDE_DIR}  # from project CMakeLists.txt
 			PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
 			PRIVATE ${PYTHON_INCLUDE_DIRS})
-	target_link_libraries(rtde PUBLIC ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${PYTHON_LIBRARIES})
+	target_link_libraries(rtde PUBLIC ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${PYTHON_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 	pybind11_add_module(rtde_control SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES})
 	target_include_directories(rtde_control PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:include>)
