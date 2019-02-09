@@ -21,7 +21,7 @@ sphinx_html:
   script:
     - mkdir build
     - cd build
-    - cmake -DCODE:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
+    - cmake -DCODE:BOOL=OFF -DPYTHON_BINDINGS:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
     - make doc
   artifacts:
     paths:
