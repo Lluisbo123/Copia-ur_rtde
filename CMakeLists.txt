@@ -3,6 +3,8 @@ list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # options
 option(CODE "Build primary libraries and executables." ON)
+option(PYTHON_BINDINGS "Build python bindings for libraries" ON)
+
 if(NOT DEFINED DOC)
 	set(DOC OFF CACHE STRING
 			"The documentation type to generate." FORCE)
@@ -34,7 +36,9 @@ if(${CODE})
 	find_package(Boost REQUIRED COMPONENTS system thread)
 	find_package(Threads)
 
-	add_subdirectory(pybind11)
+	if(${PYTHON_BINDINGS})
+		find_package(pybind11 REQUIRED)
+	endif()
 endif()
 
 set(LIB_SOURCE_FILES
@@ -53,6 +57,10 @@ set(LIB_HEADER_FILES
         include/rtde_control_interface.h
 		include/rtde_receive_interface.h)
 
+if(${PYTHON_BINDINGS})
+	find_package(pybind11 REQUIRED)
+endif()
+
 if(NOT DOC STREQUAL "OFF")
 	add_subdirectory(doc)
 endif()
@@ -70,37 +78,63 @@ if(${CODE})
 
 	add_library(rtde SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES})
 	target_include_directories(rtde
-			PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:include>
+			PUBLIC ${Boost_INCLUDE_DIRS}
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+			$<INSTALL_INTERFACE:include>)
+	target_link_libraries(rtde PUBLIC
+			${Boost_SYSTEM_LIBRARY}
+			${Boost_THREAD_LIBRARY}
+			${CMAKE_THREAD_LIBS_INIT})
+
+	if(${PYTHON_BINDINGS})
+		pybind11_add_module(rtde_control SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES}	src/rtde_python_bindings.cpp)
+		target_include_directories(rtde_control
+				PUBLIC ${Boost_INCLUDE_DIRS}
+				$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+				$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+				$<INSTALL_INTERFACE:include>
+				PRIVATE ${PYBIND11_INCLUDE_DIR}  # from project CMakeLists.txt
+				PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
+				PRIVATE ${PYTHON_INCLUDE_DIRS})
+		target_link_libraries(rtde_control PRIVATE
+				${PYTHON_LIBRARIES}
+				${Boost_SYSTEM_LIBRARY}
+				${Boost_THREAD_LIBRARY}
+				${CMAKE_THREAD_LIBS_INIT})
+
+		pybind11_add_module(rtde_receive SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES} src/rtde_python_bindings.cpp)
+		target_include_directories(rtde_receive
+			PUBLIC ${Boost_INCLUDE_DIRS}
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+			$<INSTALL_INTERFACE:include>
 			PRIVATE ${PYBIND11_INCLUDE_DIR}  # from project CMakeLists.txt
 			PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
 			PRIVATE ${PYTHON_INCLUDE_DIRS})
-	target_link_libraries(rtde PUBLIC ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${PYTHON_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-
-	pybind11_add_module(rtde_control SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES})
-	target_include_directories(rtde_control PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:include>)
-	target_link_libraries(rtde_control PRIVATE ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
-
-	pybind11_add_module(rtde_receive SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES})
-	target_include_directories(rtde_receive PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:include>)
-	target_link_libraries(rtde_receive PRIVATE ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
+		target_link_libraries(rtde_receive PRIVATE
+				${PYTHON_LIBRARIES}
+				${Boost_SYSTEM_LIBRARY}
+				${Boost_THREAD_LIBRARY})
+	endif()
 
 	set(RTDE_RECEIVE_CLIENT_SOURCE_FILES src/rtde_receive_client.cpp)
 	add_executable(rtde_receive_client ${RTDE_RECEIVE_CLIENT_SOURCE_FILES})
 	target_include_directories(rtde_receive_client
-			PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
-			PRIVATE ${PYBIND11_INCLUDE_DIR}  # from project CMakeLists.txt
-			PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
-			PRIVATE ${PYTHON_INCLUDE_DIRS})
-	target_link_libraries(rtde_receive_client PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+			PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+	target_link_libraries(rtde_receive_client PRIVATE
+			rtde
+			${Boost_SYSTEM_LIBRARY}
+			${Boost_THREAD_LIBRARY})
 
 	set(RTDE_SEND_CLIENT_SOURCE_FILES src/rtde_send_client.cpp)
 	add_executable(rtde_send_client ${RTDE_SEND_CLIENT_SOURCE_FILES})
 	target_include_directories(rtde_send_client
-			PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
-			PRIVATE ${PYBIND11_INCLUDE_DIR}  # from project CMakeLists.txt
-			PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
-			PRIVATE ${PYTHON_INCLUDE_DIRS})
-	target_link_libraries(rtde_send_client PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+			PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+	target_link_libraries(rtde_send_client PRIVATE
+			rtde
+			${Boost_SYSTEM_LIBRARY}
+			${Boost_THREAD_LIBRARY})
 
 	generate_export_header(rtde)
 
@@ -113,19 +147,24 @@ if(${CODE})
 		set_target_properties(rtde PROPERTIES LINK_FLAGS -Wl,--no-undefined)
 	endif()
 
-	install(TARGETS rtde # rtde_receive_client rtde_send_client
-		EXPORT RTDETargets
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-		RUNTIME DESTINATION bin
-		INCLUDES DESTINATION include
-	)
+	install(TARGETS rtde
+			EXPORT RTDETargets
+			LIBRARY DESTINATION lib
+			ARCHIVE DESTINATION lib
+			RUNTIME DESTINATION bin
+			INCLUDES DESTINATION include
+			)
+	if(${PYTHON_BINDINGS})
+		install(TARGETS rtde_control rtde_receive
+				DESTINATION ${PYTHON_SITE_PACKAGES})
+	endif()
+
 	install(
-		FILES
-		${LIB_HEADER_FILES}
-		"${CMAKE_CURRENT_BINARY_DIR}/rtde_export.h"
-		DESTINATION include
-		COMPONENT ur_rtde
+			FILES
+			${LIB_HEADER_FILES}
+			"${CMAKE_CURRENT_BINARY_DIR}/rtde_export.h"
+			DESTINATION include
+			COMPONENT ur_rtde
 	)
 
 	include(CMakePackageConfigHelpers)

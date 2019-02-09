@@ -40,6 +40,7 @@ RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std
 
   // Start executing receiveCallback
   th_ = std::make_shared<boost::thread>(boost::bind(&RTDEReceiveInterface::receiveCallback, this));
+  
   // Wait until the first robot state has been received
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
