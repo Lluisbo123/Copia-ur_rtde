@@ -18,10 +18,6 @@ RTDE Control Interface API
 .. doxygenclass:: RTDEControlInterface
    :project: ur_rtde
    :members:
-   :protected-members:
-   :private-members:
-   :undoc-members:
-
 
 .. _rtde-receive-api:
 
@@ -31,8 +27,6 @@ RTDE Receive Interface API
 .. doxygenclass:: RTDEReceiveInterface
       :project: ur_rtde
       :members:
-      :protected-members:
-      :private-members:
       :undoc-members:
 
 .. _rtde-api:

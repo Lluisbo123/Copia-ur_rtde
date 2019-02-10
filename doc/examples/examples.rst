@@ -12,7 +12,7 @@ Basic use
 =========
 Simple example using the RTDE Control Interface to move the robot to a pose with the **moveL** command.
 
-In C++:
+C++:
 
 .. code-block:: c++
 
@@ -21,7 +21,7 @@ In C++:
    // First argument is the pose 6d vector followed by speed and acceleration
    rtde_control.moveL({-0.143, -0.435, 0.20, -0.001, 3.12, 0.04}, 0.5, 0.2);
 
-In Python:
+Python:
 
 .. code-block:: python
 
@@ -31,7 +31,7 @@ In Python:
 
 Simple example using the RTDE Receive Interface to get the joint positions of the robot
 
-In C++:
+C++:
 
 .. code-block:: c++
 
@@ -41,7 +41,7 @@ In C++:
    RTDEReceiveInterface rtde_receive("127.0.0.1");
    std::vector<double> joint_positions = rtde_receive.getActualQ();
 
-In Python:
+Python:
 
 .. code-block:: python
 
