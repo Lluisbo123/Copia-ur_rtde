@@ -82,3 +82,7 @@ upwards with 20N in the z-axis for 1 second.
       std::this_thread::sleep_for(std::chrono::seconds(1));
       rtde_control.forceModeStop();
    }
+
+Intended movement:
+
+.. image:: ../_static/force_mode_example.gif
