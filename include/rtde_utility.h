@@ -6,7 +6,7 @@
 #include <vector>
 #include <iomanip>
 
-class RTDE_EXPORT RTDEUtility
+class RTDEUtility
 {
  public:
 
