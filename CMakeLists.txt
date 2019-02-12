@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
+if (POLICY CMP0074)
+	cmake_policy(SET CMP0074 NEW)
+endif()
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # options
@@ -102,6 +105,7 @@ if(${CODE})
 				${Boost_SYSTEM_LIBRARY}
 				${Boost_THREAD_LIBRARY}
 				${CMAKE_THREAD_LIBS_INIT})
+                taget_compile_definitions(rtde_control PRIVATE rtde_EXPORTS)
 
 		pybind11_add_module(rtde_receive SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES} src/rtde_python_bindings.cpp)
 		target_include_directories(rtde_receive
@@ -116,6 +120,7 @@ if(${CODE})
 				${PYTHON_LIBRARIES}
 				${Boost_SYSTEM_LIBRARY}
 				${Boost_THREAD_LIBRARY})
+                taget_compile_definitions(rtde_receive PRIVATE rtde_EXPORTS)
 	endif()
 
 	set(RTDE_RECEIVE_CLIENT_SOURCE_FILES src/rtde_receive_client.cpp)
