@@ -5,12 +5,12 @@
 #include <string>
 #include <boost/asio.hpp>
 
-class RTDE_EXPORT DashboardClient
+class DashboardClient
 {
  public:
-  explicit DashboardClient(std::string hostname, int port = 29999);
+  RTDE_EXPORT explicit DashboardClient(std::string hostname, int port = 29999);
 
-  virtual ~DashboardClient();
+  RTDE_EXPORT virtual ~DashboardClient();
 
   enum class ConnectionState : std::uint8_t
   {
@@ -19,24 +19,24 @@ class RTDE_EXPORT DashboardClient
   };
 
  public:
-  void connect();
-  bool isConnected();
-  void disconnect();
-  void send(const std::string& str);
-  void loadURP(const std::string& urp_name);
-  void play();
-  void stop();
-  void pause();
-  void quit();
-  void shutdown();
-  bool running();
-  void popup(const std::string& message);
-  void closePopup();
-  std::string programState();
-  void powerOn();
-  void powerOff();
-  void brakeRelease();
-  void unlockProtectiveStop();
+  RTDE_EXPORT void connect();
+  RTDE_EXPORT bool isConnected();
+  RTDE_EXPORT void disconnect();
+  RTDE_EXPORT void send(const std::string& str);
+  RTDE_EXPORT void loadURP(const std::string& urp_name);
+  RTDE_EXPORT void play();
+  RTDE_EXPORT void stop();
+  RTDE_EXPORT void pause();
+  RTDE_EXPORT void quit();
+  RTDE_EXPORT void shutdown();
+  RTDE_EXPORT bool running();
+  RTDE_EXPORT void popup(const std::string& message);
+  RTDE_EXPORT void closePopup();
+  RTDE_EXPORT std::string programState();
+  RTDE_EXPORT void powerOn();
+  RTDE_EXPORT void powerOff();
+  RTDE_EXPORT void brakeRelease();
+  RTDE_EXPORT void unlockProtectiveStop();
 
 
  private:

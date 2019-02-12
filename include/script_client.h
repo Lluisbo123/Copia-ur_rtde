@@ -6,12 +6,12 @@
 #include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
 
-class RTDE_EXPORT ScriptClient
+class ScriptClient
 {
  public:
-  explicit ScriptClient(std::string hostname, int port = 30002);
+  RTDE_EXPORT explicit ScriptClient(std::string hostname, int port = 30002);
 
-  virtual ~ScriptClient();
+  RTDE_EXPORT virtual ~ScriptClient();
 
   enum class ConnectionState : std::uint8_t
   {
@@ -20,12 +20,12 @@ class RTDE_EXPORT ScriptClient
   };
 
  public:
-  void connect();
-  void disconnect();
-  bool isConnected();
-  bool sendScript();
-  bool sendScript(const std::string& file_name);
-  bool sendScriptCommand(const std::string &cmd_str);
+  RTDE_EXPORT void connect();
+  RTDE_EXPORT void disconnect();
+  RTDE_EXPORT bool isConnected();
+  RTDE_EXPORT bool sendScript();
+  RTDE_EXPORT bool sendScript(const std::string& file_name);
+  RTDE_EXPORT bool sendScriptCommand(const std::string& cmd_str);
 
  private:
   std::string hostname_;

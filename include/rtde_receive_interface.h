@@ -15,98 +15,99 @@
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3
 
-class RTDE_EXPORT RTDEReceiveInterface
+class RTDEReceiveInterface
 {
  public:
 
-  explicit RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables = {}, int port = 30004);
+  RTDE_EXPORT explicit RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables = {},
+                                            int port = 30004);
 
-  virtual ~RTDEReceiveInterface();
+  RTDE_EXPORT virtual ~RTDEReceiveInterface();
 
   /**
     * @returns Time elapsed since the controller was started [s]
     */
-  double getTimestamp();
+  RTDE_EXPORT double getTimestamp();
 
   /**
     * @returns Target joint positions
     */
-  std::vector<double> getTargetQ();
+  RTDE_EXPORT std::vector<double> getTargetQ();
 
   /**
     * @returns Target joint velocities
     */
-  std::vector<double> getTargetQd();
+  RTDE_EXPORT std::vector<double> getTargetQd();
 
   /**
     * @returns Target joint accelerations
     */
-  std::vector<double> getTargetQdd();
+  RTDE_EXPORT std::vector<double> getTargetQdd();
 
   /**
     * @returns Target joint currents
     */
-  std::vector<double> getTargetCurrent();
+  RTDE_EXPORT std::vector<double> getTargetCurrent();
 
   /**
     * @returns Target joint moments (torques)
     */
-  std::vector<double> getTargetMoment();
+  RTDE_EXPORT std::vector<double> getTargetMoment();
 
   /**
     * @returns Actual joint positions
     */
-  std::vector<double> getActualQ();
+  RTDE_EXPORT std::vector<double> getActualQ();
 
-  std::vector<double> getActualQd();
+  RTDE_EXPORT std::vector<double> getActualQd();
 
-  std::vector<double> getActualCurrent();
+  RTDE_EXPORT std::vector<double> getActualCurrent();
 
-  std::vector<double> getJointControlOutput();
+  RTDE_EXPORT std::vector<double> getJointControlOutput();
 
-  std::vector<double> getActualTCPPose();
+  RTDE_EXPORT std::vector<double> getActualTCPPose();
 
-  std::vector<double> getActualTCPSpeed();
+  RTDE_EXPORT std::vector<double> getActualTCPSpeed();
 
-  std::vector<double> getActualTCPForce();
+  RTDE_EXPORT std::vector<double> getActualTCPForce();
 
-  std::vector<double> getTargetTCPPose();
+  RTDE_EXPORT std::vector<double> getTargetTCPPose();
 
-  std::vector<double> getTargetTCPSpeed();
+  RTDE_EXPORT std::vector<double> getTargetTCPSpeed();
 
-  uint64_t getActualDigitalInputBits();
+  RTDE_EXPORT uint64_t getActualDigitalInputBits();
 
-  std::vector<double> getJointTemperatures();
+  RTDE_EXPORT std::vector<double> getJointTemperatures();
 
-  double getActualExecutionTime();
+  RTDE_EXPORT double getActualExecutionTime();
 
-  int32_t getRobotMode();
+  RTDE_EXPORT int32_t getRobotMode();
 
-  std::vector<int32_t> getJointMode();
+  RTDE_EXPORT std::vector<int32_t> getJointMode();
 
-  int32_t getSafetyMode();
+  RTDE_EXPORT int32_t getSafetyMode();
 
-  std::vector<double> getActualToolAccelerometer();
+  RTDE_EXPORT std::vector<double> getActualToolAccelerometer();
 
-  double getSpeedScaling();
+  RTDE_EXPORT double getSpeedScaling();
 
-  double getTargetSpeedFraction();
+  RTDE_EXPORT double getTargetSpeedFraction();
 
-  double getActualMomentum();
+  RTDE_EXPORT double getActualMomentum();
 
-  double getActualMainVoltage();
+  RTDE_EXPORT double getActualMainVoltage();
 
-  double getActualRobotVoltage();
+  RTDE_EXPORT double getActualRobotVoltage();
 
-  double getActualRobotCurrent();
+  RTDE_EXPORT double getActualRobotCurrent();
 
-  std::vector<double> getActualJointVoltage();
+  RTDE_EXPORT std::vector<double> getActualJointVoltage();
 
-  uint64_t getActualDigitalOutputBits();
+  RTDE_EXPORT uint64_t getActualDigitalOutputBits();
 
-  uint32_t getRuntimeState();
+  RTDE_EXPORT uint32_t getRuntimeState();
 
-  void receiveCallback();
+  RTDE_EXPORT void receiveCallback();
 
  private:
   std::vector<std::string> variables_;

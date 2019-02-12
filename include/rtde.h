@@ -8,12 +8,12 @@
 #include <utility>
 #include <boost/asio.hpp>
 
-class RTDE_EXPORT RTDE
+class RTDE
 {
  public:
-  explicit RTDE(const std::string hostname, int port = 30004);
+  RTDE_EXPORT explicit RTDE(const std::string hostname, int port = 30004);
 
-  virtual ~RTDE();
+  RTDE_EXPORT virtual ~RTDE();
 
   class RobotCommand
   {
@@ -52,7 +52,7 @@ class RTDE_EXPORT RTDE
       RECIPE_9 = 9
     };
 
-    RobotCommand() : type_(NO_CMD), recipe_id_(1)
+    RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)
     {
     }
 
@@ -89,20 +89,20 @@ class RTDE_EXPORT RTDE
   };
 
  public:
-  void connect();
-  void disconnect();
-  bool isConnected();
+  RTDE_EXPORT void connect();
+  RTDE_EXPORT void disconnect();
+  RTDE_EXPORT bool isConnected();
 
-  bool negotiateProtocolVersion();
-  std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> getControllerVersion();
-  void receive();
-  void receiveData(std::shared_ptr<RobotState>& robot_state);
-  void send(const RobotCommand& robot_cmd);
-  void sendAll(const std::uint8_t& command, std::string payload = "");
-  void sendStart();
-  void sendPause();
-  bool sendOutputSetup(const std::vector<std::string>& output_names, double frequency);
-  bool sendInputSetup(const std::vector<std::string>& input_names);
+  RTDE_EXPORT bool negotiateProtocolVersion();
+  RTDE_EXPORT std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> getControllerVersion();
+  RTDE_EXPORT void receive();
+  RTDE_EXPORT void receiveData(std::shared_ptr<RobotState>& robot_state);
+  RTDE_EXPORT void send(const RobotCommand& robot_cmd);
+  RTDE_EXPORT void sendAll(const std::uint8_t& command, std::string payload = "");
+  RTDE_EXPORT void sendStart();
+  RTDE_EXPORT void sendPause();
+  RTDE_EXPORT bool sendOutputSetup(const std::vector<std::string>& output_names, double frequency);
+  RTDE_EXPORT bool sendInputSetup(const std::vector<std::string>& input_names);
 
  private:
   std::string hostname_;
