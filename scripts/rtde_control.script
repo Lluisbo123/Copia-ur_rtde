@@ -6,16 +6,8 @@ def rtde_control():
     global wrench = [0, 0, 0, 0, 0, 0]
     global limits = [0, 0, 0, 0, 0, 0]
 
-    def signal_ready():
-        write_output_integer_register(0, 2)
-    end
-
-    def set_executing_cmd():
-        write_output_integer_register(0, 0)
-    end
-
-    def clear_executing_cmd():
-        write_output_integer_register(0, 1)
+    def signal_ready(val):
+        write_output_integer_register(0, val)
     end
 
     def rtde_cmd():
@@ -238,7 +230,6 @@ def rtde_control():
             servoc(pose, a=acceleration, v=velocity, r=blend)
             stopj(20)
             textmsg("servoc done")
-
         elif cmd == 255:
             stopj(20)
             textmsg("Received stop!")
@@ -258,14 +249,14 @@ def rtde_control():
 
     keep_running = True
     executing_cmd = False
-    signal_ready()
+    signal_ready(1)
 
     while keep_running:
         if rtde_cmd() == 0:
-            clear_executing_cmd()
+            signal_ready(1)
             executing_cmd = False
         else:
-            set_executing_cmd()
+            signal_ready(0)
             if not executing_cmd:
                 keep_running = process_cmd()
             end

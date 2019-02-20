@@ -96,11 +96,6 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
 
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
-
-  while (getControlScriptState() == UR_CONTROLLER_READY)
-  {
-    // Wait until the controller is ready for commands
-  }
 }
 
 RTDEControlInterface::~RTDEControlInterface()
@@ -181,13 +176,15 @@ void RTDEControlInterface::moveJ(const std::vector<std::vector<double>>& path)
   // Send motions
   script_client_->sendScriptCommand(prepareCmdScript(path, "movej("));
 
-  while (getControlScriptState() == UR_CONTROLLER_EXECUTING)
+  while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
   {
-    // Wait until the controller has finished executing
+    // Wait until the controller is done with command
   }
 
+  sendClearCommand();
+
   // Re-upload RTDE script to the UR Controller
-  script_client_->sendScript("../scripts/rtde_control.script");
+  script_client_->sendScript();
 }
 
 void RTDEControlInterface::moveJ(const std::vector<double>& joints, double speed, double acceleration)
@@ -226,15 +223,15 @@ void RTDEControlInterface::moveL(const std::vector<std::vector<double>>& path)
   // Send motions
   script_client_->sendScriptCommand(prepareCmdScript(path, "movel(p"));
 
-  while (getControlScriptState() == UR_CONTROLLER_EXECUTING)
+  while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
   {
-    // Wait until the controller has finished executing
+    // Wait until the controller is done with command
   }
 
   sendClearCommand();
 
   // Re-upload RTDE script to the UR Controller
-  script_client_->sendScript("../scripts/rtde_control.script");
+  script_client_->sendScript();
 }
 
 void RTDEControlInterface::moveL(const std::vector<double>& transform, double speed, double acceleration)
@@ -446,7 +443,7 @@ int RTDEControlInterface::getControlScriptState()
 
 void RTDEControlInterface::sendCommand(const RTDE::RobotCommand& cmd)
 {
-  while (getControlScriptState() == UR_CONTROLLER_EXECUTING)
+  while (getControlScriptState() != UR_CONTROLLER_RDY_FOR_CMD)
   {
     // Wait until the controller is ready for a command
   }
@@ -454,12 +451,22 @@ void RTDEControlInterface::sendCommand(const RTDE::RobotCommand& cmd)
   // Send command to the controller
   rtde_->send(cmd);
 
-  while (getControlScriptState() != UR_CONTROLLER_EXECUTING)
+  while (getControlScriptState() != UR_CONTROLLER_CMD_RECEIVED)
   {
-    // Wait until the controller has finished executing
+    // Wait until the controller has received the command
   }
 
-  // Tell the controller to clear executing status and do nothing.
+  // Command has been received stop sending it.
+  sendClearCommand();
+
+  if (cmd.type_ != RTDE::RobotCommand::STOP)
+  {
+    while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD) {
+      // Wait until the controller has finished executing
+    }
+  }
+
+  // Command has been received stop sending it.
   sendClearCommand();
 }
 

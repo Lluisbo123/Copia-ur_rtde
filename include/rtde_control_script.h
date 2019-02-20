@@ -6,16 +6,8 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "    global wrench = [0, 0, 0, 0, 0, 0]" + NEW_LINE  + 
 "    global limits = [0, 0, 0, 0, 0, 0]" + NEW_LINE  + 
 "" + NEW_LINE  + 
-"    def signal_ready():" + NEW_LINE  + 
-"        write_output_integer_register(0, 2)" + NEW_LINE  + 
-"    end" + NEW_LINE  + 
-"" + NEW_LINE  + 
-"    def set_executing_cmd():" + NEW_LINE  + 
-"        write_output_integer_register(0, 0)" + NEW_LINE  + 
-"    end" + NEW_LINE  + 
-"" + NEW_LINE  + 
-"    def clear_executing_cmd():" + NEW_LINE  + 
-"        write_output_integer_register(0, 1)" + NEW_LINE  + 
+"    def signal_ready(val):" + NEW_LINE  + 
+"        write_output_integer_register(0, val)" + NEW_LINE  + 
 "    end" + NEW_LINE  + 
 "" + NEW_LINE  + 
 "    def rtde_cmd():" + NEW_LINE  + 
@@ -238,7 +230,6 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "            servoc(pose, a=acceleration, v=velocity, r=blend)" + NEW_LINE  + 
 "            stopj(20)" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"servoc done"+QUOTATION+")" + NEW_LINE  + 
-"" + NEW_LINE  + 
 "        elif cmd == 255:" + NEW_LINE  + 
 "            stopj(20)" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"Received stop!"+QUOTATION+")" + NEW_LINE  + 
@@ -258,14 +249,14 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "" + NEW_LINE  + 
 "    keep_running = True" + NEW_LINE  + 
 "    executing_cmd = False" + NEW_LINE  + 
-"    signal_ready()" + NEW_LINE  + 
+"    signal_ready(1)" + NEW_LINE  + 
 "" + NEW_LINE  + 
 "    while keep_running:" + NEW_LINE  + 
 "        if rtde_cmd() == 0:" + NEW_LINE  + 
-"            clear_executing_cmd()" + NEW_LINE  + 
+"            signal_ready(1)" + NEW_LINE  + 
 "            executing_cmd = False" + NEW_LINE  + 
 "        else:" + NEW_LINE  + 
-"            set_executing_cmd()" + NEW_LINE  + 
+"            signal_ready(0)" + NEW_LINE  + 
 "            if not executing_cmd:" + NEW_LINE  + 
 "                keep_running = process_cmd()" + NEW_LINE  + 
 "            end" + NEW_LINE  + 
