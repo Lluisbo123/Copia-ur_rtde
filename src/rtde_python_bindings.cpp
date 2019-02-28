@@ -14,17 +14,17 @@ PYBIND11_MODULE(rtde_control, m)
       .def(py::init<std::string>())
       .def("stopRobot", &RTDEControlInterface::stopRobot)
       .def("moveJ",
-           (void (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveJ,
+           (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveJ,
            "moveJ with path")
-      .def("moveJ", (void (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration)) &
+      .def("moveJ", (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration)) &
                         RTDEControlInterface::moveJ,
            "moveJ without path")
       .def("moveJ_IK", &RTDEControlInterface::moveJ_IK)
       .def("moveL",
-           (void (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveL,
+           (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveL,
            "moveL with path")
       .def("moveL",
-           (void (RTDEControlInterface::*)(const std::vector<double> &pose, double speed, double acceleration)) &
+           (bool (RTDEControlInterface::*)(const std::vector<double> &pose, double speed, double acceleration)) &
                RTDEControlInterface::moveL,
            "moveL without path")
       .def("moveL_FK", &RTDEControlInterface::moveL_FK)
