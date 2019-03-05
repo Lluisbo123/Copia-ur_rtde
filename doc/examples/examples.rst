@@ -102,17 +102,47 @@ control loop.
       RTDEControlInterface rtde_control("127.0.0.1");
       std::vector<double> joint_q1 = {-1.54, -1.83, -2.28, -0.59, 1.60, 0.023};
       std::vector<double> joint_q2 = {-0.69, -2.37, -1.79, -0.37, 1.93, 0.87};
-      double time = 0.2;
+      double time = 0.3;
       double lookahead_time = 0.1;
       double gain = 300;
-      for (unsigned int i=0; i<20; i++)
+      rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
+      std::this_thread::sleep_for(std::chrono::milliseconds(280));
+
+      for (unsigned int i=0; i<30; i++)
       {
-       rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
-       std::this_thread::sleep_for(std::chrono::milliseconds(200));
-       rtde_control.servoJ(joint_q2, velocity, acceleration, time, lookahead_time, gain);
+        rtde_control.servoUpdate(joint_q1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(280));
+        rtde_control.servoUpdate(joint_q2);
+        std::this_thread::sleep_for(std::chrono::milliseconds(280));
       }
+      rtde_control.servoStop();
    }
 
 Intended movement:
 
 .. image:: ../_static/servoj_example.gif
+
+MoveL Path With Blending Example
+================================
+This example will use the **MoveL** command with a path, where each pose in the path has a defined velocity, acceleration and blend. The poses in the path are defined by a 9-dimensional vector, where the first six values constitutes the pose, followed by the last 3 values *velocity*, *acceleration* and *blend*.
+
+.. code-block:: c++
+
+   #include <rtde_control_interface.h>
+   int main(int argc, char* argv[])
+   {
+     double velocity = 0.5;
+     double acceleration = 0.5; 
+     double blend1 = 0;
+     double blend2 = 0.02;
+     double blend3 = 0;
+     std::vector<std::vector<double>> path;
+     std::vector<double> pose1 = {-0.143, -0.435, 0.20, -0.001, 3.12, 0.04, velocity, acceleration, blend1};
+     std::vector<double> pose2 = {-0.143, -0.51, 0.21, -0.001, 3.12, 0.04, velocity, acceleration, blend2};
+     std::vector<double> pose3 = {-0.32, -0.61, 0.31, -0.001, 3.12, 0.04, velocity, acceleration, blend3};
+     path.push_back(pose1);
+     path.push_back(pose2);
+     path.push_back(pose3);     
+     rtde_control.moveL(path);
+   }
+
