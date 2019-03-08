@@ -122,27 +122,30 @@ Intended movement:
 
 .. image:: ../_static/servoj_example.gif
 
-MoveL Path With Blending Example
+MoveJ Path With Blending Example
 ================================
-This example will use the **MoveL** command with a path, where each pose in the path has a defined velocity, acceleration and blend. The poses in the path are defined by a 9-dimensional vector, where the first six values constitutes the pose, followed by the last 3 values *velocity*, *acceleration* and *blend*.
+This example will use the **MoveJ** command with a path, where each joint pose in the path has a defined velocity, acceleration and blend. The joint poses in the path are defined by a 9-dimensional vector, where the first six values constitutes the joint pose, followed by the last three values *velocity*, *acceleration* and *blend*.
 
 .. code-block:: c++
 
    #include <rtde_control_interface.h>
    int main(int argc, char* argv[])
    {
-     double velocity = 0.5;
-     double acceleration = 0.5; 
+     double velocity = 0.8;
+     double acceleration = 1.2;
      double blend1 = 0;
-     double blend2 = 0.02;
+     double blend2 = 0.3;
      double blend3 = 0;
      std::vector<std::vector<double>> path;
-     std::vector<double> pose1 = {-0.143, -0.435, 0.20, -0.001, 3.12, 0.04, velocity, acceleration, blend1};
-     std::vector<double> pose2 = {-0.143, -0.51, 0.21, -0.001, 3.12, 0.04, velocity, acceleration, blend2};
-     std::vector<double> pose3 = {-0.32, -0.61, 0.31, -0.001, 3.12, 0.04, velocity, acceleration, blend3};
+     std::vector<double> pose1 = {-1.6, -1.8, -2.09, -0.844, 1.59, -0.0255, velocity, acceleration, blend1};
+     std::vector<double> pose2 = {-0.738, -1.99, -1.83, -0.894, 1.60, 0.827, velocity, acceleration, blend2};
+     std::vector<double> pose3 = {-1.6, -1.63, -1.07, -2.03, 1.59, -0.0202, velocity, acceleration, blend3};
      path.push_back(pose1);
      path.push_back(pose2);
-     path.push_back(pose3);     
-     rtde_control.moveL(path);
+     path.push_back(pose3);
+     rtde_control.moveJ(path);
    }
 
+Intended movement:
+
+.. image:: ../_static/movej_path_blend.gif
