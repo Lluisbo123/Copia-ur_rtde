@@ -45,8 +45,10 @@ Currently tested on:
     cd build
     cmake ..
     make
+    make install
     
-*Notice!* If you want Python 2.x support you must use `cmake -DPYBIND11_PYTHON_VERSION=2.x ..` in this step also, since the default interpreter is Python3.
+*Notice!* If you want Python 2.x support you must use `cmake -DPYBIND11_PYTHON_VERSION=2.x ..` in this step also, since the default interpreter is Python3. If you do not want to use
+Python at all, please use `cmake -DPYTHON_BINDINGS:BOOL=OFF ..`
     
 ### Test ###
 In order to test the interface, download the most recent UR simulator for your robot from here [UR Download](https://www.universal-robots.com/download/). Once installed
@@ -57,4 +59,4 @@ run the simulator with:
 When the simulator is running initialize the robot by first clicking the **'ON'** button, and next clicking the **'START'** button. You can now run the examples.
 
 ### Contact ###
-If you have any questions or suggestions to the interface, feel free to contact <anpl@mmmi.sdu.dk>
+If you have any questions or suggestions to the interface, feel free to contact Anders Prier Lindvig <anpl@mmmi.sdu.dk> or create an issue [here](https://gitlab.com/caro-sdu/ur_rtde/issues).
