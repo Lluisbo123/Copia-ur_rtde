@@ -20,6 +20,7 @@ You can install Boost on Ubuntu using:
 *Optionally* if you want to use ur_rtde with Python install pybind11 using:
 
     git clone --branch v2.2.4 https://github.com/pybind/pybind11.git --depth 1
+    cd pybind11
     mkdir build
     cd build
     cmake ..
@@ -41,11 +42,14 @@ Currently tested on:
 *  Ubuntu 18.04 (Bionic Beaver)
 
 ### Build Instructions ###
+
+    git clone https://gitlab.com/caro-sdu/ur_rtde.git
+    cd ur_rtde
     mkdir build
     cd build
     cmake ..
     make
-    make install
+    sudo make install
     
 *Notice!* If you want Python 2.x support you must use `cmake -DPYBIND11_PYTHON_VERSION=2.x ..` in this step also, since the default interpreter is Python3. If you do not want to use
 Python at all, please use `cmake -DPYTHON_BINDINGS:BOOL=OFF ..`
