@@ -4,10 +4,10 @@ A C++ interface for sending and receiving data to/from a UR robot using the
  interface of the robot. The interface can also by used with python, through the provided python bindings.
  
 ### Documentation ###
-Documentation with examples and API resides at <https://caro-sdu.gitlab.io/ur_rtde/>
+Documentation with examples and API resides at <https://sdurobotics.gitlab.io/ur_rtde/>
 
 ### Build Status on Ubuntu 16.04 (xenial) ###
-[![build status](https://gitlab.com/caro-sdu/ur_rtde/badges/master/build.svg)](https://gitlab.com/caro-sdu/ur_rtde/commits/master)
+[![build status](https://gitlab.com/sdurobotics/ur_rtde/badges/master/pipeline.svg)](https://gitlab.com/sdurobotics/ur_rtde/commits/master)
 
 ### Dependencies ###
 *  [Boost](https://www.boost.org/)
@@ -43,7 +43,7 @@ Currently tested on:
 
 ### Build Instructions ###
 
-    git clone https://gitlab.com/caro-sdu/ur_rtde.git
+    git clone https://gitlab.com/sdurobotics/ur_rtde.git
     cd ur_rtde
     mkdir build
     cd build

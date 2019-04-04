@@ -89,7 +89,7 @@ Intended movement:
 
 ServoJ Example
 ==============
-This example will use the **servoj** command to move the robot between two joint positions continuously in a 5Hz
+This example will use the **servoj** command to move the robot between two joint positions continuously in a
 control loop.
 
 .. code-block:: c++
@@ -117,6 +117,10 @@ control loop.
       }
       rtde_control.servoStop();
    }
+
+.. note::
+   To allow for a faster control rate when servoing, the joint positions must be close to each other e.g.
+   (dense trajectory).
 
 Intended movement:
 
