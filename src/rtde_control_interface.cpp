@@ -393,12 +393,11 @@ bool RTDEControlInterface::servoJ(const std::vector<double>& q, double speed, do
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::servoUpdate(const std::vector<double> &q)
+bool RTDEControlInterface::speedStop()
 {
   RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::SERVO_UPDATE;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
-  robot_cmd.val_ = q;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SPEED_STOP;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
   return sendCommand(robot_cmd);
 }
 

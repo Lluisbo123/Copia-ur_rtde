@@ -76,8 +76,13 @@ int main(int argc, char* argv[])
   /*std::vector<double> joint_speed = {0.2, 0.3, 0.1, 0.05, 0, 0};
   std::vector<double> tool_speed = {0.5, 0.4, 0.0, 1.57, 0, 0};
   double time = 0.5;
-  rtde_control.speedJ(joint_speed, acceleration, time);
-  rtde_control.speedL(tool_speed, acceleration, time);*/
+
+  for (unsigned int i=0; i<10; i++)
+  {
+    rtde_control.speedJ(joint_speed, acceleration);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  }
+  rtde_control.speedStop();*/
 
   // Test servoJ
   double time = 0.3;
@@ -87,9 +92,9 @@ int main(int argc, char* argv[])
   rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
   for (unsigned int i=0; i<30; i++)
   {
-    rtde_control.servoUpdate(joint_q1);
+    rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
     std::this_thread::sleep_for(std::chrono::milliseconds(280));
-    rtde_control.servoUpdate(joint_q2);
+    rtde_control.servoJ(joint_q2, velocity, acceleration, time, lookahead_time, gain);
     std::this_thread::sleep_for(std::chrono::milliseconds(280));
   }
 

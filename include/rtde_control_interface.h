@@ -135,15 +135,14 @@ class RTDEControlInterface
                           double lookahead_time, double gain);
 
   /**
-    * @brief Update servo position
-    * @param q joint positions [rad]
-    */
-  RTDE_EXPORT bool servoUpdate(const std::vector<double>& q);
-
-  /**
     * @brief Stop servos
     */
   RTDE_EXPORT bool servoStop();
+
+  /**
+    * @brief Stop speeding
+    */
+  RTDE_EXPORT bool speedStop();
 
   /**
     * @brief Servo to position (circular in tool-space). Accelerates to and moves with constant tool speed v.

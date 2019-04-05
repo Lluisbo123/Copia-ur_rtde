@@ -5,11 +5,38 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "    global task_frame = p[0, 0, 0, 0, 0, 0]" + NEW_LINE  + 
 "    global wrench = [0, 0, 0, 0, 0, 0]" + NEW_LINE  + 
 "    global limits = [0, 0, 0, 0, 0, 0]" + NEW_LINE  + 
+"    global is_servoing = 0" + NEW_LINE  + 
+"    global is_speeding = 0" + NEW_LINE  + 
 "    global servo_target = [0, 0, 0, 0, 0, 0]" + NEW_LINE  + 
 "    global servo_time = 0.2" + NEW_LINE  + 
 "    global servo_lookahead_time = 0.1" + NEW_LINE  + 
 "    global servo_gain = 300" + NEW_LINE  + 
-"    global thrd = 0" + NEW_LINE  + 
+"" + NEW_LINE  + 
+"    global speed_type = 0" + NEW_LINE  + 
+"    global speed_target = [0, 0, 0, 0, 0, 0]" + NEW_LINE  + 
+"    global speed_acceleration = 0.5" + NEW_LINE  + 
+"    global speed_time = 0.5" + NEW_LINE  + 
+"" + NEW_LINE  + 
+"    global servo_thrd = 0" + NEW_LINE  + 
+"    global speed_thrd = 0" + NEW_LINE  + 
+"" + NEW_LINE  + 
+"    thread speed_thread():" + NEW_LINE  + 
+"        while (True):" + NEW_LINE  + 
+"            if speed_type == 0:" + NEW_LINE  + 
+"                if speed_time > 0:" + NEW_LINE  + 
+"                    speedl(speed_target, a=speed_acceleration, t=speed_time)" + NEW_LINE  + 
+"                else:" + NEW_LINE  + 
+"                    speedl(speed_target, a=speed_acceleration)" + NEW_LINE  + 
+"                end" + NEW_LINE  + 
+"            else:" + NEW_LINE  + 
+"                if speed_time > 0:" + NEW_LINE  + 
+"                    speedj(speed_target, a=speed_acceleration, t=speed_time)" + NEW_LINE  + 
+"                else:" + NEW_LINE  + 
+"                    speedj(speed_target, a=speed_acceleration)" + NEW_LINE  + 
+"                end" + NEW_LINE  + 
+"            end" + NEW_LINE  + 
+"        end" + NEW_LINE  + 
+"    end" + NEW_LINE  + 
 "" + NEW_LINE  + 
 "    thread servo_thread():" + NEW_LINE  + 
 "        while (True):" + NEW_LINE  + 
@@ -178,14 +205,20 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "            qd[3] = read_input_float_register(3)" + NEW_LINE  + 
 "            qd[4] = read_input_float_register(4)" + NEW_LINE  + 
 "            qd[5] = read_input_float_register(5)" + NEW_LINE  + 
-"            acceleration = read_input_float_register(6)" + NEW_LINE  + 
-"            time = read_input_float_register(7)" + NEW_LINE  + 
-"            if time > 0:" + NEW_LINE  + 
-"                speedj(qd, acceleration, time)" + NEW_LINE  + 
-"            else:" + NEW_LINE  + 
-"                speedj(qd, acceleration)" + NEW_LINE  + 
+"" + NEW_LINE  + 
+"            enter_critical" + NEW_LINE  + 
+"            speed_type = 1" + NEW_LINE  + 
+"            speed_acceleration = read_input_float_register(6)" + NEW_LINE  + 
+"            speed_time = read_input_float_register(7)" + NEW_LINE  + 
+"            speed_target = qd" + NEW_LINE  + 
+"            exit_critical" + NEW_LINE  + 
+"" + NEW_LINE  + 
+"            if is_speeding == 0:" + NEW_LINE  + 
+"                is_speeding = 1" + NEW_LINE  + 
+"                if speed_thrd == 0:" + NEW_LINE  + 
+"                    global speed_thrd = run speed_thread()" + NEW_LINE  + 
+"                end" + NEW_LINE  + 
 "            end" + NEW_LINE  + 
-"            stopj(10)" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"speedj done"+QUOTATION+")" + NEW_LINE  + 
 "        elif cmd == 11:" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"speedl"+QUOTATION+")" + NEW_LINE  + 
@@ -196,14 +229,20 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "            xd[3] = read_input_float_register(3)" + NEW_LINE  + 
 "            xd[4] = read_input_float_register(4)" + NEW_LINE  + 
 "            xd[5] = read_input_float_register(5)" + NEW_LINE  + 
-"            acceleration = read_input_float_register(6)" + NEW_LINE  + 
-"            time = read_input_float_register(7)" + NEW_LINE  + 
-"            if time > 0:" + NEW_LINE  + 
-"                speedl(xd, acceleration, time)" + NEW_LINE  + 
-"            else:" + NEW_LINE  + 
-"                speedl(xd, acceleration)" + NEW_LINE  + 
+"            enter_critical" + NEW_LINE  + 
+"            speed_type = 0" + NEW_LINE  + 
+"            speed_acceleration = read_input_float_register(6)" + NEW_LINE  + 
+"            speed_time = read_input_float_register(7)" + NEW_LINE  + 
+"            speed_target = xd" + NEW_LINE  + 
+"            exit_critical" + NEW_LINE  + 
+"" + NEW_LINE  + 
+"            if is_speeding == 0:" + NEW_LINE  + 
+"                is_speeding = 1" + NEW_LINE  + 
+"                if speed_thrd == 0:" + NEW_LINE  + 
+"                    global speed_thrd = run speed_thread()" + NEW_LINE  + 
+"                end" + NEW_LINE  + 
 "            end" + NEW_LINE  + 
-"            stopl(10)" + NEW_LINE  + 
+"" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"speedl done"+QUOTATION+")" + NEW_LINE  + 
 "        elif cmd == 12:" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"servoj"+QUOTATION+")" + NEW_LINE  + 
@@ -216,11 +255,20 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "            q[5] = read_input_float_register(5)" + NEW_LINE  + 
 "            velocity = read_input_float_register(6)" + NEW_LINE  + 
 "            acceleration = read_input_float_register(7)" + NEW_LINE  + 
+"" + NEW_LINE  + 
+"            enter_critical" + NEW_LINE  + 
+"            servo_target = q" + NEW_LINE  + 
 "            servo_time = read_input_float_register(8)" + NEW_LINE  + 
 "            servo_lookahead_time = read_input_float_register(9)" + NEW_LINE  + 
 "            servo_gain = read_input_float_register(10)" + NEW_LINE  + 
-"            servo_move = True" + NEW_LINE  + 
-"            global thrd = run servo_thread()" + NEW_LINE  + 
+"            exit_critical" + NEW_LINE  + 
+"" + NEW_LINE  + 
+"            if is_servoing == 0:" + NEW_LINE  + 
+"                is_servoing = 1" + NEW_LINE  + 
+"                if servo_thrd == 0:" + NEW_LINE  + 
+"                    global servo_thrd = run servo_thread()" + NEW_LINE  + 
+"                end" + NEW_LINE  + 
+"            end" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"servoj done"+QUOTATION+")" + NEW_LINE  + 
 "        elif cmd == 13:" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"servoc"+QUOTATION+")" + NEW_LINE  + 
@@ -240,21 +288,27 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "            stopj(20)" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"servoc done"+QUOTATION+")" + NEW_LINE  + 
 "        elif cmd == 16:" + NEW_LINE  + 
-"            textmsg("+QUOTATION+"servo_update"+QUOTATION+")" + NEW_LINE  + 
-"            q = [0, 0, 0, 0, 0, 0]" + NEW_LINE  + 
-"            q[0] = read_input_float_register(0)" + NEW_LINE  + 
-"            q[1] = read_input_float_register(1)" + NEW_LINE  + 
-"            q[2] = read_input_float_register(2)" + NEW_LINE  + 
-"            q[3] = read_input_float_register(3)" + NEW_LINE  + 
-"            q[4] = read_input_float_register(4)" + NEW_LINE  + 
-"            q[5] = read_input_float_register(5)" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"speed_stop"+QUOTATION+")" + NEW_LINE  + 
 "            enter_critical" + NEW_LINE  + 
-"            servo_target = q" + NEW_LINE  + 
+"            is_speeding = 0" + NEW_LINE  + 
+"            kill speed_thrd" + NEW_LINE  + 
+"            speed_thrd = 0" + NEW_LINE  + 
+"            if speed_type == 0:" + NEW_LINE  + 
+"                stopl(10)" + NEW_LINE  + 
+"            else:" + NEW_LINE  + 
+"                stopj(10)" + NEW_LINE  + 
+"            end" + NEW_LINE  + 
 "            exit_critical" + NEW_LINE  + 
-"            textmsg("+QUOTATION+"servo_update done"+QUOTATION+")" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"speed_stop done"+QUOTATION+")" + NEW_LINE  + 
 "        elif cmd == 17:" + NEW_LINE  + 
-"            kill thrd" + NEW_LINE  + 
-"            stopj(30)" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"servo_stop"+QUOTATION+")" + NEW_LINE  + 
+"            enter_critical" + NEW_LINE  + 
+"            is_servoing = 0" + NEW_LINE  + 
+"            kill servo_thrd" + NEW_LINE  + 
+"            servo_thrd = 0" + NEW_LINE  + 
+"            exit_critical" + NEW_LINE  + 
+"            stopj(20)" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"servo_stop done"+QUOTATION+")" + NEW_LINE  + 
 "        elif cmd == 255:" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"Received stop!"+QUOTATION+")" + NEW_LINE  + 
 "        end" + NEW_LINE  + 

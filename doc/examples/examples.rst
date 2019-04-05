@@ -89,7 +89,7 @@ Intended movement:
 
 ServoJ Example
 ==============
-This example will use the **servoj** command to move the robot between two joint positions continuously in a
+This example will use the **servoJ** command to move the robot between two joint positions continuously in a
 control loop.
 
 .. code-block:: c++
@@ -110,9 +110,9 @@ control loop.
 
       for (unsigned int i=0; i<30; i++)
       {
-        rtde_control.servoUpdate(joint_q1);
+        rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
         std::this_thread::sleep_for(std::chrono::milliseconds(280));
-        rtde_control.servoUpdate(joint_q2);
+        rtde_control.servoJ(joint_q2, velocity, acceleration, time, lookahead_time, gain);
         std::this_thread::sleep_for(std::chrono::milliseconds(280));
       }
       rtde_control.servoStop();
@@ -126,9 +126,36 @@ Intended movement:
 
 .. image:: ../_static/servoj_example.gif
 
+SpeedJ Example
+==============
+This example will use the **speedJ** command to move the robot with a defined speed for a given time period.
+
+.. code-block:: c++
+
+   #include <rtde_control_interface.h>
+   #include <thread> // only needed for the delay
+
+   int main(int argc, char* argv[])
+   {
+      RTDEControlInterface rtde_control("127.0.0.1");
+      std::vector<double> joint_speed = {0.2, 0.3, 0.1, 0.05, 0, 0};
+      double time = 0.5;
+      double acceleration = 0.5;
+      for (unsigned int i=0; i<10; i++)
+      {
+        rtde_control.speedJ(joint_speed, acceleration, time);
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+      }
+      rtde_control.speedStop();
+   }
+
+Intended movement:
+
+.. image:: ../_static/speedj_example.gif
+
 MoveJ Path With Blending Example
 ================================
-This example will use the **MoveJ** command with a path, where each joint pose in the path has a defined velocity, acceleration and blend. The joint poses in the path are defined by a 9-dimensional vector, where the first six values constitutes the joint pose, followed by the last three values *velocity*, *acceleration* and *blend*.
+This example will use the **moveJ** command with a path, where each joint pose in the path has a defined velocity, acceleration and blend. The joint poses in the path are defined by a 9-dimensional vector, where the first six values constitutes the joint pose, followed by the last three values *velocity*, *acceleration* and *blend*.
 
 .. code-block:: c++
 
