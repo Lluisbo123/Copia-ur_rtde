@@ -206,6 +206,14 @@ class RTDEControlInterface
     */
   RTDE_EXPORT bool setToolDigitalOut(std::uint8_t output_id, bool signal_level);
 
+  /**
+    * @brief Set payload
+    * @param mass Mass in kilograms
+    * @param cog Center of Gravity, a vector [CoGx, CoGy, CoGz] specifying the displacement (in meters) from the
+    * toolmount. If not specified the current CoG will be used.
+    */
+  RTDE_EXPORT bool setPayload(double mass, const std::vector<double> &cog = {});
+
  private:
   bool sendCommand(const RTDE::RobotCommand& cmd);
 

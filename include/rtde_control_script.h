@@ -309,6 +309,23 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "            exit_critical" + NEW_LINE  + 
 "            stopj(20)" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"servo_stop done"+QUOTATION+")" + NEW_LINE  + 
+"        elif cmd == 18:" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"set_payload"+QUOTATION+")" + NEW_LINE  + 
+"            mass = read_input_float_register(0)" + NEW_LINE  + 
+"            cog_x = read_input_float_register(1)" + NEW_LINE  + 
+"            cog_y = read_input_float_register(2)" + NEW_LINE  + 
+"            cog_z = read_input_float_register(3)" + NEW_LINE  + 
+"            cog = [cog_x, cog_y, cog_z]" + NEW_LINE  + 
+"            if cog_x == 0 and cog_y == 0 and cog_z == 0:" + NEW_LINE  + 
+"                textmsg("+QUOTATION+"called set_payload with current COG"+QUOTATION+")" + NEW_LINE  + 
+"                set_payload(mass, get_target_payload_cog())" + NEW_LINE  + 
+"            else:" + NEW_LINE  + 
+"                textmsg("+QUOTATION+"called set_payload with given COG"+QUOTATION+")" + NEW_LINE  + 
+"                set_payload(mass, cog)" + NEW_LINE  + 
+"            end" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"active payload:"+QUOTATION+")" + NEW_LINE  + 
+"            textmsg(get_target_payload())" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"set_payload done"+QUOTATION+")" + NEW_LINE  + 
 "        elif cmd == 255:" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"Received stop!"+QUOTATION+")" + NEW_LINE  + 
 "        end" + NEW_LINE  + 

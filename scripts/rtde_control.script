@@ -309,6 +309,21 @@ def rtde_control():
             exit_critical
             stopj(20)
             textmsg("servo_stop done")
+        elif cmd == 18:
+            textmsg("set_payload")
+            mass = read_input_float_register(0)
+            cog_x = read_input_float_register(1)
+            cog_y = read_input_float_register(2)
+            cog_z = read_input_float_register(3)
+            cog = [cog_x, cog_y, cog_z]
+            if cog_x == 0 and cog_y == 0 and cog_z == 0:
+                set_payload(mass, get_target_payload_cog())
+            else:
+                set_payload(mass, cog)
+            end
+            textmsg("active payload:")
+            textmsg(get_target_payload())
+            textmsg("set_payload done")
         elif cmd == 255:
             textmsg("Received stop!")
         end

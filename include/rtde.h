@@ -38,6 +38,7 @@ class RTDE
       SET_TOOL_DIGITAL_OUT = 15,
       SPEED_STOP = 16,
       SERVO_STOP = 17,
+      SET_PAYLOAD = 18,
       STOP = 255
     };
 
@@ -51,7 +52,8 @@ class RTDE
       RECIPE_6 = 6,
       RECIPE_7 = 7,
       RECIPE_8 = 8,
-      RECIPE_9 = 9
+      RECIPE_9 = 9,
+      RECIPE_10 = 10
     };
 
     RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)

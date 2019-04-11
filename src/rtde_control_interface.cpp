@@ -89,6 +89,12 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
       "input_int_register_0", "tool_digital_output_mask", "tool_digital_output"};
   rtde_->sendInputSetup(set_tool_digital_out_input);
 
+  // Recipe 10
+  std::vector<std::string> set_payload_input = {
+      "input_int_register_0", "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3"};
+  rtde_->sendInputSetup(set_payload_input);
+
   // Start RTDE data synchronization
   rtde_->sendStart();
 
@@ -462,6 +468,25 @@ bool RTDEControlInterface::setToolDigitalOut(std::uint8_t output_id, bool signal
     robot_cmd.std_tool_out_ = 0;
   }
 
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::setPayload(double mass, const std::vector<double> &cog)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SET_PAYLOAD;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_10;
+  robot_cmd.val_.push_back(mass);
+  if (!cog.empty()) {
+    for (const auto &val : cog)
+      robot_cmd.val_.push_back(val);
+  }
+  else
+  {
+    robot_cmd.val_.push_back(0);
+    robot_cmd.val_.push_back(0);
+    robot_cmd.val_.push_back(0);
+  }
   return sendCommand(robot_cmd);
 }
 

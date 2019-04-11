@@ -100,6 +100,10 @@ int main(int argc, char* argv[])
 
   rtde_control.servoStop();
 
+  //std::vector<double> cog = {0, 0, 0};
+  //rtde_control.setPayload(1.3);
+  //rtde_control.setPayload(1.2, cog);
+
   // Test servoC
   //rtde_control.servoC(tcp_pose1, velocity, acceleration, 0.01);*/
 
