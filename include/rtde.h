@@ -43,6 +43,7 @@ class RTDE
       END_TEACH_MODE = 20,
       FORCE_MODE_SET_DAMPING = 21,
       FORCE_MODE_SET_GAIN_SCALING = 22,
+      SET_SPEED_SLIDER = 23,
       STOP = 255
     };
 
@@ -58,7 +59,8 @@ class RTDE
       RECIPE_8 = 8,
       RECIPE_9 = 9,
       RECIPE_10 = 10,
-      RECIPE_11 = 11
+      RECIPE_11 = 11,
+      RECIPE_12 = 12
     };
 
     RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)
@@ -75,6 +77,8 @@ class RTDE
     std::uint8_t std_digital_out_mask_;
     std::uint8_t std_tool_out_;
     std::uint8_t std_tool_out_mask_;
+    std::int32_t speed_slider_mask_;
+    double speed_slider_fraction_;
   };
 
   enum RTDECommand

@@ -99,6 +99,10 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   std::vector<std::string> force_mode_parameters_input = {"input_int_register_0", "input_double_register_0"};
   rtde_->sendInputSetup(force_mode_parameters_input);
 
+  // Recipe 12
+  std::vector<std::string> set_speed_slider = {"input_int_register_0", "speed_slider_mask", "speed_slider_fraction"};
+  rtde_->sendInputSetup(set_speed_slider);
+
   // Start RTDE data synchronization
   rtde_->sendStart();
 
@@ -528,6 +532,15 @@ bool RTDEControlInterface::forceModeSetGainScaling(double scaling)
   return sendCommand(robot_cmd);
 }
 
+bool RTDEControlInterface::setSpeedSlider(double speed)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SET_SPEED_SLIDER;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_12;
+  robot_cmd.speed_slider_mask_ = 1; // use speed_slider_fraction to set speed slider value
+  robot_cmd.speed_slider_fraction_ = speed;
+  return sendCommand(robot_cmd);
+}
 
 int RTDEControlInterface::getControlScriptState()
 {

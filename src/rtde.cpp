@@ -156,6 +156,17 @@ void RTDE::send(const RobotCommand& robot_cmd)
     cmd_packed.push_back(robot_cmd.std_tool_out_);
   }
 
+  if (robot_cmd.type_ == RobotCommand::SET_SPEED_SLIDER)
+  {
+    std::vector<char> speed_slider_mask_packed = RTDEUtility::packInt32(robot_cmd.speed_slider_mask_);
+    cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(speed_slider_mask_packed.begin()),
+                      std::make_move_iterator(speed_slider_mask_packed.end()));
+
+    std::vector<char> speed_slider_fraction_packed = RTDEUtility::packDouble(robot_cmd.speed_slider_fraction_);
+    cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(speed_slider_fraction_packed.begin()),
+                      std::make_move_iterator(speed_slider_fraction_packed.end()));
+  }
+
   cmd_packed.insert(cmd_packed.begin(), robot_cmd.recipe_id_);
   std::string sent(cmd_packed.begin(), cmd_packed.end());
 

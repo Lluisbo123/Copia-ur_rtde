@@ -37,10 +37,13 @@ PYBIND11_MODULE(rtde_control, m)
       .def("servoStop", &RTDEControlInterface::servoStop)
       .def("forceModeStart", &RTDEControlInterface::forceModeStart)
       .def("forceModeStop", &RTDEControlInterface::forceModeStop)
+      .def("forceModeSetDamping", &RTDEControlInterface::forceModeSetDamping)
+      .def("forceModeSetGainScaling", &RTDEControlInterface::forceModeSetGainScaling)
       .def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor)
       .def("setStandardDigitalOut", &RTDEControlInterface::setStandardDigitalOut)
       .def("setToolDigitalOut", &RTDEControlInterface::setToolDigitalOut)
       .def("setPayload", &RTDEControlInterface::setPayload)
+      .def("setSpeedSlider", &RTDEControlInterface::setSpeedSlider)
       .def("__repr__", [](const RTDEControlInterface &a)
            {
         return "<rtde_control.RTDEControlInterface>";

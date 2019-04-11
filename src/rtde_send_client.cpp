@@ -106,6 +106,8 @@ int main(int argc, char* argv[])
   //rtde_control.forceModeSetDamping(0.025);
   //rtde_control.forceModeSetGainScaling(0.5);
 
+  //rtde_control.setSpeedSlider(0.3);
+
   //std::vector<double> cog = {0, 0, 0};
   //rtde_control.setPayload(1.3);
   //rtde_control.setPayload(1.2, cog);

@@ -248,6 +248,11 @@ class RTDEControlInterface
     */
   RTDE_EXPORT bool forceModeSetGainScaling(double scaling);
 
+  /**
+    * @brief Set the speed slider on the controller
+    * @param speed set the speed slider on the controller as a fraction value between 0 and 1 (1 is 100%)
+    */
+  RTDE_EXPORT bool setSpeedSlider(double speed);
 
  private:
   bool sendCommand(const RTDE::RobotCommand& cmd);
