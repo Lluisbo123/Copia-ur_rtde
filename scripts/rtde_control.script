@@ -324,6 +324,24 @@ def rtde_control():
             textmsg("active payload:")
             textmsg(get_target_payload())
             textmsg("set_payload done")
+        elif cmd == 19:
+            textmsg("teach_mode")
+            teach_mode()
+            textmsg("teach_mode done")
+        elif cmd == 20:
+            textmsg("end_teach_mode")
+            end_teach_mode()
+            textmsg("end_teach_mode done")
+        elif cmd == 21:
+            textmsg("force_mode_set_damping")
+            damping = read_input_float_register(0)
+            force_mode_set_damping(damping)
+            textmsg("force_mode_set_damping done")
+        elif cmd == 22:
+            textmsg("force_mode_set_gain_scaling")
+            scaling = read_input_float_register(0)
+            force_mode_set_gain_scaling(scaling)
+            textmsg("force_mode_set_gain_scaling done")
         elif cmd == 255:
             textmsg("Received stop!")
         end
@@ -339,6 +357,10 @@ def rtde_control():
 
     # Initialize force torque sensor
     zero_ftsensor()
+
+    # Initialize gain and damping for force mode to a more stable default
+    force_mode_set_gain_scaling(0.5)
+    force_mode_set_damping(0.025)
 
     keep_running = True
     executing_cmd = False

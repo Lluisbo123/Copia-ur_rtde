@@ -100,6 +100,12 @@ int main(int argc, char* argv[])
 
   rtde_control.servoStop();
 
+  //rtde_control.teachMode();
+  //rtde_control.endTeachMode();
+
+  //rtde_control.forceModeSetDamping(0.025);
+  //rtde_control.forceModeSetGainScaling(0.5);
+
   //std::vector<double> cog = {0, 0, 0};
   //rtde_control.setPayload(1.3);
   //rtde_control.setPayload(1.2, cog);

@@ -95,6 +95,10 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
       "input_double_register_3"};
   rtde_->sendInputSetup(set_payload_input);
 
+  // Recipe 11
+  std::vector<std::string> force_mode_parameters_input = {"input_int_register_0", "input_double_register_0"};
+  rtde_->sendInputSetup(force_mode_parameters_input);
+
   // Start RTDE data synchronization
   rtde_->sendStart();
 
@@ -489,6 +493,41 @@ bool RTDEControlInterface::setPayload(double mass, const std::vector<double> &co
   }
   return sendCommand(robot_cmd);
 }
+
+bool RTDEControlInterface::teachMode()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::TEACH_MODE;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::endTeachMode()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::END_TEACH_MODE;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::forceModeSetDamping(double damping)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_SET_DAMPING;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_11;
+  robot_cmd.val_.push_back(damping);
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::forceModeSetGainScaling(double scaling)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_SET_GAIN_SCALING;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_11;
+  robot_cmd.val_.push_back(scaling);
+  return sendCommand(robot_cmd);
+}
+
 
 int RTDEControlInterface::getControlScriptState()
 {

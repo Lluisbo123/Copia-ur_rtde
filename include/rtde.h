@@ -39,6 +39,10 @@ class RTDE
       SPEED_STOP = 16,
       SERVO_STOP = 17,
       SET_PAYLOAD = 18,
+      TEACH_MODE = 19,
+      END_TEACH_MODE = 20,
+      FORCE_MODE_SET_DAMPING = 21,
+      FORCE_MODE_SET_GAIN_SCALING = 22,
       STOP = 255
     };
 
@@ -53,7 +57,8 @@ class RTDE
       RECIPE_7 = 7,
       RECIPE_8 = 8,
       RECIPE_9 = 9,
-      RECIPE_10 = 10
+      RECIPE_10 = 10,
+      RECIPE_11 = 11
     };
 
     RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)

@@ -317,15 +317,31 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "            cog_z = read_input_float_register(3)" + NEW_LINE  + 
 "            cog = [cog_x, cog_y, cog_z]" + NEW_LINE  + 
 "            if cog_x == 0 and cog_y == 0 and cog_z == 0:" + NEW_LINE  + 
-"                textmsg("+QUOTATION+"called set_payload with current COG"+QUOTATION+")" + NEW_LINE  + 
 "                set_payload(mass, get_target_payload_cog())" + NEW_LINE  + 
 "            else:" + NEW_LINE  + 
-"                textmsg("+QUOTATION+"called set_payload with given COG"+QUOTATION+")" + NEW_LINE  + 
 "                set_payload(mass, cog)" + NEW_LINE  + 
 "            end" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"active payload:"+QUOTATION+")" + NEW_LINE  + 
 "            textmsg(get_target_payload())" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"set_payload done"+QUOTATION+")" + NEW_LINE  + 
+"        elif cmd == 19:" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"teach_mode"+QUOTATION+")" + NEW_LINE  + 
+"            teach_mode()" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"teach_mode done"+QUOTATION+")" + NEW_LINE  + 
+"        elif cmd == 20:" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"end_teach_mode"+QUOTATION+")" + NEW_LINE  + 
+"            end_teach_mode()" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"end_teach_mode done"+QUOTATION+")" + NEW_LINE  + 
+"        elif cmd == 21:" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"force_mode_set_damping"+QUOTATION+")" + NEW_LINE  + 
+"            damping = read_input_float_register(0)" + NEW_LINE  + 
+"            force_mode_set_damping(damping)" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"force_mode_set_damping done"+QUOTATION+")" + NEW_LINE  + 
+"        elif cmd == 22:" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"force_mode_set_gain_scaling"+QUOTATION+")" + NEW_LINE  + 
+"            scaling = read_input_float_register(0)" + NEW_LINE  + 
+"            force_mode_set_gain_scaling(scaling)" + NEW_LINE  + 
+"            textmsg("+QUOTATION+"force_mode_set_gain_scaling done"+QUOTATION+")" + NEW_LINE  + 
 "        elif cmd == 255:" + NEW_LINE  + 
 "            textmsg("+QUOTATION+"Received stop!"+QUOTATION+")" + NEW_LINE  + 
 "        end" + NEW_LINE  + 
@@ -341,6 +357,10 @@ const std::string NEW_LINE= "\n"; const std::string QUOTATION = "\""; std::strin
 "" + NEW_LINE  + 
 "    # Initialize force torque sensor" + NEW_LINE  + 
 "    zero_ftsensor()" + NEW_LINE  + 
+"" + NEW_LINE  + 
+"    # Initialize gain and damping for force mode to a more stable default" + NEW_LINE  + 
+"    force_mode_set_gain_scaling(0.5)" + NEW_LINE  + 
+"    force_mode_set_damping(0.025)" + NEW_LINE  + 
 "" + NEW_LINE  + 
 "    keep_running = True" + NEW_LINE  + 
 "    executing_cmd = False" + NEW_LINE  + 

@@ -214,6 +214,41 @@ class RTDEControlInterface
     */
   RTDE_EXPORT bool setPayload(double mass, const std::vector<double> &cog = {});
 
+  /**
+    * @brief Set robot in freedrive mode. In this mode the robot can be moved around by hand in the same way as
+    * by pressing the "freedrive" button. The robot will not be able to follow a trajectory (eg. a movej) in this mode.
+    */
+  RTDE_EXPORT bool teachMode();
+
+  /**
+    * @brief Set robot back in normal position control mode after freedrive mode.
+    */
+  RTDE_EXPORT bool endTeachMode();
+
+  /**
+    * @brief Sets the damping parameter in force mode.
+    * @param damping Between 0 and 1, default value is 0.005
+    *
+    * A value of 1 is full damping, so the robot will decellerate quickly if no force is present.
+    * A value of 0 is no damping, here the robot will maintain the speed.
+    *
+    * The value is stored until this function is called again. Call this function
+    * before force mode is entered (otherwise default value will be used).
+    */
+  RTDE_EXPORT bool forceModeSetDamping(double damping);
+
+  /**
+    * @brief Scales the gain in force mode.
+    * @param scaling scaling parameter between 0 and 2, default is 1.
+    *
+    * A value larger than 1 can make force mode unstable, e.g. in case of collisions or pushing against hard surfaces.
+    *
+    * The value is stored until this function is called again. Call this function before force mode is entered
+    * (otherwise default value will be used)
+    */
+  RTDE_EXPORT bool forceModeSetGainScaling(double scaling);
+
+
  private:
   bool sendCommand(const RTDE::RobotCommand& cmd);
 
