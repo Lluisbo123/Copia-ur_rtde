@@ -112,6 +112,9 @@ int main(int argc, char* argv[])
   //rtde_control.setPayload(1.3);
   //rtde_control.setPayload(1.2, cog);
 
+  //rtde_control.setAnalogOutputCurrent(0, 0.5);
+  //rtde_control.setAnalogOutputCurrent(1, 0.25);
+
   // Test servoC
   //rtde_control.servoC(tcp_pose1, velocity, acceleration, 0.01);*/
 

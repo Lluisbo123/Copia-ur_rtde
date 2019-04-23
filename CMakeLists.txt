@@ -45,6 +45,7 @@ if(${CODE})
 endif()
 
 set(LIB_SOURCE_FILES
+		src/robot_state.cpp
         src/rtde.cpp
         src/dashboard_client.cpp
         src/script_client.cpp

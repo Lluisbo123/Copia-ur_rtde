@@ -44,6 +44,8 @@ PYBIND11_MODULE(rtde_control, m)
       .def("setToolDigitalOut", &RTDEControlInterface::setToolDigitalOut)
       .def("setPayload", &RTDEControlInterface::setPayload)
       .def("setSpeedSlider", &RTDEControlInterface::setSpeedSlider)
+      .def("setAnalogOutputCurrent", &RTDEControlInterface::setAnalogOutputCurrent)
+      .def("setAnalogOutputVoltage", &RTDEControlInterface::setAnalogOutputCurrent)
       .def("__repr__", [](const RTDEControlInterface &a)
            {
         return "<rtde_control.RTDEControlInterface>";
@@ -89,6 +91,10 @@ PYBIND11_MODULE(rtde_receive, m)
       .def("getActualJointVoltage", &RTDEReceiveInterface::getActualJointVoltage)
       .def("getActualDigitalOutputBits", &RTDEReceiveInterface::getActualDigitalOutputBits)
       .def("getRuntimeState", &RTDEReceiveInterface::getRuntimeState)
+      .def("getStandardAnalogInput0", &RTDEReceiveInterface::getStandardAnalogInput0)
+      .def("getStandardAnalogInput1", &RTDEReceiveInterface::getStandardAnalogInput1)
+      .def("getStandardAnalogOutput0", &RTDEReceiveInterface::getStandardAnalogOutput0)
+      .def("getStandardAnalogOutput1", &RTDEReceiveInterface::getStandardAnalogOutput1)
       .def("__repr__", [](const RTDEReceiveInterface &a)
            {
         return "<rtde_receive.RTDEReceiveInterface>";

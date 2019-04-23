@@ -254,6 +254,20 @@ class RTDEControlInterface
     */
   RTDE_EXPORT bool setSpeedSlider(double speed);
 
+  /**
+    * @brief Set Analog output voltage
+    * @param output_id The number (id) of the output, integer: [0:1]
+    * @param voltage_ratio voltage set as a (ratio) of the voltage span [0..1], 1 means full voltage.
+    */
+  RTDE_EXPORT bool setAnalogOutputVoltage(std::uint8_t output_id, double voltage_ratio);
+
+  /**
+    * @brief Set Analog output current
+    * @param output_id The number (id) of the output, integer: [0:1]
+    * @param current_ratio current set as a (ratio) of the current span [0..1], 1 means full current.
+    */
+  RTDE_EXPORT bool setAnalogOutputCurrent(std::uint8_t output_id, double current_ratio);
+
  private:
   bool sendCommand(const RTDE::RobotCommand& cmd);
 
