@@ -8,6 +8,20 @@ This section contains examples of how to use the :ref:`RTDE Control Interface <r
    It is your own responsibility to verify that the movements performed by these examples are collision-free and safe
    to execute on the robot. When in doubt use the simulator provided by Universal Robots.
 
+CMake Example
+=============
+Once you have installed the ur_rtde library. You can use the cmake command find_package() to locate the library.
+Here is an example of how to find the library and link it against your C++ executable.
+
+.. code-block:: cmake
+
+   cmake_minimum_required(VERSION 3.5)
+   project(ur_rtde_cmake_example)
+
+   find_package(ur_rtde REQUIRED)
+   add_executable(ur_rtde_cmake_example main.cpp)
+   target_link_libraries(ur_rtde_cmake_example PRIVATE ur_rtde::rtde)
+
 Basic use
 =========
 Simple example using the RTDE Control Interface to move the robot to a pose with the **moveL** command.
