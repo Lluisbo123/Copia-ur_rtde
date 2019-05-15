@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <mutex>
 
+namespace ur_rtde
+{
 class RobotState
 {
  public:
@@ -277,5 +279,7 @@ class RobotState
 
   std::mutex mutex_;
 };
+
+}  // namespace ur_rtde
 
 #endif  // RTDE_ROBOT_STATE_H

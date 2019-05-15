@@ -2,9 +2,9 @@
 #define RTDE_RECEIVE_INTERFACE_H
 
 #include <rtde_export.h>
-#include <rtde.h>
-#include <dashboard_client.h>
-#include <script_client.h>
+#include <ur_rtde/rtde.h>
+#include <ur_rtde/dashboard_client.h>
+#include <ur_rtde/script_client.h>
 #include <thread>
 #include <future>
 #include <chrono>
@@ -15,10 +15,11 @@
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3
 
+namespace ur_rtde
+{
 class RTDEReceiveInterface
 {
  public:
-
   RTDE_EXPORT explicit RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables = {},
                                             int port = 30004);
 
@@ -122,9 +123,11 @@ class RTDEReceiveInterface
   std::string hostname_;
   int port_;
   std::shared_ptr<RTDE> rtde_;
-  std::atomic<bool> stop_thread {false};
+  std::atomic<bool> stop_thread{false};
   std::shared_ptr<boost::thread> th_;
   std::shared_ptr<RobotState> robot_state_;
 };
+
+}  // namespace ur_rtde
 
 #endif  // RTDE_RECEIVE_INTERFACE_H

@@ -6,10 +6,12 @@
 #include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
 
+namespace ur_rtde
+{
 class ScriptClient
 {
  public:
-  RTDE_EXPORT explicit ScriptClient(std::string hostname, int port = 30002);
+  RTDE_EXPORT explicit ScriptClient(std::string hostname, uint32_t major_control_version, int port = 30002);
 
   RTDE_EXPORT virtual ~ScriptClient();
 
@@ -24,11 +26,12 @@ class ScriptClient
   RTDE_EXPORT void disconnect();
   RTDE_EXPORT bool isConnected();
   RTDE_EXPORT bool sendScript();
-  RTDE_EXPORT bool sendScript(const std::string& file_name);
-  RTDE_EXPORT bool sendScriptCommand(const std::string& cmd_str);
+  RTDE_EXPORT bool sendScript(const std::string &file_name);
+  RTDE_EXPORT bool sendScriptCommand(const std::string &cmd_str);
 
  private:
   std::string hostname_;
+  uint32_t major_control_version_;
   int port_;
   ConnectionState conn_state_;
   std::shared_ptr<boost::asio::io_service> io_service_;
@@ -36,4 +39,6 @@ class ScriptClient
   std::shared_ptr<boost::asio::ip::tcp::resolver> resolver_;
 };
 
-#endif //RTDE_SCRIPT_CLIENT_H
+}  // namespace ur_rtde
+
+#endif  // RTDE_SCRIPT_CLIENT_H

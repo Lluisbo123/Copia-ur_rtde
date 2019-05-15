@@ -1,8 +1,10 @@
-#include <rtde_control_interface.h>
+#include <ur_rtde/rtde_control_interface.h>
 #include <iostream>
 #include <bitset>
 #include <chrono>
 
+namespace ur_rtde
+{
 RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hostname_(std::move(hostname)), port_(port)
 {
   rtde_ = std::make_shared<RTDE>(hostname_);
@@ -21,7 +23,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   db_client_->connect();
 
   // Create a connection to the script server
-  script_client_ = std::make_shared<ScriptClient>(hostname_);
+  script_client_ = std::make_shared<ScriptClient>(hostname_, major_version);
   script_client_->connect();
 
   // Setup output
@@ -156,7 +158,22 @@ bool RTDEControlInterface::reuploadScript()
   return true;
 }
 
-void RTDEControlInterface::verifyValueIsWithin(const double& value, const double& min, const double& max)
+bool RTDEControlInterface::sendCustomScript(const std::string &script)
+{
+}
+
+bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
+{
+  // First stop the running RTDE control script
+  stopRobot();
+
+  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+
+  // Send custom script file
+  script_client_->sendScript(file_path);
+}
+
+void RTDEControlInterface::verifyValueIsWithin(const double &value, const double &min, const double &max)
 {
   if (std::isnan(min) || std::isnan(max))
   {
@@ -174,13 +191,13 @@ void RTDEControlInterface::verifyValueIsWithin(const double& value, const double
   }
 }
 
-std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector<double>>& path, const std::string& cmd)
+std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector<double>> &path, const std::string &cmd)
 {
   std::string cmd_str;
   std::stringstream ss;
   cmd_str += "def motions():\n";
   cmd_str += "\twrite_output_integer_register(0, 0)\n";
-  for (const auto& pose : path)
+  for (const auto &pose : path)
   {
     verifyValueIsWithin(pose[6], UR_VELOCITY_MIN, UR_VELOCITY_MAX);
     verifyValueIsWithin(pose[7], UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
@@ -197,7 +214,7 @@ std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector
   return cmd_str;
 }
 
-bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>>& path)
+bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path)
 {
   // First stop the running RTDE control script
   stopRobot();
@@ -223,7 +240,7 @@ bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>>& path)
   return true;
 }
 
-bool RTDEControlInterface::moveJ(const std::vector<double>& joints, double speed, double acceleration)
+bool RTDEControlInterface::moveJ(const std::vector<double> &joints, double speed, double acceleration)
 {
   verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
@@ -237,7 +254,7 @@ bool RTDEControlInterface::moveJ(const std::vector<double>& joints, double speed
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::moveJ_IK(const std::vector<double>& transform, double speed, double acceleration)
+bool RTDEControlInterface::moveJ_IK(const std::vector<double> &transform, double speed, double acceleration)
 {
   verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
@@ -251,7 +268,7 @@ bool RTDEControlInterface::moveJ_IK(const std::vector<double>& transform, double
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::moveL(const std::vector<std::vector<double>>& path)
+bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path)
 {
   // First stop the running RTDE control script
   stopRobot();
@@ -276,7 +293,7 @@ bool RTDEControlInterface::moveL(const std::vector<std::vector<double>>& path)
   return true;
 }
 
-bool RTDEControlInterface::moveL(const std::vector<double>& transform, double speed, double acceleration)
+bool RTDEControlInterface::moveL(const std::vector<double> &transform, double speed, double acceleration)
 {
   verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
@@ -290,7 +307,7 @@ bool RTDEControlInterface::moveL(const std::vector<double>& transform, double sp
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::moveL_FK(const std::vector<double>& joints, double speed, double acceleration)
+bool RTDEControlInterface::moveL_FK(const std::vector<double> &joints, double speed, double acceleration)
 {
   verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
@@ -304,7 +321,7 @@ bool RTDEControlInterface::moveL_FK(const std::vector<double>& joints, double sp
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::moveC(const std::vector<double>& pose_via, const std::vector<double>& pose_to, double speed,
+bool RTDEControlInterface::moveC(const std::vector<double> &pose_via, const std::vector<double> &pose_to, double speed,
                                  double acceleration, int mode)
 {
   verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
@@ -314,7 +331,7 @@ bool RTDEControlInterface::moveC(const std::vector<double>& pose_via, const std:
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEC;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_2;
   robot_cmd.val_ = pose_via;
-  for (const auto& val : pose_to)
+  for (const auto &val : pose_to)
     robot_cmd.val_.push_back(val);
 
   robot_cmd.val_.push_back(speed);
@@ -323,18 +340,18 @@ bool RTDEControlInterface::moveC(const std::vector<double>& pose_via, const std:
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::forceModeStart(const std::vector<double>& task_frame,
-                                          const std::vector<int>& selection_vector, const std::vector<double>& wrench,
-                                          int type, const std::vector<double>& limits)
+bool RTDEControlInterface::forceModeStart(const std::vector<double> &task_frame,
+                                          const std::vector<int> &selection_vector, const std::vector<double> &wrench,
+                                          int type, const std::vector<double> &limits)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_START;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   robot_cmd.val_ = task_frame;
-  for (const auto& val : wrench)
+  for (const auto &val : wrench)
     robot_cmd.val_.push_back(val);
 
-  for (const auto& val : limits)
+  for (const auto &val : limits)
     robot_cmd.val_.push_back(val);
 
   robot_cmd.selection_vector_ = selection_vector;
@@ -342,7 +359,7 @@ bool RTDEControlInterface::forceModeStart(const std::vector<double>& task_frame,
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::forceModeUpdate(const std::vector<double>& wrench)
+bool RTDEControlInterface::forceModeUpdate(const std::vector<double> &wrench)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_UPDATE;
@@ -367,7 +384,7 @@ bool RTDEControlInterface::zeroFtSensor()
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::speedJ(const std::vector<double>& qd, double acceleration, double time)
+bool RTDEControlInterface::speedJ(const std::vector<double> &qd, double acceleration, double time)
 {
   verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
 
@@ -380,7 +397,7 @@ bool RTDEControlInterface::speedJ(const std::vector<double>& qd, double accelera
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::speedL(const std::vector<double>& xd, double acceleration, double time)
+bool RTDEControlInterface::speedL(const std::vector<double> &xd, double acceleration, double time)
 {
   verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
 
@@ -393,7 +410,7 @@ bool RTDEControlInterface::speedL(const std::vector<double>& xd, double accelera
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::servoJ(const std::vector<double>& q, double speed, double acceleration, double time,
+bool RTDEControlInterface::servoJ(const std::vector<double> &q, double speed, double acceleration, double time,
                                   double lookahead_time, double gain)
 {
   verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
@@ -429,7 +446,7 @@ bool RTDEControlInterface::servoStop()
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::servoC(const std::vector<double>& pose, double speed, double acceleration, double blend)
+bool RTDEControlInterface::servoC(const std::vector<double> &pose, double speed, double acceleration, double blend)
 {
   verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
@@ -485,7 +502,7 @@ bool RTDEControlInterface::setToolDigitalOut(std::uint8_t output_id, bool signal
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::setPayload(double mass, const std::vector<double>& cog)
+bool RTDEControlInterface::setPayload(double mass, const std::vector<double> &cog)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SET_PAYLOAD;
@@ -493,7 +510,7 @@ bool RTDEControlInterface::setPayload(double mass, const std::vector<double>& co
   robot_cmd.val_.push_back(mass);
   if (!cog.empty())
   {
-    for (const auto& val : cog)
+    for (const auto &val : cog)
       robot_cmd.val_.push_back(val);
   }
   else
@@ -591,7 +608,7 @@ int RTDEControlInterface::getControlScriptState()
   }
 }
 
-bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand& cmd)
+bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 {
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
   while (getControlScriptState() != UR_CONTROLLER_RDY_FOR_CMD)
@@ -644,3 +661,5 @@ void RTDEControlInterface::sendClearCommand()
   clear_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
   rtde_->send(clear_cmd);
 }
+
+}  // namespace ur_rtde

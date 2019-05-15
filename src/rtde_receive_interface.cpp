@@ -1,6 +1,8 @@
-#include <rtde_receive_interface.h>
+#include <ur_rtde/rtde_receive_interface.h>
 #include <iostream>
 
+namespace ur_rtde
+{
 RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables, int port)
     : variables_(std::move(variables)), hostname_(std::move(hostname)), port_(port)
 {
@@ -243,3 +245,5 @@ double RTDEReceiveInterface::getStandardAnalogOutput1()
 {
   return robot_state_->getStandard_analog_output_1();
 }
+
+}  // namespace ur_rtde

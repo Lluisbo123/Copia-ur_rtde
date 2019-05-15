@@ -2,12 +2,14 @@
 #define RTDE_LIBRARY_H
 
 #include <rtde_export.h>
-#include <robot_state.h>
+#include <ur_rtde/robot_state.h>
 #include <cstdint>
 #include <string>
 #include <utility>
 #include <boost/asio.hpp>
 
+namespace ur_rtde
+{
 class RTDE
 {
  public:
@@ -115,13 +117,13 @@ class RTDE
   RTDE_EXPORT bool negotiateProtocolVersion();
   RTDE_EXPORT std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> getControllerVersion();
   RTDE_EXPORT void receive();
-  RTDE_EXPORT void receiveData(std::shared_ptr<RobotState>& robot_state);
-  RTDE_EXPORT void send(const RobotCommand& robot_cmd);
-  RTDE_EXPORT void sendAll(const std::uint8_t& command, std::string payload = "");
+  RTDE_EXPORT void receiveData(std::shared_ptr<RobotState> &robot_state);
+  RTDE_EXPORT void send(const RobotCommand &robot_cmd);
+  RTDE_EXPORT void sendAll(const std::uint8_t &command, std::string payload = "");
   RTDE_EXPORT void sendStart();
   RTDE_EXPORT void sendPause();
-  RTDE_EXPORT bool sendOutputSetup(const std::vector<std::string>& output_names, double frequency);
-  RTDE_EXPORT bool sendInputSetup(const std::vector<std::string>& input_names);
+  RTDE_EXPORT bool sendOutputSetup(const std::vector<std::string> &output_names, double frequency);
+  RTDE_EXPORT bool sendInputSetup(const std::vector<std::string> &input_names);
 
  private:
   std::string hostname_;
@@ -133,5 +135,7 @@ class RTDE
   std::shared_ptr<boost::asio::ip::tcp::socket> socket_;
   std::shared_ptr<boost::asio::ip::tcp::resolver> resolver_;
 };
+
+}  // namespace ur_rtde
 
 #endif
