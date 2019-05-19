@@ -114,7 +114,7 @@ You can find more information about CMake projects in visual studio `Here
 Once you have loaded the project navigate to the CMake Settings through 'Project->CMake Settings for ur_rtde'.
 Set the following CMake Command Arguments in order for the project to find Boost and disable the Python bindings:
 
-.. code-block:: cmake
+.. code-block:: shell
 
     -DBOOST_ROOT=<YOUR_BOOST_ROOT> -DBOOST_LIBRARYDIR=<YOUR_BOOST_LIBRARY_DIR> -DPYTHON_BINDINGS:BOOL=OFF
 
