@@ -160,6 +160,7 @@ bool RTDEControlInterface::reuploadScript()
 
 bool RTDEControlInterface::sendCustomScript(const std::string &script)
 {
+  return true;
 }
 
 bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
@@ -171,6 +172,7 @@ bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
 
   // Send custom script file
   script_client_->sendScript(file_path);
+  return true;
 }
 
 void RTDEControlInterface::verifyValueIsWithin(const double &value, const double &min, const double &max)
