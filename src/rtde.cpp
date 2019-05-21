@@ -414,6 +414,8 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
           robot_state->setActual_execution_time(RTDEUtility::getDouble(data, message_offset));
         else if (output_name == "robot_mode")
           robot_state->setRobot_mode(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "robot_status_bits")
+          robot_state->setRobot_status(RTDEUtility::getUInt32(data, message_offset));
         else if (output_name == "joint_mode")
           robot_state->setJoint_mode(RTDEUtility::unpackVector6Int32(data, message_offset));
         else if (output_name == "safety_mode")

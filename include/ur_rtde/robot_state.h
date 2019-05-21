@@ -54,6 +54,8 @@ class RobotState
   RTDE_EXPORT void setActual_execution_time(double actual_execution_time);
   RTDE_EXPORT int32_t getRobot_mode();
   RTDE_EXPORT void setRobot_mode(int32_t robot_mode);
+  RTDE_EXPORT uint32_t getRobot_status();
+  RTDE_EXPORT void setRobot_status(uint32_t robot_status);
   RTDE_EXPORT const std::vector<int32_t> &getJoint_mode();
   RTDE_EXPORT void setJoint_mode(const std::vector<int32_t> &joint_mode);
   RTDE_EXPORT int32_t getSafety_mode();
@@ -207,6 +209,7 @@ class RobotState
   std::vector<double> joint_temperatures_;
   double actual_execution_time_;
   int32_t robot_mode_;
+  uint32_t robot_status_;
   std::vector<int32_t> joint_mode_;
   int32_t safety_mode_;
   std::vector<double> actual_tool_accelerometer_;

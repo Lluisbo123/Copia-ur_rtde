@@ -84,6 +84,8 @@ class RTDEReceiveInterface
 
   RTDE_EXPORT int32_t getRobotMode();
 
+  RTDE_EXPORT uint32_t getRobotStatus();
+
   RTDE_EXPORT std::vector<int32_t> getJointMode();
 
   RTDE_EXPORT int32_t getSafetyMode();

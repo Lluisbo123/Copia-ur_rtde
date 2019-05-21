@@ -40,6 +40,14 @@ class RTDEControlInterface
 
   RTDE_EXPORT virtual ~RTDEControlInterface();
 
+  enum RobotStatus
+  {
+    ROBOT_STATUS_POWER_ON = 0,
+    ROBOT_STATUS_PROGRAM_RUNNING = 1,
+    ROBOT_STATUS_TEACH_BUTTON_PRESSED = 2,
+    ROBOT_STATUS_POWER_BUTTON_PRESSED = 3
+  };
+
   /**
    * @brief In the event of an error, this function can be used to resume operation by reuploading the RTDE control
    * script. This will only happen if a script is not already running on the controller.
@@ -281,6 +289,11 @@ class RTDEControlInterface
     * @param current_ratio current set as a (ratio) of the current span [0..1], 1 means full current.
     */
   RTDE_EXPORT bool setAnalogOutputCurrent(std::uint8_t output_id, double current_ratio);
+
+  /**
+    * @brief Returns true if a program is running on the controller, otherwise it returns false
+    */
+  RTDE_EXPORT bool isProgramRunning();
 
  private:
   bool sendCommand(const RTDE::RobotCommand &cmd);

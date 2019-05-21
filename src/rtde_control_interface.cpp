@@ -27,7 +27,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   script_client_->connect();
 
   // Setup output
-  std::vector<std::string> state_names = {"output_int_register_0"};
+  std::vector<std::string> state_names = {"robot_status_bits","output_int_register_0"}; //
   rtde_->sendOutputSetup(state_names, frequency);
 
   // Setup input recipes
@@ -111,14 +111,30 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
                                                     "standard_analog_output_1"};
   rtde_->sendInputSetup(set_std_analog_output);
 
+  // Init Robot state
+  robot_state_ = std::make_shared<RobotState>();
+
   // Start RTDE data synchronization
   rtde_->sendStart();
 
-  // Send script to the UR Controller
-  script_client_->sendScript();
+  if(!isProgramRunning())
+  {
+    // Send script to the UR Controller
+    script_client_->sendScript();
+  }
+  else
+  {
+    std::cout << "A script was running on the controller, killing it!" << std::endl;
+    // Stop the running script first
+    stopRobot();
+    db_client_->stop();
 
-  // Init Robot state
-  robot_state_ = std::make_shared<RobotState>();
+    // Wait until terminated
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    // Send script to the UR Controller
+    script_client_->sendScript();
+  }
 }
 
 RTDEControlInterface::~RTDEControlInterface()
@@ -594,6 +610,22 @@ bool RTDEControlInterface::setAnalogOutputCurrent(std::uint8_t output_id, double
   else if (output_id == 1)
     robot_cmd.std_analog_output_1_ = current_ratio;
   return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::isProgramRunning()
+{
+  if (robot_state_ != nullptr)
+  {
+    // Receive RobotState
+    rtde_->receiveData(robot_state_);
+    // Read Bits 0-3: Is power on(1) | Is program running(2) | Is teach button pressed(4) | Is power button pressed(8)
+    std::bitset<sizeof(uint32_t)> status_bits(robot_state_->getRobot_status());
+    return status_bits.test(RobotStatus::ROBOT_STATUS_PROGRAM_RUNNING);
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
 }
 
 int RTDEControlInterface::getControlScriptState()
