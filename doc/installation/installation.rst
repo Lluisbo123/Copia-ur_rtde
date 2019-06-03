@@ -93,6 +93,12 @@ Build Instructions
     default interpreter is Python3. If you do not want to use Python at all, please
     use :bash:`cmake -DPYTHON_BINDINGS:BOOL=OFF ..`
 
+.. tip::
+    In order to test the interface, download the most recent UR simulator for your robot from here
+    `UR Download <https://www.universal-robots.com/download/>`_. Once installed run the simulator with:
+    :bash:`./start-ursim.sh`, when the simulator is running, initialize the robot by first clicking the **'ON'** button,
+    and next clicking the **'START'** button. You can now run the examples.
+
 
 Instructions for Windows
 ------------------------
@@ -122,3 +128,5 @@ Set the following CMake Command Arguments in order for the project to find Boost
     Remember you can run the UR Simulator on Windows through the virtual machines provided by UR. In the VMware virtual
     machine you can set the network adapter to "Bridged" in the 'Virtual Machine Settings'. If you then obtain the IP
     address of the robot using ifconfig, you can test the communication with your windows host running the ur_rtde program.
+
+
