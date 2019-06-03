@@ -26,6 +26,16 @@ class RTDEReceiveInterface
   RTDE_EXPORT virtual ~RTDEReceiveInterface();
 
   /**
+    * @returns Can be used to reconnect to the robot after a lost connection.
+    */
+  RTDE_EXPORT bool reconnect();
+
+  /**
+    * @returns Connection status for RTDE, useful for checking for lost connection.
+    */
+  RTDE_EXPORT bool isConnected();
+
+  /**
     * @returns Time elapsed since the controller was started [s]
     */
   RTDE_EXPORT double getTimestamp();

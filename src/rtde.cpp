@@ -65,7 +65,7 @@ void RTDE::disconnect()
 
 bool RTDE::isConnected()
 {
-  return conn_state_ == ConnectionState::CONNECTED;
+  return conn_state_ == ConnectionState::CONNECTED || conn_state_ == ConnectionState::STARTED;
 }
 
 bool RTDE::negotiateProtocolVersion()

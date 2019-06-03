@@ -67,8 +67,65 @@ void RTDEReceiveInterface::receiveCallback()
   while (!stop_thread)
   {
     // Receive and update the robot state
-    rtde_->receiveData(robot_state_);
+    try
+    {
+      rtde_->receiveData(robot_state_);
+    }
+    catch (std::exception& e)
+    {
+      std::cerr << e.what() << std::endl;
+      if (rtde_->isConnected())
+        rtde_->disconnect();
+      stop_thread = true;
+    }
   }
+}
+
+bool RTDEReceiveInterface::reconnect()
+{
+  if (rtde_ != nullptr)
+  {
+    rtde_->connect();
+    rtde_->negotiateProtocolVersion();
+    auto controller_version = rtde_->getControllerVersion();
+    uint32_t major_version = std::get<MAJOR_VERSION>(controller_version);
+
+    double frequency = 125;
+    // If e-Series Robot set frequency to 500Hz
+    if (major_version > CB3_MAJOR_VERSION)
+      frequency = 500;
+
+    if (variables_.empty()) {
+      // Assume all variables
+      variables_ = {
+        "timestamp", "target_q", "target_qd", "target_qdd",
+        "target_current", "target_moment", "actual_q", "actual_qd",
+        "actual_current", "joint_control_output", "actual_TCP_pose", "actual_TCP_speed",
+        "actual_TCP_force", "target_TCP_pose", "target_TCP_speed", "actual_digital_input_bits",
+        "joint_temperatures", "actual_execution_time", "robot_mode", "joint_mode",
+        "safety_mode", "actual_tool_accelerometer", "speed_scaling", "target_speed_fraction",
+        "actual_momentum", "actual_main_voltage", "actual_robot_voltage", "actual_robot_current",
+        "actual_joint_voltage", "actual_digital_output_bits", "runtime_state", "standard_analog_input0",
+        "standard_analog_input0", "standard_analog_output0", "standard_analog_output1", "robot_status_bits"};
+    }
+
+    // Setup output
+    rtde_->sendOutputSetup(variables_, frequency);
+
+    // Start RTDE data synchronization
+    rtde_->sendStart();
+
+    // Start executing receiveCallback
+    th_ = std::make_shared<boost::thread>(boost::bind(&RTDEReceiveInterface::receiveCallback, this));
+
+    // Wait until the first robot state has been received
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+}
+
+bool RTDEReceiveInterface::isConnected()
+{
+  return rtde_->isConnected();
 }
 
 double RTDEReceiveInterface::getTimestamp()
