@@ -50,7 +50,8 @@ set(LIB_SOURCE_FILES
         src/dashboard_client.cpp
         src/script_client.cpp
         src/rtde_control_interface.cpp
-		src/rtde_receive_interface.cpp)
+		src/rtde_receive_interface.cpp
+		src/rtde_io_interface.cpp)
 
 set(LIB_HEADER_FILES
         include/ur_rtde/rtde.h
@@ -59,7 +60,8 @@ set(LIB_HEADER_FILES
         include/ur_rtde/robot_state.h
         include/ur_rtde/script_client.h
         include/ur_rtde/rtde_control_interface.h
-		include/ur_rtde/rtde_receive_interface.h)
+		include/ur_rtde/rtde_receive_interface.h
+		include/ur_rtde/rtde_io_interface.h)
 
 if(${PYTHON_BINDINGS})
 	find_package(pybind11 REQUIRED)
@@ -142,11 +144,21 @@ if(${CODE})
 			${Boost_SYSTEM_LIBRARY}
 			${Boost_THREAD_LIBRARY})
 
+	set(RTDE_IO_CLIENT_SOURCE_FILES src/rtde_io_client.cpp)
+	add_executable(rtde_io_client ${RTDE_IO_CLIENT_SOURCE_FILES})
+	target_include_directories(rtde_io_client
+			PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+	target_link_libraries(rtde_io_client PRIVATE
+			rtde
+			${Boost_SYSTEM_LIBRARY}
+			${Boost_THREAD_LIBRARY})
+
 	generate_export_header(rtde)
 
 	add_library(ur_rtde::rtde ALIAS rtde)
 	add_executable(ur_rtde::rtde_receive_client ALIAS rtde_receive_client)
 	add_executable(ur_rtde::rtde_send_client ALIAS rtde_send_client)
+	add_executable(ur_rtde::rtde_io_client ALIAS rtde_io_client)
 
 	if (CMAKE_COMPILER_IS_GNUCXX)
 		# Give error in Linux if library is not fully linked (like Windows)

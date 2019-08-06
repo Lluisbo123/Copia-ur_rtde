@@ -15,6 +15,7 @@ The interface can also by used with python, through the provided python bindings
    :caption: Table of Contents
    :glob:
 
+   introduction/introduction
    installation/installation
    examples/examples
    api/api

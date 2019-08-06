@@ -13,8 +13,8 @@
 #define UR_CONTROLLER_RDY_FOR_CMD 1
 #define UR_CONTROLLER_CMD_RECEIVED 0
 #define UR_CONTROLLER_DONE_WITH_CMD 1
-#define UR_EXECUTION_TIMEOUT 30
-#define UR_PATH_EXECUTION_TIMEOUT 120
+#define UR_EXECUTION_TIMEOUT 300
+#define UR_PATH_EXECUTION_TIMEOUT 600
 #define UR_GET_READY_TIMEOUT 3
 #define UR_CMD_RECEIVE_TIMEOUT 3
 
@@ -49,6 +49,16 @@ class RTDEControlInterface
   };
 
   /**
+    * @returns Can be used to reconnect to the robot after a lost connection.
+    */
+  RTDE_EXPORT bool reconnect();
+
+  /**
+  * @returns Connection status for RTDE, useful for checking for lost connection.
+  */
+  RTDE_EXPORT bool isConnected();
+
+  /**
    * @brief In the event of an error, this function can be used to resume operation by reuploading the RTDE control
    * script. This will only happen if a script is not already running on the controller.
    */
@@ -56,9 +66,12 @@ class RTDEControlInterface
 
   /**
     * @brief Send a custom ur script to the controller
-    * @param script the custom ur script to be sent to the controller specified as a string
+    * @param function_name specify a name for the custom script function
+    * @param script the custom ur script to be sent to the controller specified as a string,
+    * each line must be terminated with a newline. The code will automatically be indented with one tab
+    * to fit with the function body.
     */
-  RTDE_EXPORT bool sendCustomScript(const std::string &script);
+  RTDE_EXPORT bool sendCustomScriptFunction(const std::string &function_name, const std::string &script);
 
   /**
     * @brief Send a custom ur script file to the controller
@@ -215,20 +228,6 @@ class RTDEControlInterface
   RTDE_EXPORT bool zeroFtSensor();
 
   /**
-    * @brief Set standard digital output signal level
-    * @param output_id The number (id) of the output, integer: [0:7]
-    * @param signal_level The signal level. (boolean)
-    */
-  RTDE_EXPORT bool setStandardDigitalOut(std::uint8_t output_id, bool signal_level);
-
-  /**
-    * @brief Set tool digital output signal level
-    * @param output_id The number (id) of the output, integer: [0:1]
-    * @param signal_level The signal level. (boolean)
-    */
-  RTDE_EXPORT bool setToolDigitalOut(std::uint8_t output_id, bool signal_level);
-
-  /**
     * @brief Set payload
     * @param mass Mass in kilograms
     * @param cog Center of Gravity, a vector [CoGx, CoGy, CoGz] specifying the displacement (in meters) from the
@@ -269,26 +268,6 @@ class RTDEControlInterface
     * (otherwise default value will be used)
     */
   RTDE_EXPORT bool forceModeSetGainScaling(double scaling);
-
-  /**
-    * @brief Set the speed slider on the controller
-    * @param speed set the speed slider on the controller as a fraction value between 0 and 1 (1 is 100%)
-    */
-  RTDE_EXPORT bool setSpeedSlider(double speed);
-
-  /**
-    * @brief Set Analog output voltage
-    * @param output_id The number (id) of the output, integer: [0:1]
-    * @param voltage_ratio voltage set as a (ratio) of the voltage span [0..1], 1 means full voltage.
-    */
-  RTDE_EXPORT bool setAnalogOutputVoltage(std::uint8_t output_id, double voltage_ratio);
-
-  /**
-    * @brief Set Analog output current
-    * @param output_id The number (id) of the output, integer: [0:1]
-    * @param current_ratio current set as a (ratio) of the current span [0..1], 1 means full current.
-    */
-  RTDE_EXPORT bool setAnalogOutputCurrent(std::uint8_t output_id, double current_ratio);
 
   /**
     * @brief Returns true if a program is running on the controller, otherwise it returns false
