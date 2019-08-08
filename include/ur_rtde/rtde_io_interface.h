@@ -65,11 +65,6 @@ class RTDEIOInterface
     */
   RTDE_EXPORT bool setAnalogOutputCurrent(std::uint8_t output_id, double current_ratio);
 
-  /**
-    * @brief Returns true if a program is running on the controller, otherwise it returns false
-    */
-  RTDE_EXPORT bool isProgramRunning();
-
  private:
   bool sendCommand(const RTDE::RobotCommand &cmd);
 

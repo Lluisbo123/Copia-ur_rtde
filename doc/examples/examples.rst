@@ -1,8 +1,8 @@
 ********
 Examples
 ********
-This section contains examples of how to use the :ref:`RTDE Control Interface <rtde-control-api>` and the
-:ref:`RTDE Receive Interface <rtde-receive-api>`.
+This section contains examples of how to use the :ref:`RTDE Control Interface <rtde-control-api>` the
+:ref:`RTDE Receive Interface <rtde-receive-api>` and the :ref:`RTDE IO Interface <rtde-io-api>`.
 
 .. warning::
    It is your own responsibility to verify that the movements performed by these examples are collision-free and safe

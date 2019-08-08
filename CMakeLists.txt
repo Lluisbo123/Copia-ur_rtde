@@ -124,6 +124,21 @@ if(${CODE})
 				${Boost_SYSTEM_LIBRARY}
 				${Boost_THREAD_LIBRARY})
                 target_compile_definitions(rtde_receive PRIVATE rtde_EXPORTS)
+
+		pybind11_add_module(rtde_io SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES} src/rtde_python_bindings.cpp)
+		target_include_directories(rtde_io
+				PUBLIC ${Boost_INCLUDE_DIRS}
+				$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+				$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+				$<INSTALL_INTERFACE:include>
+				PRIVATE ${PYBIND11_INCLUDE_DIR}  # from project CMakeLists.txt
+				PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
+				PRIVATE ${PYTHON_INCLUDE_DIRS})
+		target_link_libraries(rtde_io PRIVATE
+				${PYTHON_LIBRARIES}
+				${Boost_SYSTEM_LIBRARY}
+				${Boost_THREAD_LIBRARY})
+		target_compile_definitions(rtde_io PRIVATE rtde_EXPORTS)
 	endif()
 
 	set(RTDE_RECEIVE_CLIENT_SOURCE_FILES src/rtde_receive_client.cpp)
@@ -183,7 +198,7 @@ if(${CODE})
 			INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR}
 			)
 	if(${PYTHON_BINDINGS})
-		install(TARGETS rtde_control rtde_receive
+		install(TARGETS rtde_control rtde_receive rtde_io
 				DESTINATION ${PYTHON_SITE_PACKAGES})
 	endif()
 

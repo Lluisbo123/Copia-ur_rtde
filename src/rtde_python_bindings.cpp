@@ -3,6 +3,8 @@
 #include <pybind11/functional.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/rtde_receive_interface.h>
+#include <ur_rtde/rtde_io_interface.h>
+
 namespace py = pybind11;
 using namespace ur_rtde;
 
@@ -13,6 +15,11 @@ PYBIND11_MODULE(rtde_control, m)
   m.doc() = "RTDE Control Interface";
   py::class_<RTDEControlInterface>(m, "RTDEControlInterface")
       .def(py::init<std::string>())
+      .def("reconnect", &RTDEControlInterface::reconnect,
+        "Can be used to reconnect to the robot after a lost connection.")
+      .def("isConnected", &RTDEControlInterface::isConnected)
+      .def("sendCustomScriptFunction", &RTDEControlInterface::sendCustomScriptFunction)
+      .def("sendCustomScriptFile", &RTDEControlInterface::sendCustomScriptFile)
       .def("stopRobot", &RTDEControlInterface::stopRobot)
       .def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveJ,
@@ -56,6 +63,8 @@ PYBIND11_MODULE(rtde_receive, m)
   m.doc() = "RTDE Receive Interface";
   py::class_<RTDEReceiveInterface>(m, "RTDEReceiveInterface")
       .def(py::init<std::string>())
+      .def("reconnect", &RTDEReceiveInterface::reconnect)
+      .def("isConnected", &RTDEReceiveInterface::isConnected)
       .def("getTimestamp", &RTDEReceiveInterface::getTimestamp)
       .def("getTargetQ", &RTDEReceiveInterface::getTargetQ)
       .def("getTargetQd", &RTDEReceiveInterface::getTargetQd)
@@ -95,5 +104,25 @@ PYBIND11_MODULE(rtde_receive, m)
            {
         return "<rtde_receive.RTDEReceiveInterface>";
       });
+}
+};
+
+namespace rtde_io
+{
+PYBIND11_MODULE(rtde_io, m)
+{
+  m.doc() = "RTDE IO Interface";
+  py::class_<RTDEIOInterface>(m, "RTDEIOInterface")
+    .def(py::init<std::string>())
+    .def("reconnect", &RTDEIOInterface::reconnect)
+    .def("setStandardDigitalOut", &RTDEIOInterface::setStandardDigitalOut)
+    .def("setToolDigitalOut", &RTDEIOInterface::setToolDigitalOut)
+    .def("setSpeedSlider", &RTDEIOInterface::setSpeedSlider)
+    .def("setAnalogOutputVoltage", &RTDEIOInterface::setAnalogOutputVoltage)
+    .def("setAnalogOutputCurrent", &RTDEIOInterface::setAnalogOutputCurrent)
+    .def("__repr__", [](const RTDEIOInterface &a)
+    {
+      return "<rtde_io.RTDEIOInterface>";
+    });
 }
 };

@@ -214,22 +214,6 @@ bool RTDEIOInterface::setAnalogOutputCurrent(std::uint8_t output_id, double curr
   return sendCommand(robot_cmd);
 }
 
-bool RTDEIOInterface::isProgramRunning()
-{
-  if (robot_state_ != nullptr)
-  {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
-    // Read Bits 0-3: Is power on(1) | Is program running(2) | Is teach button pressed(4) | Is power button pressed(8)
-    std::bitset<sizeof(uint32_t)> status_bits(robot_state_->getRobot_status());
-    return status_bits.test(RobotStatus::ROBOT_STATUS_PROGRAM_RUNNING);
-  }
-  else
-  {
-    throw std::logic_error("Please initialize the RobotState, before using it!");
-  }
-}
-
 bool RTDEIOInterface::sendCommand(const RTDE::RobotCommand &cmd)
 {
   try

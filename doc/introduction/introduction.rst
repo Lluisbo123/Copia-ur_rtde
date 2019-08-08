@@ -8,9 +8,13 @@ ur_rtde makes the following interfaces available:
 * :ref:`RTDE IO interface <rtde-io-api>`
 
 The :ref:`RTDE Control interface <rtde-control-api>` is primarily used for moving the
-robot and utility functions. The :ref:`RTDE Receive interface <rtde-receive-api>` is used for receiving data from the
-robot. Finally the `RTDE IO interface <rtde-io-api>` is used for setting digital / analog IO's and adjusting the speed
-slider of the robot.
+robot and utility functions. The :ref:`RTDE Control interface <rtde-control-api>` requires a control script to be
+running on the robot, which is uploaded automatically (Green).
+The :ref:`RTDE Receive interface <rtde-receive-api>` is used for receiving data from the
+robot (Orange). Finally the `RTDE IO interface <rtde-io-api>`
+is used for setting digital / analog IO's and adjusting the speed slider of the robot (Blue).
+
+.. image:: ../_static/ur_rtde_diagram.png
 
 The reason for splitting control and IO into two different interfaces is to allow for controlling the IO's while the
 robot is moving or performing another task. So the user has a separate interface to control the digital / analog
