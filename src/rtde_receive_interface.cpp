@@ -121,6 +121,8 @@ bool RTDEReceiveInterface::reconnect()
     // Wait until the first robot state has been received
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
+
+  return RTDEReceiveInterface::isConnected();
 }
 
 bool RTDEReceiveInterface::isConnected()
