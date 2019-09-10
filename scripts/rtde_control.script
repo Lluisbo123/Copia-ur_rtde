@@ -342,6 +342,35 @@ $V5         textmsg(get_target_payload())
             scaling = read_input_float_register(0)
 $V5         force_mode_set_gain_scaling(scaling)
             textmsg("force_mode_set_gain_scaling done")
+        elif cmd == 25:
+            textmsg("servol")
+            pose = p[0, 0, 0, 0, 0, 0]
+            pose[0] = read_input_float_register(0)
+            pose[1] = read_input_float_register(1)
+            pose[2] = read_input_float_register(2)
+            pose[3] = read_input_float_register(3)
+            pose[4] = read_input_float_register(4)
+            pose[5] = read_input_float_register(5)
+            velocity = read_input_float_register(6)
+            acceleration = read_input_float_register(7)
+            q = get_inverse_kin(pose)
+            textmsg("Target q:")
+            textmsg(q)
+
+            enter_critical
+            servo_target = q
+            servo_time = read_input_float_register(8)
+            servo_lookahead_time = read_input_float_register(9)
+            servo_gain = read_input_float_register(10)
+            exit_critical
+
+            if is_servoing == 0:
+                is_servoing = 1
+                if servo_thrd == 0:
+                    global servo_thrd = run servo_thread()
+                end
+            end
+            textmsg("servol done")
         elif cmd == 255:
             textmsg("Received stop!")
         end

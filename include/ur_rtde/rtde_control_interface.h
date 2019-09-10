@@ -170,6 +170,18 @@ class RTDEControlInterface
                           double lookahead_time, double gain);
 
   /**
+    * @brief Servo to position (linear in tool-space)
+    * @param pose target pose
+    * @param speed NOT used in current version
+    * @param acceleration NOT used in current version
+    * @param time time where the command is controlling the robot. The function is blocking for time t [S]
+    * @param lookahead_time time [S], range [0.03,0.2] smoothens the trajectory with this lookahead time
+    * @param gain proportional gain for following target position, range [100,2000]
+    */
+  RTDE_EXPORT bool servoL(const std::vector<double> &pose, double speed, double acceleration, double time,
+                          double lookahead_time, double gain);
+
+  /**
     * @brief Stop servos
     */
   RTDE_EXPORT bool servoStop();

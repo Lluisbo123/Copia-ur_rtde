@@ -589,6 +589,26 @@ bool RTDEControlInterface::servoJ(const std::vector<double> &q, double speed, do
   return sendCommand(robot_cmd);
 }
 
+bool RTDEControlInterface::servoL(const std::vector<double> &pose, double speed, double acceleration, double time,
+                                  double lookahead_time, double gain)
+{
+  verifyValueIsWithin(speed, UR_VELOCITY_MIN, UR_VELOCITY_MAX);
+  verifyValueIsWithin(acceleration, UR_ACCELERATION_MIN, UR_ACCELERATION_MAX);
+  verifyValueIsWithin(lookahead_time, UR_SERVO_LOOKAHEAD_TIME_MIN, UR_SERVO_LOOKAHEAD_TIME_MAX);
+  verifyValueIsWithin(gain, UR_SERVO_GAIN_MIN, UR_SERVO_GAIN_MAX);
+
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SERVOL;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_3;
+  robot_cmd.val_ = pose;
+  robot_cmd.val_.push_back(speed);
+  robot_cmd.val_.push_back(acceleration);
+  robot_cmd.val_.push_back(time);
+  robot_cmd.val_.push_back(lookahead_time);
+  robot_cmd.val_.push_back(gain);
+  return sendCommand(robot_cmd);
+}
+
 bool RTDEControlInterface::speedStop()
 {
   RTDE::RobotCommand robot_cmd;
