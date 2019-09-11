@@ -7,12 +7,12 @@ A C++ interface for sending and receiving data to/from a UR robot using the
 Documentation with installation instructions, examples and API resides at <https://sdurobotics.gitlab.io/ur_rtde/>
 
 ### Motivation ###
-No widely available C++ interface that utilizes the RTDE of the UR's exists. Most of the available ROS interfaces lacks a lot of features or are very restricted in terms of control.
+No widely available C++ interface that utilizes the RTDE of the UR's existed. Most of the available ROS interfaces lacks a lot of features or are very restricted in terms of control.
 This interface is meant to be usable with various robot frameworks, which is why the receive and control interface relies only on STL datatypes. One can choose to convert to STL types or
-simply rewrite the control and receive interfaces to the desired datatypes to avoid any overhead. The interface aims to make all the functions on the controller available externally in 
-either C++ or Python with bindings. Finally the plan is to make a more complete ROS interface based on this project.
+simply rewrite the control and receive interfaces to the desired datatypes to avoid any overhead. The interface aims to make all the functions on the controller available externally in C++ and Python
+with bindings. Finally the plan is to make a more complete ROS interface based on this project.
 
-### Build Status on Ubuntu 16.04 (xenial) ###
+### Build Status ###
 [![build status](https://gitlab.com/sdurobotics/ur_rtde/badges/master/pipeline.svg)](https://gitlab.com/sdurobotics/ur_rtde/commits/master)
 
 ### Dependencies ###
