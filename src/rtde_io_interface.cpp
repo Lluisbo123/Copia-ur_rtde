@@ -43,7 +43,7 @@ RTDEIOInterface::RTDEIOInterface(std::string hostname, int port) : hostname_(std
   rtde_->sendInputSetup(set_speed_slider);
 
   // Recipe 5
-  std::vector<std::string> set_std_analog_output = {"input_int_register_2", "standard_analog_output_mask",
+  std::vector<std::string> set_std_analog_output = {"input_int_register_20", "standard_analog_output_mask",
                                                     "standard_analog_output_type", "standard_analog_output_0",
                                                     "standard_analog_output_1"};
   rtde_->sendInputSetup(set_std_analog_output);
