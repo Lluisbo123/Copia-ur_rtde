@@ -35,8 +35,8 @@ else()
 	# https://git.mel.vin/template/c/issues/50
 	# https://bugzilla.gnome.org/show_bug.cgi?id=792676
 	set(DOXY_WARN_AS_ERR "NO")
-
-	find_package(PythonInterp REQUIRED)
+	
+	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 	include(find_python_module)
 
 	# do not change the ENV, doesn't work with add_custom_target
