@@ -17,9 +17,11 @@ sphinx_html:
   image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1804-doc
   before_script:
       # Install doc dependencies
-      - apt-get update && apt-get -y install openjdk-8-jdk fonts-dejavu fonts-liberation fonts-noto 
+      - apt-get update && apt-get -y install fonts-dejavu fonts-liberation fonts-noto 
       - pip3 install breathe
   script:
+    - mkdir build
+    - cd build
     - cmake -DCODE:BOOL=OFF -DPYTHON_BINDINGS:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
     - make doc
   artifacts:
