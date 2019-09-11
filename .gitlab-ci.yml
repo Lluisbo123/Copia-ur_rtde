@@ -6,9 +6,6 @@ stages:
 build:
   stage: build
   image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1604
-  #before_script:
-      # Install build dependencies
-  #    - apt-get update && apt-get -y install cmake
   script:
     - mkdir build
     - cd build
@@ -18,9 +15,10 @@ build:
 sphinx_html:
   stage: doc
   image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1804-doc
+  before_script:
+      # Install doc dependencies
+      - pip install breathe sphinx sphinx_rtd_theme sphinxcontrib-plantuml
   script:
-    - mkdir build
-    - cd build
     - cmake -DCODE:BOOL=OFF -DPYTHON_BINDINGS:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
     - make doc
   artifacts:
