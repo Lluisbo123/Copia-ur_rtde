@@ -17,7 +17,7 @@ sphinx_html:
   image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1804-doc
   before_script:
       # Install doc dependencies
-      - apt get update & apt get install openjdk8-jre py2-pip ttf-dejavu ttf-liberation font-noto graphviz
+      - apt-get update && apt-get -y install openjdk8-jre py2-pip ttf-dejavu ttf-liberation font-noto graphviz
       - pip install breathe sphinx sphinx_rtd_theme sphinxcontrib-plantuml
   script:
     - cmake -DCODE:BOOL=OFF -DPYTHON_BINDINGS:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
