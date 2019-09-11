@@ -5,10 +5,10 @@ stages:
 
 build:
   stage: build
-  image: sstrakh/xenial-boost-clang
-  before_script:
+  image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1604
+  #before_script:
       # Install build dependencies
-      - apt-get update && apt-get -y install cmake
+  #    - apt-get update && apt-get -y install cmake
   script:
     - mkdir build
     - cd build
@@ -17,7 +17,7 @@ build:
 
 sphinx_html:
   stage: doc
-  image: git.mel.vin:5005/template/c/cicd/sphinx_html:1.4
+  image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1804-doc
   script:
     - mkdir build
     - cd build
@@ -35,7 +35,7 @@ pages:
 #    - tags@prier/ur_rtde
   dependencies:
     - sphinx_html
-  image: git.mel.vin:5005/template/c/cicd/coreutils:1.1
+  image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1804-doc
   script:
     - mv build/doc/html public
   artifacts:
