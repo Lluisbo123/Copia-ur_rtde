@@ -41,18 +41,26 @@ RTDE::~RTDE() = default;
 
 void RTDE::connect()
 {
-  io_service_ = std::make_shared<boost::asio::io_service>();
-  socket_ = std::make_shared<tcp::socket>(*io_service_);
-  socket_->open(boost::asio::ip::tcp::v4());
-  boost::asio::ip::tcp::no_delay no_delay_option(true);
-  boost::asio::socket_base::reuse_address sol_reuse_option(true);
-  socket_->set_option(no_delay_option);
-  socket_->set_option(sol_reuse_option);
-  resolver_ = std::make_shared<tcp::resolver>(*io_service_);
-  tcp::resolver::query query(hostname_, std::to_string(port_));
-  boost::asio::connect(*socket_, resolver_->resolve(query));
-  conn_state_ = ConnectionState::CONNECTED;
-  std::cout << "Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
+  try
+  {
+    io_service_ = std::make_shared<boost::asio::io_service>();
+    socket_ = std::make_shared<tcp::socket>(*io_service_);
+    socket_->open(boost::asio::ip::tcp::v4());
+    boost::asio::ip::tcp::no_delay no_delay_option(true);
+    boost::asio::socket_base::reuse_address sol_reuse_option(true);
+    socket_->set_option(no_delay_option);
+    socket_->set_option(sol_reuse_option);
+    resolver_ = std::make_shared<tcp::resolver>(*io_service_);
+    tcp::resolver::query query(hostname_, std::to_string(port_));
+    boost::asio::connect(*socket_, resolver_->resolve(query));
+    conn_state_ = ConnectionState::CONNECTED;
+    std::cout << "Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
+  }
+  catch (boost::system::system_error const& e)
+  {
+    std::cout << "Warning: Could not connect to: " << hostname_ << " at " << port_ << ", verify the IP" << std::endl;
+    throw;
+  }
 }
 
 void RTDE::disconnect()
