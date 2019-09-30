@@ -9,7 +9,7 @@ build:
   script:
     - mkdir build
     - cd build
-    - cmake -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR ..
+    - cmake -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=ON ..
     - make
 
 sphinx_html:
