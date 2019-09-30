@@ -379,8 +379,8 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
     {
       // Read ID
       message_offset = 0;
-      unsigned char id = RTDEUtility::getUChar(data, message_offset);
-
+      //unsigned char id = RTDEUtility::getUChar(data, message_offset);
+      
       // Read all the variables specified by the user.
       for (const auto &output_name : output_names_)
       {
