@@ -2,3 +2,5 @@ build
 cmake-build-debug
 cmake-build-release
 .idea
+.vscode
+include/ur_rtde/rtde_control_script.h

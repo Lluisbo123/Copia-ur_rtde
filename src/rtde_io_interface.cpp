@@ -237,8 +237,9 @@ bool RTDEIOInterface::sendCommand(const RTDE::RobotCommand &cmd)
   {
     std::cout << "RTDEIOInterface: Robot is disconnected, reconnecting..." << std::endl;
     reconnect();
-    sendCommand(cmd);
+    return sendCommand(cmd);
   }
+  return false;
 }
 
 }  // namespace ur_rtde
