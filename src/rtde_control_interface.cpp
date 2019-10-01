@@ -12,6 +12,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   rtde_->negotiateProtocolVersion();
   auto controller_version = rtde_->getControllerVersion();
   uint32_t major_version = std::get<MAJOR_VERSION>(controller_version);
+  uint32_t minor_version = std::get<MINOR_VERSION>(controller_version);
 
   double frequency = 125;
   // If e-Series Robot set frequency to 500Hz
@@ -23,11 +24,14 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   db_client_->connect();
 
   // Create a connection to the script server
-  script_client_ = std::make_shared<ScriptClient>(hostname_, major_version);
+  script_client_ = std::make_shared<ScriptClient>(hostname_, major_version, minor_version);
   script_client_->connect();
 
   // Setup output
-  std::vector<std::string> state_names = {"robot_status_bits", "output_int_register_0"};
+  std::vector<std::string> state_names = {
+      "robot_status_bits",        "output_int_register_0",    "output_int_register_1",
+      "output_double_register_0", "output_double_register_1", "output_double_register_2",
+      "output_double_register_3", "output_double_register_4", "output_double_register_5"};
   rtde_->sendOutputSetup(state_names, frequency);
 
   // Setup input recipes
@@ -90,6 +94,10 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   // Recipe 9
   std::vector<std::string> force_mode_parameters_input = {"input_int_register_0", "input_double_register_0"};
   rtde_->sendInputSetup(force_mode_parameters_input);
+
+  // Recipe 10
+  std::vector<std::string> get_actual_joint_positions_history_input = {"input_int_register_0", "input_int_register_1"};
+  rtde_->sendInputSetup(get_actual_joint_positions_history_input);
 
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
@@ -156,7 +164,10 @@ bool RTDEControlInterface::reconnect()
     frequency = 500;
 
   // Setup output
-  std::vector<std::string> state_names = {"robot_status_bits", "output_int_register_0"};
+  std::vector<std::string> state_names = {
+      "robot_status_bits",        "output_int_register_0",    "output_int_register_1",
+      "output_double_register_0", "output_double_register_1", "output_double_register_2",
+      "output_double_register_3", "output_double_register_4", "output_double_register_5"};
   rtde_->sendOutputSetup(state_names, frequency);
 
   // Setup input recipes
@@ -220,6 +231,10 @@ bool RTDEControlInterface::reconnect()
   std::vector<std::string> force_mode_parameters_input = {"input_int_register_0", "input_double_register_0"};
   rtde_->sendInputSetup(force_mode_parameters_input);
 
+  // Recipe 10
+  std::vector<std::string> get_actual_joint_positions_history_input = {"input_int_register_0", "input_int_register_1"};
+  rtde_->sendInputSetup(get_actual_joint_positions_history_input);
+
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
 
@@ -269,12 +284,12 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
   std::string cmd_str;
   std::string line;
   std::stringstream ss(script);
-  cmd_str += "def "+function_name+"():\n";
+  cmd_str += "def " + function_name + "():\n";
   cmd_str += "\twrite_output_integer_register(0, 0)\n";
 
-  while(std::getline(ss, line, '\n'))
+  while (std::getline(ss, line, '\n'))
   {
-    cmd_str += "\t"+line;
+    cmd_str += "\t" + line;
   }
 
   // Signal when motions are finished
@@ -695,6 +710,68 @@ bool RTDEControlInterface::forceModeSetGainScaling(double scaling)
   return sendCommand(robot_cmd);
 }
 
+int RTDEControlInterface::toolContact(const std::vector<double> &direction)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::TOOL_CONTACT;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+  robot_cmd.val_ = direction;
+  if (sendCommand(robot_cmd))
+  {
+    return getToolContactValue();
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+int RTDEControlInterface::getStepTime()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::GET_STEPTIME;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  if (sendCommand(robot_cmd))
+  {
+    return getStepTimeValue();
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+std::vector<double> RTDEControlInterface::getActualJointPositionsHistory(int steps)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::GET_ACTUAL_JOINT_POSITIONS_HISTORY;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_10;
+  robot_cmd.steps_ = steps;
+  if (sendCommand(robot_cmd))
+  {
+    return getActualJointPositionsHistoryValue();
+  }
+  else
+  {
+    return std::vector<double>();
+  }
+}
+
+std::vector<double> RTDEControlInterface::getTargetWaypoint()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::GET_TARGET_WAYPOINT;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  if (sendCommand(robot_cmd))
+  {
+    return getTargetWaypointValue();
+  }
+  else
+  {
+    return std::vector<double>();
+  }
+}
+
 bool RTDEControlInterface::isProgramRunning()
 {
   if (robot_state_ != nullptr)
@@ -704,6 +781,70 @@ bool RTDEControlInterface::isProgramRunning()
     // Read Bits 0-3: Is power on(1) | Is program running(2) | Is teach button pressed(4) | Is power button pressed(8)
     std::bitset<sizeof(uint32_t)> status_bits(robot_state_->getRobot_status());
     return status_bits.test(RobotStatus::ROBOT_STATUS_PROGRAM_RUNNING);
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
+int RTDEControlInterface::getStepTimeValue()
+{
+  if (robot_state_ != nullptr)
+  {
+    // Receive RobotState
+    rtde_->receiveData(robot_state_);
+    return robot_state_->getOutput_int_register_1();
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
+int RTDEControlInterface::getToolContactValue()
+{
+  if (robot_state_ != nullptr)
+  {
+    // Receive RobotState
+    rtde_->receiveData(robot_state_);
+    return robot_state_->getOutput_int_register_1();
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
+std::vector<double> RTDEControlInterface::getTargetWaypointValue()
+{
+  if (robot_state_ != nullptr)
+  {
+    // Receive RobotState
+    rtde_->receiveData(robot_state_);
+    std::vector<double> target_waypoint = {
+        robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
+        robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
+        robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
+    return target_waypoint;
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
+std::vector<double> RTDEControlInterface::getActualJointPositionsHistoryValue()
+{
+  if (robot_state_ != nullptr)
+  {
+    // Receive RobotState
+    rtde_->receiveData(robot_state_);
+    std::vector<double> actual_joint_positions_history = {
+        robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
+        robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
+        robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
+    return actual_joint_positions_history;
   }
   else
   {

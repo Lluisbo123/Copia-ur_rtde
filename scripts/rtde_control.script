@@ -1,5 +1,4 @@
 def rtde_control():
-
     global force_mode_type = 2
     global selection_vector = [0, 0, 0, 0, 0, 0]
     global task_frame = p[0, 0, 0, 0, 0, 0]
@@ -316,13 +315,13 @@ def rtde_control():
             cog_y = read_input_float_register(2)
             cog_z = read_input_float_register(3)
             cog = [cog_x, cog_y, cog_z]
-$V5         if cog_x == 0 and cog_y == 0 and cog_z == 0:
-$V5             set_payload(mass, get_target_payload_cog())
-$V5         else:
+$V50        if cog_x == 0 and cog_y == 0 and cog_z == 0:
+$V50            set_payload(mass, get_target_payload_cog())
+$V50        else:
                 set_payload(mass, cog)
-$V5         end
-$V5         textmsg("active payload:")
-$V5         textmsg(get_target_payload())
+$V50        end
+$V50        textmsg("active payload:")
+$V50        textmsg(get_target_payload())
             textmsg("set_payload done")
         elif cmd == 19:
             textmsg("teach_mode")
@@ -340,7 +339,7 @@ $V5         textmsg(get_target_payload())
         elif cmd == 22:
             textmsg("force_mode_set_gain_scaling")
             scaling = read_input_float_register(0)
-$V5         force_mode_set_gain_scaling(scaling)
+$V50        force_mode_set_gain_scaling(scaling)
             textmsg("force_mode_set_gain_scaling done")
         elif cmd == 25:
             textmsg("servol")
@@ -371,6 +370,51 @@ $V5         force_mode_set_gain_scaling(scaling)
                 end
             end
             textmsg("servol done")
+        elif cmd == 26:
+            textmsg("tool_contact")
+            direction = [0, 0, 0, 0, 0, 0]
+            direction[0] = read_input_float_register(0)
+            direction[1] = read_input_float_register(1)
+            direction[2] = read_input_float_register(2)
+            direction[3] = read_input_float_register(3)
+            direction[4] = read_input_float_register(4)
+            direction[5] = read_input_float_register(5)
+$V54        time_steps = tool_contact(direction)
+$V54        write_output_integer_register(1, time_steps)
+$V54        textmsg("tool_contact timesteps:")
+$V54        textmsg(time_steps)
+            textmsg("tool_contact done")
+        elif cmd == 27:
+            textmsg("get_steptime")
+$V54        step_time = get_steptime()
+$V54        write_output_integer_register(1, step_time)
+$V54        textmsg("get_steptime step_time:")
+$V54        textmsg(step_time)
+            textmsg("get_steptime done")
+        elif cmd == 28:
+            textmsg("get_actual_joint_positions_history")
+            steps = read_input_integer_register(1)
+$V54        textmsg(steps)
+$V54        joint_positions_history = get_actual_joint_positions_history(steps)
+$V54        textmsg(joint_positions_history)
+$V54        write_output_float_register(0, joint_positions_history[0])
+$V54        write_output_float_register(1, joint_positions_history[1])
+$V54        write_output_float_register(2, joint_positions_history[2])
+$V54        write_output_float_register(3, joint_positions_history[3])
+$V54        write_output_float_register(4, joint_positions_history[4])
+$V54        write_output_float_register(5, joint_positions_history[5])
+            textmsg("get_actual_joint_positions_history done")
+        elif cmd == 29:
+            textmsg("get_target_waypoint")
+$V53        target_waypoint = get_target_waypoint()
+$V53        write_output_float_register(0, target_waypoint[0])
+$V53        write_output_float_register(1, target_waypoint[1])
+$V53        write_output_float_register(2, target_waypoint[2])
+$V53        write_output_float_register(3, target_waypoint[3])
+$V53        write_output_float_register(4, target_waypoint[4])
+$V53        write_output_float_register(5, target_waypoint[5])
+            textmsg("get_target_waypoint done")
+
         elif cmd == 255:
             textmsg("Received stop!")
         end
@@ -388,7 +432,7 @@ $V5         force_mode_set_gain_scaling(scaling)
     zero_ftsensor()
 
     # Initialize gain and damping for force mode to a more stable default
-$V5 force_mode_set_gain_scaling(0.5)
+$V50force_mode_set_gain_scaling(0.5)
     force_mode_set_damping(0.025)
 
     keep_running = True

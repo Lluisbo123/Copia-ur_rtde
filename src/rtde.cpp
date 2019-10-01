@@ -143,6 +143,13 @@ void RTDE::send(const RobotCommand &robot_cmd)
                       std::make_move_iterator(sel_vector_packed.end()));
   }
 
+  if (robot_cmd.type_ == RobotCommand::GET_ACTUAL_JOINT_POSITIONS_HISTORY)
+  {
+    std::vector<char> actual_joint_positions_history_packed = RTDEUtility::packUInt32(robot_cmd.steps_);
+    cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(actual_joint_positions_history_packed.begin()),
+                      std::make_move_iterator(actual_joint_positions_history_packed.end()));
+  }
+
   if (!robot_cmd.val_.empty())
   {
     std::vector<char> vector_nd_packed = RTDEUtility::packVectorNd(robot_cmd.val_);

@@ -9,6 +9,7 @@
 #include <sstream>
 
 #define MAJOR_VERSION 0
+#define MINOR_VERSION 1
 #define CB3_MAJOR_VERSION 3
 #define UR_CONTROLLER_RDY_FOR_CMD 1
 #define UR_CONTROLLER_CMD_RECEIVED 0
@@ -282,6 +283,50 @@ class RTDEControlInterface
   RTDE_EXPORT bool forceModeSetGainScaling(double scaling);
 
   /**
+    * @brief Detects when a contact between the tool and an object happens.
+    * @param direction The first three elements are interpreted as a 3D vector (in the robot base coordinate system)
+    * giving the direction in which contacts should be detected. If all elements of the list are zero, contacts from all
+    * directions are considered.
+    * @returns The returned value is the number of time steps back to just before the contact have started. A value
+    * larger than 0 means that a contact is detected. A value of 0 means no contact.
+    */
+  RTDE_EXPORT int toolContact(const std::vector<double>& direction);
+
+  /**
+    * @brief Returns the duration of the robot time step in seconds.
+    *
+    * In every time step, the robot controller will receive measured joint positions and velocities from the robot, and
+    * send desired joint positions and velocities back to the robot. This happens with a predetermined frequency, in
+    * regular intervals. This interval length is the robot time step.
+    *
+    * @returns Duration of the robot step in seconds
+    */
+  RTDE_EXPORT int getStepTime();
+
+  /**
+    * @brief Detects when a contact between the tool and an object happens.
+    * @param direction The first three elements are interpreted as a 3D vector (in the robot base coordinate system)
+    * giving the direction in which contacts should be detected. If all elements of the list are zero, contacts from all
+    * directions are considered.
+    * @returns The returned value is the number of time steps back to just before the contact have started. A value
+    * larger than 0 means that a contact is detected. A value of 0 means no contact.
+    */
+  RTDE_EXPORT std::vector<double> getActualJointPositionsHistory(int steps=0);
+
+  /**
+    * @brief Returns the target waypoint of the active move
+    *
+    * This is different from the target tcp pose which returns the target pose for each time step.
+    * The get_target_waypoint() returns the same target pose for movel, movej, movep or movec during the motion. It
+    * returns the target tcp pose, if none of the mentioned move functions are running.
+    *
+    * This method is useful for calculating relative movements where the previous move command uses blends.
+    *
+    * @returns The desired waypoint TCP vector [X, Y, Z, Rx, Ry, Rz]
+    */
+  RTDE_EXPORT std::vector<double> getTargetWaypoint();
+
+  /**
     * @brief Returns true if a program is running on the controller, otherwise it returns false
     */
   RTDE_EXPORT bool isProgramRunning();
@@ -292,6 +337,14 @@ class RTDEControlInterface
   void sendClearCommand();
 
   int getControlScriptState();
+
+  int getToolContactValue();
+
+  int getStepTimeValue();
+
+  std::vector<double> getTargetWaypointValue();
+
+  std::vector<double> getActualJointPositionsHistoryValue();
 
   void verifyValueIsWithin(const double &value, const double &min, const double &max);
 

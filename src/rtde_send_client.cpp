@@ -102,6 +102,19 @@ int main(int argc, char* argv[])
 
   rtde_control.servoStop();
 
+  /*rtde_control.moveJ(joint_q1, velocity, acceleration);
+  rtde_control.moveJ(joint_q2, velocity, acceleration);
+  rtde_control.moveJ(joint_q3, velocity, acceleration);
+  rtde_control.moveJ(joint_q1, velocity, acceleration);
+
+  for (int step = 0; step < 200; step++)
+  {
+    for (const auto &d : rtde_control.getActualJointPositionsHistory(step))
+      std::cout << d << " ";
+
+    std::cout << std::endl;
+  }*/
+
   // rtde_control.teachMode();
   // rtde_control.endTeachMode();
 
