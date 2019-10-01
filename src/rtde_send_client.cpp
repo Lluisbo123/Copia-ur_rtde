@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
   // Data to be sent
   double velocity = 0.5;
   double acceleration = 0.5;
-  int movec_mode = 0;
+  //int movec_mode = 0;
   std::vector<double> tcp_pose1 = {-0.143, -0.435, 0.20, -0.001, 3.12, 0.04};
   std::vector<double> tcp_pose2 = {-0.143, -0.51, 0.21, -0.001, 3.12, 0.04};
 
