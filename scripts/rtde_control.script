@@ -372,7 +372,7 @@ $V50        force_mode_set_gain_scaling(scaling)
             textmsg("servol done")
         elif cmd == 26:
             textmsg("tool_contact")
-            direction = [0, 0, 0, 0, 0, 0]
+            direction = p[0, 0, 0, 0, 0, 0]
             direction[0] = read_input_float_register(0)
             direction[1] = read_input_float_register(1)
             direction[2] = read_input_float_register(2)
