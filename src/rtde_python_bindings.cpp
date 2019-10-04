@@ -53,6 +53,8 @@ PYBIND11_MODULE(rtde_control, m)
       .def("getTargetWaypoint", &RTDEControlInterface::getTargetWaypoint, py::call_guard<py::gil_scoped_release>())
       .def("getActualJointPositionsHistory", &RTDEControlInterface::getActualJointPositionsHistory, py::call_guard<py::gil_scoped_release>())
       .def("getStepTime", &RTDEControlInterface::getStepTime, py::call_guard<py::gil_scoped_release>())
+      .def("teachMode", &RTDEControlInterface::teachMode, py::call_guard<py::gil_scoped_release>())
+      .def("endTeachMode", &RTDEControlInterface::endTeachMode, py::call_guard<py::gil_scoped_release>())
       .def("forceModeSetGainScaling", &RTDEControlInterface::forceModeSetGainScaling,
            py::call_guard<py::gil_scoped_release>())
       .def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor, py::call_guard<py::gil_scoped_release>())
