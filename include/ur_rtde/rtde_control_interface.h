@@ -19,12 +19,14 @@
 #define UR_GET_READY_TIMEOUT 3
 #define UR_CMD_RECEIVE_TIMEOUT 3
 
-#define UR_VELOCITY_MAX 1.0
-#define UR_VELOCITY_ABSOLUTE_MAX 3.14
-#define UR_VELOCITY_MIN 0
-#define UR_ACCELERATION_MAX 2.0
-#define UR_ACCELERATION_ABSOLUTE_MAX 5.0
-#define UR_ACCELERATION_MIN 0
+#define UR_JOINT_VELOCITY_MAX 3.14 // rad/s
+#define UR_JOINT_VELOCITY_MIN 0 // rad/s
+#define UR_JOINT_ACCELERATION_MAX 40.0 // rad/s^2
+#define UR_JOINT_ACCELERATION_MIN 0 // rad/s^2
+#define UR_TOOL_VELOCITY_MAX 3.0 // m/s
+#define UR_TOOL_VELOCITY_MIN 0 // m/s
+#define UR_TOOL_ACCELERATION_MAX 150.0 // m/s^2
+#define UR_TOOL_ACCELERATION_MIN 0 // m/s^2
 #define UR_SERVO_LOOKAHEAD_TIME_MAX 0.2
 #define UR_SERVO_LOOKAHEAD_TIME_MIN 0.03
 #define UR_SERVO_GAIN_MAX 2000
@@ -91,7 +93,7 @@ class RTDEControlInterface
     * @param speed joint speed of leading axis [rad/s]
     * @param acceleration joint acceleration of leading axis [rad/s^2]
     */
-  RTDE_EXPORT bool moveJ(const std::vector<double> &q, double speed, double acceleration);
+  RTDE_EXPORT bool moveJ(const std::vector<double> &q, double speed=1.05, double acceleration=1.4);
 
   /**
     * @brief Move to each joint position specified in a path
@@ -105,7 +107,7 @@ class RTDEControlInterface
     * @param speed joint speed of leading axis [rad/s]
     * @param acceleration joint acceleration of leading axis [rad/s^2]
     */
-  RTDE_EXPORT bool moveJ_IK(const std::vector<double> &pose, double speed, double acceleration);
+  RTDE_EXPORT bool moveJ_IK(const std::vector<double> &pose, double speed=1.05, double acceleration=1.4);
 
   /**
     * @brief Move to position (linear in tool-space)
@@ -113,7 +115,7 @@ class RTDEControlInterface
     * @param speed tool speed [m/s]
     * @param acceleration tool acceleration [m/s^2]
     */
-  RTDE_EXPORT bool moveL(const std::vector<double> &pose, double speed, double acceleration);
+  RTDE_EXPORT bool moveL(const std::vector<double> &pose, double speed=0.25, double acceleration=1.2);
 
   /**
     * @brief Move to each pose specified in a path
@@ -127,7 +129,7 @@ class RTDEControlInterface
     * @param speed tool speed [m/s]
     * @param acceleration tool acceleration [m/s^2]
     */
-  RTDE_EXPORT bool moveL_FK(const std::vector<double> &q, double speed, double acceleration);
+  RTDE_EXPORT bool moveL_FK(const std::vector<double> &q, double speed=0.25, double acceleration=1.2);
 
   /**
     * @brief Move Circular: Move to position (circular in tool-space)
@@ -138,8 +140,8 @@ class RTDEControlInterface
     * @param mode 0: Unconstrained mode. Interpolate orientation from current pose to target pose (pose_to)
     * 1: Fixed mode. Keep orientation constant relative to the tangent of the circular arc (starting from current pose)
     */
-  RTDE_EXPORT bool moveC(const std::vector<double> &pose_via, const std::vector<double> &pose_to, double speed,
-                         double acceleration, int mode);
+  RTDE_EXPORT bool moveC(const std::vector<double> &pose_via, const std::vector<double> &pose_to, double speed=0.25,
+                         double acceleration=1.2, int mode=0);
 
   /**
     * @brief Joint speed - Accelerate linearly in joint space and continue with constant joint speed
@@ -147,7 +149,7 @@ class RTDEControlInterface
     * @param acceleration joint acceleration [rad/s^2] (of leading axis)
     * @param time time [s] before the function returns (optional)
     */
-  RTDE_EXPORT bool speedJ(const std::vector<double> &qd, double acceleration, double time = 0.0);
+  RTDE_EXPORT bool speedJ(const std::vector<double> &qd, double acceleration=0.5, double time = 0.0);
 
   /**
     * @brief Tool speed - Accelerate linearly in Cartesian space and continue with constant tool speed. The time t is
@@ -156,7 +158,7 @@ class RTDEControlInterface
     * @param acceleration tool position acceleration [m/s^2]
     * @param time time [s] before the function returns (optional)
     */
-  RTDE_EXPORT bool speedL(const std::vector<double> &xd, double acceleration, double time = 0.0);
+  RTDE_EXPORT bool speedL(const std::vector<double> &xd, double acceleration=0.25, double time = 0.0);
 
   /**
     * @brief Servo to position (linear in joint-space)
@@ -199,7 +201,7 @@ class RTDEControlInterface
     * @param acceleration tool acceleration [m/s^2]
     * @param blend blend radius (of target pose) [m]
     */
-  RTDE_EXPORT bool servoC(const std::vector<double> &pose, double speed, double acceleration, double blend);
+  RTDE_EXPORT bool servoC(const std::vector<double> &pose, double speed=0.25, double acceleration=1.2, double blend=0.0);
 
   /**
     * @brief Set robot to be controlled in force mode

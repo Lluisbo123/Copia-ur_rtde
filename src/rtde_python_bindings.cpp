@@ -28,30 +28,38 @@ PYBIND11_MODULE(rtde_control, m)
            "moveJ with path", py::call_guard<py::gil_scoped_release>())
       .def("moveJ", (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration)) &
                         RTDEControlInterface::moveJ,
-           "moveJ without path", py::call_guard<py::gil_scoped_release>())
-      .def("moveJ_IK", &RTDEControlInterface::moveJ_IK, py::call_guard<py::gil_scoped_release>())
+           "moveJ without path", py::arg("q"), py::arg("speed") = 1.05, py::arg("acceleration") = 1.4,
+           py::call_guard<py::gil_scoped_release>())
+      .def("moveJ_IK", &RTDEControlInterface::moveJ_IK, py::arg("pose"), py::arg("speed") = 1.05,
+           py::arg("acceleration") = 1.4, py::call_guard<py::gil_scoped_release>())
       .def("moveL",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveL,
            "moveL with path", py::call_guard<py::gil_scoped_release>())
       .def("moveL",
            (bool (RTDEControlInterface::*)(const std::vector<double> &pose, double speed, double acceleration)) &
                RTDEControlInterface::moveL,
-           "moveL without path", py::call_guard<py::gil_scoped_release>())
-      .def("moveL_FK", &RTDEControlInterface::moveL_FK, py::call_guard<py::gil_scoped_release>())
+           "moveL without path", py::arg("pose"), py::arg("speed") = 0.25, py::arg("acceleration") = 1.2,
+           py::call_guard<py::gil_scoped_release>())
+      .def("moveL_FK", &RTDEControlInterface::moveL_FK, py::arg("q"), py::arg("speed") = 0.25,
+           py::arg("acceleration") = 1.2, py::call_guard<py::gil_scoped_release>())
       .def("moveC", &RTDEControlInterface::moveC, py::call_guard<py::gil_scoped_release>())
-      .def("speedJ", &RTDEControlInterface::speedJ, py::call_guard<py::gil_scoped_release>())
-      .def("speedL", &RTDEControlInterface::speedL, py::call_guard<py::gil_scoped_release>())
+      .def("speedJ", &RTDEControlInterface::speedJ, py::arg("qd"), py::arg("acceleration") = 0.5, py::arg("time") = 0.0,
+           py::call_guard<py::gil_scoped_release>())
+      .def("speedL", &RTDEControlInterface::speedL, py::arg("xd"), py::arg("acceleration") = 0.25,
+           py::arg("time") = 0.0, py::call_guard<py::gil_scoped_release>())
       .def("speedStop", &RTDEControlInterface::speedStop, py::call_guard<py::gil_scoped_release>())
       .def("servoJ", &RTDEControlInterface::servoJ, py::call_guard<py::gil_scoped_release>())
       .def("servoL", &RTDEControlInterface::servoL, py::call_guard<py::gil_scoped_release>())
-      .def("servoC", &RTDEControlInterface::servoC, py::call_guard<py::gil_scoped_release>())
+      .def("servoC", &RTDEControlInterface::servoC, py::arg("pose"), py::arg("speed") = 0.25,
+           py::arg("acceleration") = 1.2, py::arg("blend") = 0.0, py::call_guard<py::gil_scoped_release>())
       .def("servoStop", &RTDEControlInterface::servoStop, py::call_guard<py::gil_scoped_release>())
       .def("forceModeStart", &RTDEControlInterface::forceModeStart, py::call_guard<py::gil_scoped_release>())
       .def("forceModeStop", &RTDEControlInterface::forceModeStop, py::call_guard<py::gil_scoped_release>())
       .def("forceModeSetDamping", &RTDEControlInterface::forceModeSetDamping, py::call_guard<py::gil_scoped_release>())
       .def("toolContact", &RTDEControlInterface::toolContact, py::call_guard<py::gil_scoped_release>())
       .def("getTargetWaypoint", &RTDEControlInterface::getTargetWaypoint, py::call_guard<py::gil_scoped_release>())
-      .def("getActualJointPositionsHistory", &RTDEControlInterface::getActualJointPositionsHistory, py::call_guard<py::gil_scoped_release>())
+      .def("getActualJointPositionsHistory", &RTDEControlInterface::getActualJointPositionsHistory,
+           py::call_guard<py::gil_scoped_release>())
       .def("getStepTime", &RTDEControlInterface::getStepTime, py::call_guard<py::gil_scoped_release>())
       .def("forceModeSetGainScaling", &RTDEControlInterface::forceModeSetGainScaling,
            py::call_guard<py::gil_scoped_release>())
