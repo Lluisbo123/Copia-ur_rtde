@@ -241,6 +241,9 @@ bool RTDEControlInterface::reconnect()
   // Start RTDE data synchronization
   rtde_->sendStart();
 
+  // Clear command register
+  sendClearCommand();
+
   if (!isProgramRunning())
   {
     // Send script to the UR Controller
