@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
   // Data to be sent
   double velocity = 0.5;
   double acceleration = 0.5;
-  int movec_mode = 0;
+  //int movec_mode = 0;
   std::vector<double> tcp_pose1 = {-0.143, -0.435, 0.20, -0.001, 3.12, 0.04};
   std::vector<double> tcp_pose2 = {-0.143, -0.51, 0.21, -0.001, 3.12, 0.04};
 
@@ -101,6 +101,19 @@ int main(int argc, char* argv[])
   }
 
   rtde_control.servoStop();
+
+  /*rtde_control.moveJ(joint_q1, velocity, acceleration);
+  rtde_control.moveJ(joint_q2, velocity, acceleration);
+  rtde_control.moveJ(joint_q3, velocity, acceleration);
+  rtde_control.moveJ(joint_q1, velocity, acceleration);
+
+  for (int step = 0; step < 200; step++)
+  {
+    for (const auto &d : rtde_control.getActualJointPositionsHistory(step))
+      std::cout << d << " ";
+
+    std::cout << std::endl;
+  }*/
 
   // rtde_control.teachMode();
   // rtde_control.endTeachMode();

@@ -11,7 +11,8 @@ namespace ur_rtde
 class ScriptClient
 {
  public:
-  RTDE_EXPORT explicit ScriptClient(std::string hostname, uint32_t major_control_version, int port = 30002);
+  RTDE_EXPORT explicit ScriptClient(std::string hostname, uint32_t major_control_version,
+                                    uint32_t minor_control_version, int port = 30002);
 
   RTDE_EXPORT virtual ~ScriptClient();
 
@@ -32,6 +33,7 @@ class ScriptClient
  private:
   std::string hostname_;
   uint32_t major_control_version_;
+  uint32_t minor_control_version_;
   int port_;
   ConnectionState conn_state_;
   std::shared_ptr<boost::asio::io_service> io_service_;

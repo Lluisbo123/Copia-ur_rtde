@@ -9,9 +9,11 @@ using boost::asio::ip::tcp;
 
 namespace ur_rtde
 {
-ScriptClient::ScriptClient(std::string hostname, uint32_t major_control_version, int port)
+ScriptClient::ScriptClient(std::string hostname, uint32_t major_control_version, uint32_t minor_control_version,
+                           int port)
     : hostname_(std::move(hostname)),
       major_control_version_(major_control_version),
+      minor_control_version_(minor_control_version),
       port_(port),
       conn_state_(ConnectionState::DISCONNECTED)
 {
@@ -67,32 +69,37 @@ bool ScriptClient::sendScript()
 {
   std::string ur_script = UR_SCRIPT;
 
-  // Remove commands not fitting for the specific version of the controller
-  std::string major_control_id;
-  switch (major_control_version_)
-  {
-    case 3:
-      major_control_id = "V3";
-      break;
-    case 5:
-      major_control_id = "V5";
-      break;
-    default:
-      std::cerr << "Unknown major controller version specified: " << major_control_id;
-      break;
-  }
-
+  // Remove lines not fitting for the specific version of the controller
   std::size_t n = ur_script.find("$");
+
   while (n != std::string::npos)
   {
-    if (ur_script.substr(n + 1, 3) != major_control_id)
+    const std::string major_str(1, ur_script.at(n+2));
+    const std::string minor_str(1, ur_script.at(n+3));
+
+    if (!major_str.empty() && !minor_str.empty() && major_str != " " && minor_str != " ")
     {
-      ur_script.erase(n, ur_script.find("\n", n) - n + 1);
+      int major_version_needed = std::stoi(major_str);
+      int minor_version_needed = std::stoi(minor_str);
+
+      if (major_control_version_ >= major_version_needed && minor_control_version_ >= minor_version_needed)
+      {
+        // Keep the line
+        ur_script.erase(n, 4);
+        ur_script.insert(n, "    ");
+      }
+      else
+      {
+        // Erase the line
+        ur_script.erase(n, ur_script.find("\n", n) - n + 1);
+      }
     }
     else
     {
-      ur_script.erase(n, 4);
+      std::cerr << "Could not read the control version required from the control script!" << std::endl;
+      return false;
     }
+
     n = ur_script.find("$");
   }
 

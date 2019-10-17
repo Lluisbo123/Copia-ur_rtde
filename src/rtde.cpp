@@ -41,18 +41,26 @@ RTDE::~RTDE() = default;
 
 void RTDE::connect()
 {
-  io_service_ = std::make_shared<boost::asio::io_service>();
-  socket_ = std::make_shared<tcp::socket>(*io_service_);
-  socket_->open(boost::asio::ip::tcp::v4());
-  boost::asio::ip::tcp::no_delay no_delay_option(true);
-  boost::asio::socket_base::reuse_address sol_reuse_option(true);
-  socket_->set_option(no_delay_option);
-  socket_->set_option(sol_reuse_option);
-  resolver_ = std::make_shared<tcp::resolver>(*io_service_);
-  tcp::resolver::query query(hostname_, std::to_string(port_));
-  boost::asio::connect(*socket_, resolver_->resolve(query));
-  conn_state_ = ConnectionState::CONNECTED;
-  std::cout << "Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
+  try
+  {
+    io_service_ = std::make_shared<boost::asio::io_service>();
+    socket_ = std::make_shared<tcp::socket>(*io_service_);
+    socket_->open(boost::asio::ip::tcp::v4());
+    boost::asio::ip::tcp::no_delay no_delay_option(true);
+    boost::asio::socket_base::reuse_address sol_reuse_option(true);
+    socket_->set_option(no_delay_option);
+    socket_->set_option(sol_reuse_option);
+    resolver_ = std::make_shared<tcp::resolver>(*io_service_);
+    tcp::resolver::query query(hostname_, std::to_string(port_));
+    boost::asio::connect(*socket_, resolver_->resolve(query));
+    conn_state_ = ConnectionState::CONNECTED;
+    std::cout << "Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
+  }
+  catch (boost::system::system_error const& e)
+  {
+    std::cout << "Warning: Could not connect to: " << hostname_ << " at " << port_ << ", verify the IP" << std::endl;
+    throw;
+  }
 }
 
 void RTDE::disconnect()
@@ -133,6 +141,13 @@ void RTDE::send(const RobotCommand &robot_cmd)
     std::vector<char> sel_vector_packed = RTDEUtility::packVectorNInt32(robot_cmd.selection_vector_);
     cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(sel_vector_packed.begin()),
                       std::make_move_iterator(sel_vector_packed.end()));
+  }
+
+  if (robot_cmd.type_ == RobotCommand::GET_ACTUAL_JOINT_POSITIONS_HISTORY)
+  {
+    std::vector<char> actual_joint_positions_history_packed = RTDEUtility::packUInt32(robot_cmd.steps_);
+    cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(actual_joint_positions_history_packed.begin()),
+                      std::make_move_iterator(actual_joint_positions_history_packed.end()));
   }
 
   if (!robot_cmd.val_.empty())
@@ -371,8 +386,9 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
     {
       // Read ID
       message_offset = 0;
-      unsigned char id = RTDEUtility::getUChar(data, message_offset);
 
+      RTDEUtility::getUChar(data, message_offset);
+      
       // Read all the variables specified by the user.
       for (const auto &output_name : output_names_)
       {
