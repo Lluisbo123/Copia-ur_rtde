@@ -46,6 +46,7 @@ if(${CODE})
 	find_package(Threads)
 
 	if(${PYTHON_BINDINGS})
+		set(pybind11_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 		find_package(pybind11 REQUIRED)
 	endif()
 endif()
