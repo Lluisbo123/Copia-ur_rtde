@@ -29,7 +29,7 @@ Currently tested on:
 
 *  Ubuntu 16.04 (Xenial Xerus)
 *  Ubuntu 18.04 (Bionic Beaver)
-*  MacOSX (Mojave)
+*  macOS 10.14 (Mojave)
 *  Windows 10 Pro x64
 
 ### Contact ###
