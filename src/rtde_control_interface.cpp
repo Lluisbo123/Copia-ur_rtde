@@ -105,6 +105,9 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   // Start RTDE data synchronization
   rtde_->sendStart();
 
+  // Clear command register
+  sendClearCommand();
+
   if (!isProgramRunning())
   {
     // Send script to the UR Controller
