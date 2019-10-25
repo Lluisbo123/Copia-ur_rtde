@@ -111,7 +111,7 @@ if(${CODE})
 				PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
 				PRIVATE ${PYTHON_INCLUDE_DIRS})
 		target_link_libraries(rtde_control PRIVATE
-				${PYTHON_LIBRARIES}
+				#${PYTHON_LIBRARIES}
 				${Boost_SYSTEM_LIBRARY}
 				${Boost_THREAD_LIBRARY}
 				${CMAKE_THREAD_LIBS_INIT})
@@ -127,7 +127,7 @@ if(${CODE})
 			PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
 			PRIVATE ${PYTHON_INCLUDE_DIRS})
 		target_link_libraries(rtde_receive PRIVATE
-				${PYTHON_LIBRARIES}
+				#${PYTHON_LIBRARIES}
 				${Boost_SYSTEM_LIBRARY}
 				${Boost_THREAD_LIBRARY})
                 target_compile_definitions(rtde_receive PRIVATE rtde_EXPORTS)
@@ -142,7 +142,7 @@ if(${CODE})
 				PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
 				PRIVATE ${PYTHON_INCLUDE_DIRS})
 		target_link_libraries(rtde_io PRIVATE
-				${PYTHON_LIBRARIES}
+				#${PYTHON_LIBRARIES}
 				${Boost_SYSTEM_LIBRARY}
 				${Boost_THREAD_LIBRARY})
 		target_compile_definitions(rtde_io PRIVATE rtde_EXPORTS)
