@@ -6,6 +6,10 @@ A C++ interface for sending and receiving data to/from a UR robot using the
 ### Documentation ###
 Documentation with installation instructions, examples and API resides at <https://sdurobotics.gitlab.io/ur_rtde/>
 
+If you only want to the use the Python interface, you can install ur_rtde through pip:
+
+    pip install --user ur_rtde
+
 ### Motivation ###
 No widely available C++ interface that utilizes the RTDE of the UR's existed. Most of the available ROS interfaces lacks a lot of features or are very restricted in terms of control.
 This interface is meant to be usable with various robot frameworks, which is why the receive and control interface relies only on STL datatypes. One can choose to convert to STL types or

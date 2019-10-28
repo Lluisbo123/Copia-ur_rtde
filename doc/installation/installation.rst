@@ -3,6 +3,13 @@ Installation
 ************
 This section contains information on how to build and install the ur_rtde library.
 
+If you only want to the use the Python interface, you can install ur_rtde through pip:
+
+.. code-block:: shell
+
+   pip install --user ur_rtde
+
+
 Dependencies
 ============
 .. image:: ../_static/boost-logo.svg
