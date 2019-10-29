@@ -16,7 +16,7 @@ ln -s /opt/python/cp37-cp37m/bin/cmake /usr/bin/cmake
 cd ${WORKDIR}
 
 # Collect the pythons
-pys=(/opt/python/cp3*/bin)
+pys=(/opt/python/cp*/bin)
 
 # Filter out Python 3.4 (No numpy support)
 pys=(${pys[@]//*34*/})

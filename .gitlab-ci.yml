@@ -16,8 +16,8 @@ build:
 build_pypi:
   stage: build_pypi
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:manylinux
-  only:
-    - tags
+#  only:
+#    - tags
   script:
     - ./ci/build-wheels.sh
 
