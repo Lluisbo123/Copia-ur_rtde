@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RTDE_DASHBOARD_ENUMS_H
+#define RTDE_DASHBOARD_ENUMS_H
 #include <iostream>
 
 namespace ur_rtde
@@ -89,3 +90,5 @@ RobotMode parseRobotMode(const std::string &state_str);
 std::string toString(const RobotMode &mode);
 
 }  // namespace ur_rtde
+
+#endif  // RTDE_DASHBOARD_ENUMS_H
