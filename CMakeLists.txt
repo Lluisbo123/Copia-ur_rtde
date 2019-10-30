@@ -55,6 +55,7 @@ set(LIB_SOURCE_FILES
 		src/robot_state.cpp
         src/rtde.cpp
         src/dashboard_client.cpp
+        src/dashboard_enums.cpp
         src/script_client.cpp
         src/rtde_control_interface.cpp
 		src/rtde_receive_interface.cpp
