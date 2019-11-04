@@ -96,7 +96,8 @@ bool DashboardClient::running()
   std::string message = "running\n";
   send(message);
   auto str = receive();
-  if (strstr(str.c_str(), "True") != nullptr)
+  std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return std::tolower(c); });
+  if (strstr(str.c_str(), "true") != nullptr)
     return true;
   return false;
 }
