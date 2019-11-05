@@ -10,17 +10,6 @@ RTDEIOInterface::RTDEIOInterface(std::string hostname, int port) : hostname_(std
   rtde_ = std::make_shared<RTDE>(hostname_);
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
-  auto controller_version = rtde_->getControllerVersion();
-  uint32_t major_version = std::get<MAJOR_VERSION>(controller_version);
-
-  double frequency = 125;
-  // If e-Series Robot set frequency to 500Hz
-  if (major_version > CB3_MAJOR_VERSION)
-    frequency = 500;
-
-  // Setup output
-  std::vector<std::string> state_names = {"robot_status_bits", "output_int_register_0"};
-  rtde_->sendOutputSetup(state_names, frequency);
 
   // Setup input recipes
 
@@ -51,8 +40,8 @@ RTDEIOInterface::RTDEIOInterface(std::string hostname, int port) : hostname_(std
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
 
-  // Start RTDE data synchronization
-  rtde_->sendStart();
+  // Wait for connection to be fully established before returning
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 RTDEIOInterface::~RTDEIOInterface()
@@ -68,17 +57,6 @@ bool RTDEIOInterface::reconnect()
 {
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
-  auto controller_version = rtde_->getControllerVersion();
-  uint32_t major_version = std::get<MAJOR_VERSION>(controller_version);
-
-  double frequency = 125;
-  // If e-Series Robot set frequency to 500Hz
-  if (major_version > CB3_MAJOR_VERSION)
-    frequency = 500;
-
-  // Setup output
-  std::vector<std::string> state_names = {"robot_status_bits","output_int_register_0"}; //
-  rtde_->sendOutputSetup(state_names, frequency);
 
   // Setup input recipes
 
@@ -108,9 +86,6 @@ bool RTDEIOInterface::reconnect()
 
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
-
-  // Start RTDE data synchronization
-  rtde_->sendStart();
 
   // Wait for connection to be fully established before returning
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
