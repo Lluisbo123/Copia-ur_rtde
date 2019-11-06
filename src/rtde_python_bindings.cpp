@@ -67,6 +67,7 @@ PYBIND11_MODULE(rtde_control, m)
            py::call_guard<py::gil_scoped_release>())
       .def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor, py::call_guard<py::gil_scoped_release>())
       .def("setPayload", &RTDEControlInterface::setPayload, py::call_guard<py::gil_scoped_release>())
+      .def("setTcp", &RTDEControlInterface::setTcp, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEControlInterface &a)
            {
         return "<rtde_control.RTDEControlInterface>";

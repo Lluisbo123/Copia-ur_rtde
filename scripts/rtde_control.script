@@ -414,7 +414,17 @@ $V53        write_output_float_register(3, target_waypoint[3])
 $V53        write_output_float_register(4, target_waypoint[4])
 $V53        write_output_float_register(5, target_waypoint[5])
             textmsg("get_target_waypoint done")
-
+        elif cmd == 30:
+            textmsg("set_tcp")
+            pose = p[0, 0, 0, 0, 0, 0]
+            pose[0] = read_input_float_register(0)
+            pose[1] = read_input_float_register(1)
+            pose[2] = read_input_float_register(2)
+            pose[3] = read_input_float_register(3)
+            pose[4] = read_input_float_register(4)
+            pose[5] = read_input_float_register(5)
+            set_tcp(pose)
+            textmsg("set_tcp done")
         elif cmd == 255:
             textmsg("Received stop!")
         end

@@ -52,6 +52,7 @@ class RTDE
       GET_STEPTIME = 27,
       GET_ACTUAL_JOINT_POSITIONS_HISTORY = 28,
       GET_TARGET_WAYPOINT = 29,
+      SET_TCP = 30,
       STOP = 255
     };
 

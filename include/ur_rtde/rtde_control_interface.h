@@ -1,5 +1,5 @@
-#ifndef RTDE_RTDE_CONTROL_INTERFACE_H
-#define RTDE_RTDE_CONTROL_INTERFACE_H
+#ifndef RTDE_CONTROL_INTERFACE_H
+#define RTDE_CONTROL_INTERFACE_H
 
 #include <rtde_export.h>
 #include <ur_rtde/rtde.h>
@@ -329,6 +329,14 @@ class RTDEControlInterface
   RTDE_EXPORT std::vector<double> getTargetWaypoint();
 
   /**
+    * @brief Sets the active tcp offset, i.e. the transformation from the output flange coordinate system to the
+    * TCP as a pose.
+    * @param tcp_offset A pose describing the transformation of the tcp offset.
+    */
+  RTDE_EXPORT bool setTcp(const std::vector<double> &tcp_offset);
+
+
+  /**
     * @brief Returns true if a program is running on the controller, otherwise it returns false
     */
   RTDE_EXPORT bool isProgramRunning();
@@ -363,4 +371,4 @@ class RTDEControlInterface
 
 }  // namespace ur_rtde
 
-#endif  // RTDE_RTDE_CONTROL_INTERFACE_H
+#endif  // RTDE_CONTROL_INTERFACE_H

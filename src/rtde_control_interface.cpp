@@ -867,6 +867,15 @@ std::vector<double> RTDEControlInterface::getActualJointPositionsHistoryValue()
   }
 }
 
+bool RTDEControlInterface::setTcp(const std::vector<double> &tcp_offset)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SET_TCP;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+  robot_cmd.val_ = tcp_offset;
+  return sendCommand(robot_cmd);
+}
+
 int RTDEControlInterface::getControlScriptState()
 {
   if (robot_state_ != nullptr)
