@@ -76,6 +76,11 @@ bool RTDE::isConnected()
   return conn_state_ == ConnectionState::CONNECTED || conn_state_ == ConnectionState::STARTED;
 }
 
+bool RTDE::isStarted()
+{
+  return conn_state_ == ConnectionState::STARTED;
+}
+
 bool RTDE::negotiateProtocolVersion()
 {
   std::uint8_t cmd = RTDE_REQUEST_PROTOCOL_VERSION;

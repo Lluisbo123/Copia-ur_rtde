@@ -5,6 +5,7 @@
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/dashboard_client.h>
 #include <ur_rtde/script_client.h>
+#include <boost/thread.hpp>
 #include <thread>
 #include <sstream>
 
@@ -18,6 +19,7 @@
 #define UR_PATH_EXECUTION_TIMEOUT 600
 #define UR_GET_READY_TIMEOUT 3
 #define UR_CMD_RECEIVE_TIMEOUT 3
+#define RTDE_START_SYNCHRONIZATION_TIMEOUT 5
 
 #define UR_JOINT_VELOCITY_MAX 3.14 // rad/s
 #define UR_JOINT_VELOCITY_MIN 0 // rad/s
@@ -360,10 +362,14 @@ class RTDEControlInterface
 
   std::string prepareCmdScript(const std::vector<std::vector<double>> &path, const std::string &cmd);
 
+  void receiveCallback();
+
  private:
   std::string hostname_;
   int port_;
   std::shared_ptr<RTDE> rtde_;
+  std::atomic<bool> stop_thread{false};
+  std::shared_ptr<boost::thread> th_;
   std::shared_ptr<DashboardClient> db_client_;
   std::shared_ptr<ScriptClient> script_client_;
   std::shared_ptr<RobotState> robot_state_;

@@ -102,8 +102,32 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
 
+  // Wait until RTDE data synchronization has started.
+  std::cout << "Waiting for RTDE data synchronization to start..." << std::endl;
+  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+
   // Start RTDE data synchronization
   rtde_->sendStart();
+
+  while(!rtde_->isStarted())
+  {
+    // Wait until RTDE data synchronization has started or timeout
+    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+    if (duration > RTDE_START_SYNCHRONIZATION_TIMEOUT)
+    {
+      break;
+    }
+  }
+
+  if (!rtde_->isStarted())
+    throw std::logic_error("Failed to start RTDE data synchronization, before timeout");
+
+  // Start executing receiveCallback
+  th_ = std::make_shared<boost::thread>(boost::bind(&RTDEControlInterface::receiveCallback, this));
+
+  // Wait until the first robot state has been received
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
   // Clear command register
   sendClearCommand();
@@ -147,6 +171,11 @@ RTDEControlInterface::~RTDEControlInterface()
     if (db_client_->isConnected())
       db_client_->disconnect();
   }
+
+  // Stop the receive callback function
+  stop_thread = true;
+  th_->interrupt();
+  th_->join();
 }
 
 bool RTDEControlInterface::isConnected()
@@ -241,8 +270,32 @@ bool RTDEControlInterface::reconnect()
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
 
+  // Wait until RTDE data synchronization has started.
+  std::cout << "Waiting for RTDE data synchronization to start..." << std::endl;
+  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+
   // Start RTDE data synchronization
   rtde_->sendStart();
+
+  while(!rtde_->isStarted())
+  {
+    // Wait until RTDE data synchronization has started or timeout
+    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+    if (duration > RTDE_START_SYNCHRONIZATION_TIMEOUT)
+    {
+      break;
+    }
+  }
+
+  if (!rtde_->isStarted())
+    throw std::logic_error("Failed to start RTDE data synchronization, before timeout");
+
+  // Start executing receiveCallback
+  th_ = std::make_shared<boost::thread>(boost::bind(&RTDEControlInterface::receiveCallback, this));
+
+  // Wait until the first robot state has been received
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
   // Clear command register
   sendClearCommand();
@@ -267,6 +320,25 @@ bool RTDEControlInterface::reconnect()
   }
 
   return true;
+}
+
+void RTDEControlInterface::receiveCallback()
+{
+  while (!stop_thread)
+  {
+    // Receive and update the robot state
+    try
+    {
+      rtde_->receiveData(robot_state_);
+    }
+    catch (std::exception& e)
+    {
+      std::cerr << e.what() << std::endl;
+      if (rtde_->isConnected())
+        rtde_->disconnect();
+      stop_thread = true;
+    }
+  }
 }
 
 void RTDEControlInterface::stopRobot()
@@ -791,8 +863,6 @@ bool RTDEControlInterface::isProgramRunning()
 {
   if (robot_state_ != nullptr)
   {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
     // Read Bits 0-3: Is power on(1) | Is program running(2) | Is teach button pressed(4) | Is power button pressed(8)
     std::bitset<sizeof(uint32_t)> status_bits(robot_state_->getRobot_status());
     return status_bits.test(RobotStatus::ROBOT_STATUS_PROGRAM_RUNNING);
@@ -807,8 +877,6 @@ int RTDEControlInterface::getStepTimeValue()
 {
   if (robot_state_ != nullptr)
   {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
     return robot_state_->getOutput_int_register_1();
   }
   else
@@ -821,8 +889,6 @@ int RTDEControlInterface::getToolContactValue()
 {
   if (robot_state_ != nullptr)
   {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
     return robot_state_->getOutput_int_register_1();
   }
   else
@@ -835,8 +901,6 @@ std::vector<double> RTDEControlInterface::getTargetWaypointValue()
 {
   if (robot_state_ != nullptr)
   {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
     std::vector<double> target_waypoint = {
         robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
         robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
@@ -853,8 +917,6 @@ std::vector<double> RTDEControlInterface::getActualJointPositionsHistoryValue()
 {
   if (robot_state_ != nullptr)
   {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
     std::vector<double> actual_joint_positions_history = {
         robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
         robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
@@ -880,8 +942,6 @@ int RTDEControlInterface::getControlScriptState()
 {
   if (robot_state_ != nullptr)
   {
-    // Receive RobotState
-    rtde_->receiveData(robot_state_);
     return robot_state_->getOutput_int_register_0();
   }
   else

@@ -117,6 +117,7 @@ class RTDE
   RTDE_EXPORT void connect();
   RTDE_EXPORT void disconnect();
   RTDE_EXPORT bool isConnected();
+  RTDE_EXPORT bool isStarted();
 
   RTDE_EXPORT bool negotiateProtocolVersion();
   RTDE_EXPORT std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> getControllerVersion();
