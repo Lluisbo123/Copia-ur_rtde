@@ -1,7 +1,7 @@
 #ifndef RTDE_RTDE_UTILITY_H
 #define RTDE_RTDE_UTILITY_H
 
-#include <rtde_export.h>
+#include <ur_rtde/rtde_export.h>
 #include <cstdint>
 #include <vector>
 #include <iomanip>

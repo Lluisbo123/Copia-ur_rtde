@@ -1,7 +1,7 @@
 #ifndef RTDE_DASHBOARD_CLIENT_H
 #define RTDE_DASHBOARD_CLIENT_H
 
-#include <rtde_export.h>
+#include <ur_rtde/rtde_export.h>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <string>

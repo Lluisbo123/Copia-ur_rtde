@@ -1,7 +1,7 @@
 #ifndef RTDE_H
 #define RTDE_H
 
-#include <rtde_export.h>
+#include <ur_rtde/rtde_export.h>
 #include <ur_rtde/robot_state.h>
 #include <cstdint>
 #include <string>

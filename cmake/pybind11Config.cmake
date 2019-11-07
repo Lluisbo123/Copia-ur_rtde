@@ -78,6 +78,6 @@ set(${PN}_DEFINITIONS USING_${PN})
 # make detectable the FindPythonLibsNew.cmake module
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
-include_directories(pybind11_INCLUDE_DIR)
+set(pybind11_INCLUDE_DIR "${pybind11_INCLUDE_DIR}" CACHE INTERNAL "pybind include directory")
 
 include(pybind11Tools)

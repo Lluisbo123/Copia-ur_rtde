@@ -176,7 +176,7 @@ if(${CODE})
 			${Boost_SYSTEM_LIBRARY}
 			${Boost_THREAD_LIBRARY})
 
-	generate_export_header(rtde)
+	generate_export_header(rtde EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/ur_rtde/rtde_export.h)
 
 	add_library(ur_rtde::rtde ALIAS rtde)
 	add_executable(ur_rtde::rtde_receive_client ALIAS rtde_receive_client)
@@ -215,7 +215,7 @@ if(${CODE})
 	install(
 			FILES
 			${LIB_HEADER_FILES}
-			"${CMAKE_CURRENT_BINARY_DIR}/rtde_export.h"
+			"${CMAKE_CURRENT_BINARY_DIR}/ur_rtde/rtde_export.h"
 			DESTINATION ${INCLUDE_INSTALL_DIR}
 			COMPONENT ur_rtde
 	)

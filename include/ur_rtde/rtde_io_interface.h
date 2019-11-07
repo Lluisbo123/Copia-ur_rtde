@@ -1,7 +1,7 @@
 #ifndef RTDE_IO_INTERFACE_H
 #define RTDE_IO_INTERFACE_H
 
-#include <rtde_export.h>
+#include <ur_rtde/rtde_export.h>
 #include <ur_rtde/rtde.h>
 #include <thread>
 #include <sstream>

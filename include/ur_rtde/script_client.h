@@ -1,7 +1,7 @@
 #ifndef RTDE_SCRIPT_CLIENT_H
 #define RTDE_SCRIPT_CLIENT_H
 
-#include <rtde_export.h>
+#include <ur_rtde/rtde_export.h>
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
