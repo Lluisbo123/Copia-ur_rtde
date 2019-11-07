@@ -4,6 +4,8 @@
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_io_interface.h>
+#include <ur_rtde/script_client.h>
+#include <ur_rtde/dashboard_client.h>
 
 namespace py = pybind11;
 using namespace ur_rtde;
@@ -160,3 +162,49 @@ PYBIND11_MODULE(rtde_io, m)
       });
 }
 };
+
+namespace script_client
+{
+PYBIND11_MODULE(script_client, m)
+{
+  m.doc() = "Script Client";
+  py::class_<ScriptClient>(m, "ScriptClient")
+      .def(py::init<std::string, int>())
+      .def("connect", &ScriptClient::connect)
+      .def("isConnected", &ScriptClient::isConnected)
+      .def("disconnect", &ScriptClient::disconnect)
+      .def("sendScript", (bool (ScriptClient::*)()) & ScriptClient::sendScript)
+      .def("sendScript", (bool (ScriptClient::*)(const std::string &file_name)) & ScriptClient::sendScript)
+      .def("sendScriptCommand", &ScriptClient::sendScriptCommand)
+      .def("__repr__", [](const ScriptClient &a) { return "<script_client.ScriptClient>"; });
+}
+};  // namespace script_client
+
+namespace dashboard_client
+{
+PYBIND11_MODULE(dashboard_client, m)
+{
+  m.doc() = "Dashboard Client";
+  py::class_<DashboardClient>(m, "DashboardClient")
+      .def(py::init<std::string>())
+      .def("connect", &DashboardClient::connect)
+      .def("isConnected", &DashboardClient::isConnected)
+      .def("disconnect", &DashboardClient::disconnect)
+      .def("send", &DashboardClient::send)
+      .def("loadURP", &DashboardClient::loadURP)
+      .def("play", &DashboardClient::play)
+      .def("stop", &DashboardClient::stop)
+      .def("pause", &DashboardClient::pause)
+      .def("quit", &DashboardClient::quit)
+      .def("shutdown", &DashboardClient::shutdown)
+      .def("running", &DashboardClient::running)
+      .def("popup", &DashboardClient::popup)
+      .def("closePopup", &DashboardClient::closePopup)
+      .def("programState", &DashboardClient::programState)
+      .def("powerOn", &DashboardClient::powerOn)
+      .def("powerOff", &DashboardClient::powerOff)
+      .def("brakeRelease", &DashboardClient::brakeRelease)
+      .def("unlockProtectiveStop", &DashboardClient::unlockProtectiveStop)
+      .def("__repr__", [](const DashboardClient &a) { return "<dashboard_client.DashboardClient>"; });
+}
+};  // namespace dashboard_client
