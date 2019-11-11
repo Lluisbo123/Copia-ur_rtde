@@ -165,12 +165,9 @@ PYBIND11_MODULE(script_client, m)
       .def("connect", &ScriptClient::connect, py::call_guard<py::gil_scoped_release>())
       .def("isConnected", &ScriptClient::isConnected, py::call_guard<py::gil_scoped_release>())
       .def("disconnect", &ScriptClient::disconnect, py::call_guard<py::gil_scoped_release>())
-      .def("sendScript", (bool (ScriptClient::*)()) & ScriptClient::sendScript,
-           py::call_guard<py::gil_scoped_release>())
-      .def("sendScript", (bool (ScriptClient::*)(const std::string &file_name)) & ScriptClient::sendScript,
-           py::call_guard<py::gil_scoped_release>())
-      .def("sendScriptCommand", (bool (ScriptClient::*)(const std::string &cmd_str)) & ScriptClient::sendScriptCommand,
-           py::call_guard<py::gil_scoped_release>())
+      .def("sendScript", &ScriptClient::sendScript, py::call_guard<py::gil_scoped_release>())
+      .def("sendScript", &ScriptClient::sendScript, py::call_guard<py::gil_scoped_release>())
+      .def("sendScriptCommand", &ScriptClient::sendScriptCommand, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const ScriptClient &a) { return "<script_client.ScriptClient>"; });
 }
 };  // namespace script_client
@@ -185,19 +182,16 @@ PYBIND11_MODULE(dashboard_client, m)
       .def("connect", &DashboardClient::connect, py::call_guard<py::gil_scoped_release>())
       .def("isConnected", &DashboardClient::isConnected, py::call_guard<py::gil_scoped_release>())
       .def("disconnect", &DashboardClient::disconnect, py::call_guard<py::gil_scoped_release>())
-      .def("send", (void (DashboardClient::*)(const std::string &str)) & DashboardClient::send,
-           py::call_guard<py::gil_scoped_release>())
+      .def("send", &DashboardClient::send, py::call_guard<py::gil_scoped_release>())
       .def("receive", &DashboardClient::receive, py::call_guard<py::gil_scoped_release>())
-      .def("loadURP", (void (DashboardClient::*)(const std::string &urp_name)) & DashboardClient::loadURP,
-           py::call_guard<py::gil_scoped_release>())
+      .def("loadURP", &DashboardClient::loadURP, py::call_guard<py::gil_scoped_release>())
       .def("play", &DashboardClient::play, py::call_guard<py::gil_scoped_release>())
       .def("stop", &DashboardClient::stop, py::call_guard<py::gil_scoped_release>())
       .def("pause", &DashboardClient::pause, py::call_guard<py::gil_scoped_release>())
       .def("quit", &DashboardClient::quit, py::call_guard<py::gil_scoped_release>())
       .def("shutdown", &DashboardClient::shutdown, py::call_guard<py::gil_scoped_release>())
       .def("running", &DashboardClient::running, py::call_guard<py::gil_scoped_release>())
-      .def("popup", (void (DashboardClient::*)(const std::string &message)) & DashboardClient::popup,
-           py::call_guard<py::gil_scoped_release>())
+      .def("popup", &DashboardClient::popup, py::call_guard<py::gil_scoped_release>())
       .def("closePopup", &DashboardClient::closePopup, py::call_guard<py::gil_scoped_release>())
       .def("closeSafetyPopup", &DashboardClient::closeSafetyPopup, py::call_guard<py::gil_scoped_release>())
       .def("powerOn", &DashboardClient::powerOn, py::call_guard<py::gil_scoped_release>())
@@ -210,11 +204,9 @@ PYBIND11_MODULE(dashboard_client, m)
       .def("getLoadedProgram", &DashboardClient::getLoadedProgram, py::call_guard<py::gil_scoped_release>())
       .def("safetymode", &DashboardClient::safetymode, py::call_guard<py::gil_scoped_release>())
       .def("safetystatus", &DashboardClient::safetystatus, py::call_guard<py::gil_scoped_release>())
-      .def("addToLog", (void (DashboardClient::*)(const std::string &message)) & DashboardClient::addToLog,
-           py::call_guard<py::gil_scoped_release>())
+      .def("addToLog", &DashboardClient::addToLog, py::call_guard<py::gil_scoped_release>())
       .def("isProgramSaved", &DashboardClient::isProgramSaved, py::call_guard<py::gil_scoped_release>())
-      .def("setUserRole", (void (DashboardClient::*)(const UserRole &role)) & DashboardClient::setUserRole,
-           py::call_guard<py::gil_scoped_release>())
+      .def("setUserRole", &DashboardClient::setUserRole, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const DashboardClient &a) { return "<dashboard_client.DashboardClient>"; });
 }
 };  // namespace dashboard_client
