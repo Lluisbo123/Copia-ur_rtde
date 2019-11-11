@@ -1,11 +1,11 @@
+#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <pybind11/functional.h>
-#include <ur_rtde/rtde_control_interface.h>
-#include <ur_rtde/rtde_receive_interface.h>
-#include <ur_rtde/rtde_io_interface.h>
-#include <ur_rtde/script_client.h>
 #include <ur_rtde/dashboard_client.h>
+#include <ur_rtde/rtde_control_interface.h>
+#include <ur_rtde/rtde_io_interface.h>
+#include <ur_rtde/rtde_receive_interface.h>
+#include <ur_rtde/script_client.h>
 
 namespace py = pybind11;
 using namespace ur_rtde;
@@ -28,8 +28,9 @@ PYBIND11_MODULE(rtde_control, m)
       .def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveJ,
            "moveJ with path", py::call_guard<py::gil_scoped_release>())
-      .def("moveJ", (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration)) &
-                        RTDEControlInterface::moveJ,
+      .def("moveJ",
+           (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration)) &
+               RTDEControlInterface::moveJ,
            "moveJ without path", py::arg("q"), py::arg("speed") = 1.05, py::arg("acceleration") = 1.4,
            py::call_guard<py::gil_scoped_release>())
       .def("moveJ_IK", &RTDEControlInterface::moveJ_IK, py::arg("pose"), py::arg("speed") = 1.05,
@@ -70,12 +71,9 @@ PYBIND11_MODULE(rtde_control, m)
       .def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor, py::call_guard<py::gil_scoped_release>())
       .def("setPayload", &RTDEControlInterface::setPayload, py::call_guard<py::gil_scoped_release>())
       .def("setTcp", &RTDEControlInterface::setTcp, py::call_guard<py::gil_scoped_release>())
-      .def("__repr__", [](const RTDEControlInterface &a)
-           {
-        return "<rtde_control.RTDEControlInterface>";
-      });
+      .def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
-};
+};  // namespace rtde_control
 
 namespace rtde_receive
 {
@@ -136,12 +134,9 @@ PYBIND11_MODULE(rtde_receive, m)
            py::call_guard<py::gil_scoped_release>())
       .def("getStandardAnalogOutput1", &RTDEReceiveInterface::getStandardAnalogOutput1,
            py::call_guard<py::gil_scoped_release>())
-      .def("__repr__", [](const RTDEReceiveInterface &a)
-           {
-        return "<rtde_receive.RTDEReceiveInterface>";
-      });
+      .def("__repr__", [](const RTDEReceiveInterface &a) { return "<rtde_receive.RTDEReceiveInterface>"; });
 }
-};
+};  // namespace rtde_receive
 
 namespace rtde_io
 {
@@ -156,12 +151,9 @@ PYBIND11_MODULE(rtde_io, m)
       .def("setSpeedSlider", &RTDEIOInterface::setSpeedSlider, py::call_guard<py::gil_scoped_release>())
       .def("setAnalogOutputVoltage", &RTDEIOInterface::setAnalogOutputVoltage, py::call_guard<py::gil_scoped_release>())
       .def("setAnalogOutputCurrent", &RTDEIOInterface::setAnalogOutputCurrent, py::call_guard<py::gil_scoped_release>())
-      .def("__repr__", [](const RTDEIOInterface &a)
-           {
-        return "<rtde_io.RTDEIOInterface>";
-      });
+      .def("__repr__", [](const RTDEIOInterface &a) { return "<rtde_io.RTDEIOInterface>"; });
 }
-};
+};  // namespace rtde_io
 
 namespace script_client
 {
@@ -170,12 +162,15 @@ PYBIND11_MODULE(script_client, m)
   m.doc() = "Script Client";
   py::class_<ScriptClient>(m, "ScriptClient")
       .def(py::init<std::string, int>())
-      .def("connect", &ScriptClient::connect)
-      .def("isConnected", &ScriptClient::isConnected)
-      .def("disconnect", &ScriptClient::disconnect)
-      .def("sendScript", (bool (ScriptClient::*)()) & ScriptClient::sendScript)
-      .def("sendScript", (bool (ScriptClient::*)(const std::string &file_name)) & ScriptClient::sendScript)
-      .def("sendScriptCommand", &ScriptClient::sendScriptCommand)
+      .def("connect", &ScriptClient::connect, py::call_guard<py::gil_scoped_release>())
+      .def("isConnected", &ScriptClient::isConnected, py::call_guard<py::gil_scoped_release>())
+      .def("disconnect", &ScriptClient::disconnect, py::call_guard<py::gil_scoped_release>())
+      .def("sendScript", (bool (ScriptClient::*)()) & ScriptClient::sendScript,
+           py::call_guard<py::gil_scoped_release>())
+      .def("sendScript", (bool (ScriptClient::*)(const std::string &file_name)) & ScriptClient::sendScript,
+           py::call_guard<py::gil_scoped_release>())
+      .def("sendScriptCommand", (bool (ScriptClient::*)(const std::string &cmd_str)) & ScriptClient::sendScriptCommand,
+           py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const ScriptClient &a) { return "<script_client.ScriptClient>"; });
 }
 };  // namespace script_client
@@ -187,24 +182,39 @@ PYBIND11_MODULE(dashboard_client, m)
   m.doc() = "Dashboard Client";
   py::class_<DashboardClient>(m, "DashboardClient")
       .def(py::init<std::string>())
-      .def("connect", &DashboardClient::connect)
-      .def("isConnected", &DashboardClient::isConnected)
-      .def("disconnect", &DashboardClient::disconnect)
-      .def("send", &DashboardClient::send)
-      .def("loadURP", &DashboardClient::loadURP)
-      .def("play", &DashboardClient::play)
-      .def("stop", &DashboardClient::stop)
-      .def("pause", &DashboardClient::pause)
-      .def("quit", &DashboardClient::quit)
-      .def("shutdown", &DashboardClient::shutdown)
-      .def("running", &DashboardClient::running)
-      .def("popup", &DashboardClient::popup)
-      .def("closePopup", &DashboardClient::closePopup)
-      .def("programState", &DashboardClient::programState)
-      .def("powerOn", &DashboardClient::powerOn)
-      .def("powerOff", &DashboardClient::powerOff)
-      .def("brakeRelease", &DashboardClient::brakeRelease)
-      .def("unlockProtectiveStop", &DashboardClient::unlockProtectiveStop)
+      .def("connect", &DashboardClient::connect, py::call_guard<py::gil_scoped_release>())
+      .def("isConnected", &DashboardClient::isConnected, py::call_guard<py::gil_scoped_release>())
+      .def("disconnect", &DashboardClient::disconnect, py::call_guard<py::gil_scoped_release>())
+      .def("send", (void (DashboardClient::*)(const std::string &str)) & DashboardClient::send,
+           py::call_guard<py::gil_scoped_release>())
+      .def("receive", &DashboardClient::receive, py::call_guard<py::gil_scoped_release>())
+      .def("loadURP", (void (DashboardClient::*)(const std::string &urp_name)) & DashboardClient::loadURP,
+           py::call_guard<py::gil_scoped_release>())
+      .def("play", &DashboardClient::play, py::call_guard<py::gil_scoped_release>())
+      .def("stop", &DashboardClient::stop, py::call_guard<py::gil_scoped_release>())
+      .def("pause", &DashboardClient::pause, py::call_guard<py::gil_scoped_release>())
+      .def("quit", &DashboardClient::quit, py::call_guard<py::gil_scoped_release>())
+      .def("shutdown", &DashboardClient::shutdown, py::call_guard<py::gil_scoped_release>())
+      .def("running", &DashboardClient::running, py::call_guard<py::gil_scoped_release>())
+      .def("popup", (void (DashboardClient::*)(const std::string &message)) & DashboardClient::popup,
+           py::call_guard<py::gil_scoped_release>())
+      .def("closePopup", &DashboardClient::closePopup, py::call_guard<py::gil_scoped_release>())
+      .def("closeSafetyPopup", &DashboardClient::closeSafetyPopup, py::call_guard<py::gil_scoped_release>())
+      .def("powerOn", &DashboardClient::powerOn, py::call_guard<py::gil_scoped_release>())
+      .def("powerOff", &DashboardClient::powerOff, py::call_guard<py::gil_scoped_release>())
+      .def("brakeRelease", &DashboardClient::brakeRelease, py::call_guard<py::gil_scoped_release>())
+      .def("unlockProtectiveStop", &DashboardClient::unlockProtectiveStop, py::call_guard<py::gil_scoped_release>())
+      .def("restartSafety", &DashboardClient::restartSafety, py::call_guard<py::gil_scoped_release>())
+      .def("PolyscopeVersion", &DashboardClient::PolyscopeVersion, py::call_guard<py::gil_scoped_release>())
+      .def("robotmode", &DashboardClient::robotmode, py::call_guard<py::gil_scoped_release>())
+      .def("getLoadedProgram", &DashboardClient::getLoadedProgram, py::call_guard<py::gil_scoped_release>())
+      .def("safetymode", &DashboardClient::safetymode, py::call_guard<py::gil_scoped_release>())
+      .def("safetystatus", &DashboardClient::safetystatus, py::call_guard<py::gil_scoped_release>())
+      .def("addToLog", (void (DashboardClient::*)(const std::string &message)) & DashboardClient::addToLog,
+           py::call_guard<py::gil_scoped_release>())
+      .def("isProgramSaved", &DashboardClient::isProgramSaved, py::call_guard<py::gil_scoped_release>())
+      .def("setUserRole", (void (DashboardClient::*)(const UserRole &role)) & DashboardClient::setUserRole,
+           py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const DashboardClient &a) { return "<dashboard_client.DashboardClient>"; });
 }
 };  // namespace dashboard_client
