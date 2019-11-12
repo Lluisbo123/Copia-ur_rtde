@@ -68,6 +68,10 @@ PYBIND11_MODULE(rtde_control, m)
       .def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor, py::call_guard<py::gil_scoped_release>())
       .def("setPayload", &RTDEControlInterface::setPayload, py::call_guard<py::gil_scoped_release>())
       .def("setTcp", &RTDEControlInterface::setTcp, py::call_guard<py::gil_scoped_release>())
+      .def("getInverseKinematics", &RTDEControlInterface::getInverseKinematics, py::arg("x"),
+          py::arg("qnear"),py::arg("max_position_error") = 1e-10,
+          py::arg("max_orientation_error") = 1e-10,
+          py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEControlInterface &a)
            {
         return "<rtde_control.RTDEControlInterface>";

@@ -53,6 +53,7 @@ class RTDE
       GET_ACTUAL_JOINT_POSITIONS_HISTORY = 28,
       GET_TARGET_WAYPOINT = 29,
       SET_TCP = 30,
+      GET_INVERSE_KINEMATICS = 31,
       STOP = 255
     };
 
@@ -67,7 +68,8 @@ class RTDE
       RECIPE_7 = 7,
       RECIPE_8 = 8,
       RECIPE_9 = 9,
-      RECIPE_10 = 10
+      RECIPE_10 = 10,
+      RECIPE_11 = 11
     };
 
     RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)

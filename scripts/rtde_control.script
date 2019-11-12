@@ -425,6 +425,35 @@ $V53        write_output_float_register(5, target_waypoint[5])
             pose[5] = read_input_float_register(5)
             set_tcp(pose)
             textmsg("set_tcp done")
+        elif cmd == 31:
+            textmsg("get_inverse_kin")
+            x = p[0, 0, 0, 0, 0, 0]
+            x[0] = read_input_float_register(0)
+            x[1] = read_input_float_register(1)
+            x[2] = read_input_float_register(2)
+            x[3] = read_input_float_register(3)
+            x[4] = read_input_float_register(4)
+            x[5] = read_input_float_register(5)
+
+            qnear = [0, 0, 0, 0, 0, 0]
+            qnear[0] = read_input_float_register(6)
+            qnear[1] = read_input_float_register(7)
+            qnear[2] = read_input_float_register(8)
+            qnear[3] = read_input_float_register(9)
+            qnear[4] = read_input_float_register(10)
+            qnear[5] = read_input_float_register(11)
+            maxPositionError = read_input_float_register(12)
+            maxOrientationError = read_input_float_register(13)
+
+            q = get_inverse_kin(x, qnear, maxPositionError, maxOrientationError)
+
+            write_output_float_register(0, q[0])
+            write_output_float_register(1, q[1])
+            write_output_float_register(2, q[2])
+            write_output_float_register(3, q[3])
+            write_output_float_register(4, q[4])
+            write_output_float_register(5, q[5])
+            textmsg("get_inverse_kin done")
         elif cmd == 255:
             textmsg("Received stop!")
         end

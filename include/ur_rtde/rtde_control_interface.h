@@ -337,6 +337,18 @@ class RTDEControlInterface
     */
   RTDE_EXPORT bool setTcp(const std::vector<double> &tcp_offset);
 
+  /**
+    * @brief Calculate the inverse kinematic transformation (tool space -> jointspace). If qnear is defined, the
+    * solution closest to qnear is returned.Otherwise, the solution closest to the current joint positions is returned.
+    * If no tcp is provided the currently active tcp of the controller will be used.
+    * @param x tool pose
+    * @param qnear list of joint positions (Optional)
+    * @param maxPositionError the maximum allowed positionerror (Optional)
+    * @param maxOrientationError the maximum allowed orientationerror (Optional)
+    * @returns joint positions
+    */
+  RTDE_EXPORT std::vector<double> getInverseKinematics(const std::vector<double> &x, const std::vector<double> &qnear,
+      double max_position_error=1e-10, double max_orientation_error=1e-10);
 
   /**
     * @brief Returns true if a program is running on the controller, otherwise it returns false
@@ -357,6 +369,8 @@ class RTDEControlInterface
   std::vector<double> getTargetWaypointValue();
 
   std::vector<double> getActualJointPositionsHistoryValue();
+
+  std::vector<double> getInverseKinematicsValue();
 
   void verifyValueIsWithin(const double &value, const double &min, const double &max);
 
