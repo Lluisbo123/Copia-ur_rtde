@@ -1,7 +1,6 @@
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <ur_rtde/dashboard_client.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/rtde_io_interface.h>
 #include <ur_rtde/rtde_receive_interface.h>
@@ -71,6 +70,9 @@ PYBIND11_MODULE(rtde_control, m)
       .def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor, py::call_guard<py::gil_scoped_release>())
       .def("setPayload", &RTDEControlInterface::setPayload, py::call_guard<py::gil_scoped_release>())
       .def("setTcp", &RTDEControlInterface::setTcp, py::call_guard<py::gil_scoped_release>())
+      .def("getInverseKinematics", &RTDEControlInterface::getInverseKinematics, py::arg("x"), py::arg("qnear"),
+           py::arg("max_position_error") = 1e-10, py::arg("max_orientation_error") = 1e-10,
+           py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control
@@ -161,12 +163,14 @@ PYBIND11_MODULE(script_client, m)
 {
   m.doc() = "Script Client";
   py::class_<ScriptClient>(m, "ScriptClient")
-      .def(py::init<std::string, int>())
+      .def(py::init<std::string, uint32_t, uint32_t>())
       .def("connect", &ScriptClient::connect, py::call_guard<py::gil_scoped_release>())
       .def("isConnected", &ScriptClient::isConnected, py::call_guard<py::gil_scoped_release>())
       .def("disconnect", &ScriptClient::disconnect, py::call_guard<py::gil_scoped_release>())
-      .def("sendScript", &ScriptClient::sendScript, py::call_guard<py::gil_scoped_release>())
-      .def("sendScript", &ScriptClient::sendScript, py::call_guard<py::gil_scoped_release>())
+      .def("sendScript", (bool (ScriptClient::*)()) & ScriptClient::sendScript,
+           py::call_guard<py::gil_scoped_release>())
+      .def("sendScript", (bool (ScriptClient::*)(const std::string &file_name)) & ScriptClient::sendScript,
+           py::call_guard<py::gil_scoped_release>())
       .def("sendScriptCommand", &ScriptClient::sendScriptCommand, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const ScriptClient &a) { return "<script_client.ScriptClient>"; });
 }
