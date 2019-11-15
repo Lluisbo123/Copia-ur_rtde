@@ -99,6 +99,14 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   std::vector<std::string> get_actual_joint_positions_history_input = {"input_int_register_0", "input_int_register_1"};
   rtde_->sendInputSetup(get_actual_joint_positions_history_input);
 
+  // Recipe 11
+  std::vector<std::string> get_inverse_kin_input = {
+      "input_int_register_0", "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
+      "input_double_register_7", "input_double_register_8", "input_double_register_9", "input_double_register_10",
+      "input_double_register_11", "input_double_register_12", "input_double_register_13"};
+  rtde_->sendInputSetup(get_inverse_kin_input);
+
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
 
@@ -266,6 +274,14 @@ bool RTDEControlInterface::reconnect()
   // Recipe 10
   std::vector<std::string> get_actual_joint_positions_history_input = {"input_int_register_0", "input_int_register_1"};
   rtde_->sendInputSetup(get_actual_joint_positions_history_input);
+
+  // Recipe 11
+  std::vector<std::string> get_inverse_kin_input = {
+      "input_int_register_0", "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
+      "input_double_register_7", "input_double_register_8", "input_double_register_9", "input_double_register_10",
+      "input_double_register_11", "input_double_register_12", "input_double_register_13"};
+  rtde_->sendInputSetup(get_inverse_kin_input);
 
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
@@ -929,6 +945,22 @@ std::vector<double> RTDEControlInterface::getActualJointPositionsHistoryValue()
   }
 }
 
+std::vector<double> RTDEControlInterface::getInverseKinematicsValue()
+{
+  if (robot_state_ != nullptr)
+  {
+    std::vector<double> q = {
+        robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
+        robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
+        robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
+    return q;
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
 bool RTDEControlInterface::setTcp(const std::vector<double> &tcp_offset)
 {
   RTDE::RobotCommand robot_cmd;
@@ -936,6 +968,27 @@ bool RTDEControlInterface::setTcp(const std::vector<double> &tcp_offset)
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
   robot_cmd.val_ = tcp_offset;
   return sendCommand(robot_cmd);
+}
+
+std::vector<double> RTDEControlInterface::getInverseKinematics(const std::vector<double> &x,
+                                                const std::vector<double> &qnear,
+                                                double max_position_error,
+                                                double max_orientation_error){
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::GET_INVERSE_KINEMATICS;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_11;
+  robot_cmd.val_ = x;
+  robot_cmd.val_.insert(robot_cmd.val_.end(), qnear.begin(), qnear.end());
+  robot_cmd.val_.push_back(max_position_error);
+  robot_cmd.val_.push_back(max_orientation_error);
+  if (sendCommand(robot_cmd))
+  {
+    return getInverseKinematicsValue();
+  }
+  else
+  {
+    return std::vector<double>();
+  }
 }
 
 int RTDEControlInterface::getControlScriptState()
