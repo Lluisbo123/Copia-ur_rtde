@@ -64,6 +64,7 @@ set(LIB_SOURCE_FILES
 set(LIB_HEADER_FILES
         include/ur_rtde/rtde.h
         include/ur_rtde/rtde_utility.h
+		include/ur_rtde/dashboard_enums.h
         include/ur_rtde/dashboard_client.h
         include/ur_rtde/robot_state.h
         include/ur_rtde/script_client.h
