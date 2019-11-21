@@ -65,8 +65,7 @@ void RTDE::connect()
 
 void RTDE::disconnect()
 {
-  // Close socket
-  socket_->close();
+  // We rely on the socket_ destructor to do its job.
   conn_state_ = ConnectionState::DISCONNECTED;
   std::cout << "RTDE - Socket disconnected" << std::endl;
 }

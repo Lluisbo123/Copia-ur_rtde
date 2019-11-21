@@ -353,6 +353,8 @@ void RTDEControlInterface::receiveCallback()
       if (rtde_->isConnected())
         rtde_->disconnect();
       stop_thread = true;
+      th_->interrupt();
+      th_->join();
     }
   }
 }
@@ -381,9 +383,9 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
   cmd_str += "def " + function_name + "():\n";
   cmd_str += "\twrite_output_integer_register(0, 0)\n";
 
-  while (std::getline(ss, line, '\n'))
+  while (std::getline(ss, line))
   {
-    cmd_str += "\t" + line;
+    cmd_str += "\t" + line + "\n";
   }
 
   // Signal when motions are finished
