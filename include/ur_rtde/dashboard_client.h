@@ -44,7 +44,7 @@ class DashboardClient
   RTDE_EXPORT void brakeRelease();
   RTDE_EXPORT void unlockProtectiveStop();
   RTDE_EXPORT void restartSafety();
-  RTDE_EXPORT std::string PolyscopeVersion();
+  RTDE_EXPORT std::string polyscopeVersion();
   RTDE_EXPORT std::string programState();
   RTDE_EXPORT std::string robotmode();
   RTDE_EXPORT std::string getLoadedProgram();

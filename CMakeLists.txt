@@ -158,7 +158,7 @@ if(${CODE})
 				PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
 				PRIVATE ${PYTHON_INCLUDE_DIRS})
 			target_link_libraries(script_client PRIVATE
-				${PYTHON_LIBRARIES}
+				#${PYTHON_LIBRARIES}
 				${Boost_SYSTEM_LIBRARY}
 				${Boost_THREAD_LIBRARY})
 			target_compile_definitions(script_client PRIVATE rtde_EXPORTS)
@@ -174,7 +174,7 @@ if(${CODE})
 			PRIVATE ${pybind11_INCLUDE_DIR}  # from pybind11Config
 			PRIVATE ${PYTHON_INCLUDE_DIRS})
 		target_link_libraries(dashboard_client PRIVATE
-			${PYTHON_LIBRARIES}
+			#${PYTHON_LIBRARIES}
 			${Boost_SYSTEM_LIBRARY}
 			${Boost_THREAD_LIBRARY})
 		target_compile_definitions(dashboard_client PRIVATE rtde_EXPORTS)
