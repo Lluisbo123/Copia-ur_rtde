@@ -116,7 +116,7 @@ void DashboardClient::closePopup()
   receive();
 }
 
-std::string DashboardClient::PolyscopeVersion()
+std::string DashboardClient::polyscopeVersion()
 {
   std::string close_popup = "PolyscopeVersion\n";
   send(close_popup);
