@@ -54,6 +54,7 @@ class RTDE
       GET_TARGET_WAYPOINT = 29,
       SET_TCP = 30,
       GET_INVERSE_KINEMATICS = 31,
+      PROTECTIVE_STOP = 32,
       STOP = 255
     };
 

@@ -1005,6 +1005,14 @@ int RTDEControlInterface::getControlScriptState()
   }
 }
 
+bool RTDEControlInterface::triggerProtectiveStop()
+{
+    RTDE::RobotCommand robot_cmd;
+    robot_cmd.type_ = RTDE::RobotCommand::Type::PROTECTIVE_STOP;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+    return sendCommand(robot_cmd);
+}
+
 bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 {
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();

@@ -351,6 +351,11 @@ class RTDEControlInterface
       double max_position_error=1e-10, double max_orientation_error=1e-10);
 
   /**
+    * @brief Triggers a protective stop on the robot. Can be used for testing and debugging.
+    */
+  RTDE_EXPORT bool triggerProtectiveStop();
+
+  /**
     * @brief Returns true if a program is running on the controller, otherwise it returns false
     */
   RTDE_EXPORT bool isProgramRunning();

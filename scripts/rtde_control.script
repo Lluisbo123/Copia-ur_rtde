@@ -454,6 +454,10 @@ $V53        write_output_float_register(5, target_waypoint[5])
             write_output_float_register(4, q[4])
             write_output_float_register(5, q[5])
             textmsg("get_inverse_kin done")
+        elif cmd == 32:
+            textmsg("protective_stop")
+            protective_stop()
+            textmsg("protective_stop done")
         elif cmd == 255:
             textmsg("Received stop!")
         end
