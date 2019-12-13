@@ -471,9 +471,6 @@ $V53        write_output_float_register(5, target_waypoint[5])
 
     textmsg("RTDE Control Script Loaded")
 
-    # Initialize force torque sensor
-    zero_ftsensor()
-
     # Initialize gain and damping for force mode to a more stable default
 $V50force_mode_set_gain_scaling(0.5)
     force_mode_set_damping(0.025)
