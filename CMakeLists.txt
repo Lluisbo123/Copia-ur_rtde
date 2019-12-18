@@ -228,9 +228,9 @@ if(${CODE})
 		set(BIN_INSTALL_DIR "bin")
 	endif()
 	if(NOT DEFINED INCLUDE_INSTALL_DIR)
-		set(INCLUDE_INSTALL_DIR "include/ur_rtde")
+		set(INCLUDE_INSTALL_DIR "include")
 	else()
-		set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_DIR}/ur_rtde")
+		set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_DIR}")
 	endif()
 
 	install(TARGETS rtde
@@ -249,7 +249,7 @@ if(${CODE})
 			FILES
 			${LIB_HEADER_FILES}
 			"${CMAKE_CURRENT_BINARY_DIR}/ur_rtde/rtde_export.h"
-			DESTINATION ${INCLUDE_INSTALL_DIR}
+			DESTINATION ${INCLUDE_INSTALL_DIR}/ur_rtde
 			COMPONENT ur_rtde
 	)
 
