@@ -209,7 +209,7 @@ if(${CODE})
 			${Boost_SYSTEM_LIBRARY}
 			${Boost_THREAD_LIBRARY})
 
-	generate_export_header(rtde EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/ur_rtde/rtde_export.h)
+	generate_export_header(rtde EXPORT_FILE_NAME ${CMAKE_CURRENT_SOURCE_DIR}/include/ur_rtde/rtde_export.h)
 
 	add_library(ur_rtde::rtde ALIAS rtde)
 	add_executable(ur_rtde::rtde_receive_client ALIAS rtde_receive_client)
