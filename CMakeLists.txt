@@ -69,8 +69,11 @@ set(LIB_HEADER_FILES
         include/ur_rtde/robot_state.h
         include/ur_rtde/script_client.h
         include/ur_rtde/rtde_control_interface.h
+		include/ur_rtde/rtde_control_interface_doc.h
 		include/ur_rtde/rtde_receive_interface.h
-		include/ur_rtde/rtde_io_interface.h)
+		include/ur_rtde/rtde_receive_interface_doc.h
+		include/ur_rtde/rtde_io_interface.h
+		include/ur_rtde/rtde_io_interface_doc.h)
 
 if(${PYTHON_BINDINGS})
 	find_package(pybind11 REQUIRED)
@@ -248,7 +251,7 @@ if(${CODE})
 	install(
 			FILES
 			${LIB_HEADER_FILES}
-			"${CMAKE_CURRENT_BINARY_DIR}/ur_rtde/rtde_export.h"
+			"${CMAKE_CURRENT_SOURCE_DIR}/include/ur_rtde/rtde_export.h"
 			DESTINATION ${INCLUDE_INSTALL_DIR}/ur_rtde
 			COMPONENT ur_rtde
 	)
