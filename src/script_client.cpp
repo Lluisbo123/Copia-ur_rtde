@@ -1,8 +1,8 @@
 #include <ur_rtde/script_client.h>
-#include <iostream>
-#include <string>
 #include <fstream>
+#include <iostream>
 #include <streambuf>
+#include <string>
 #include "ur_rtde/rtde_control_script.h"
 
 using boost::asio::ip::tcp;
@@ -74,15 +74,16 @@ bool ScriptClient::sendScript()
 
   while (n != std::string::npos)
   {
-    const std::string major_str(1, ur_script.at(n+2));
-    const std::string minor_str(1, ur_script.at(n+3));
+    const std::string major_str(1, ur_script.at(n + 2));
+    const std::string minor_str(1, ur_script.at(n + 3));
 
     if (!major_str.empty() && !minor_str.empty() && major_str != " " && minor_str != " ")
     {
-      int major_version_needed = std::stoi(major_str);
-      int minor_version_needed = std::stoi(minor_str);
+      uint32_t major_version_needed = uint32_t(std::stoi(major_str));
+      uint32_t minor_version_needed = uint32_t(std::stoi(minor_str));
 
-      if (major_control_version_ >= major_version_needed && minor_control_version_ >= minor_version_needed)
+      if ((major_control_version_ > major_version_needed) ||
+          (major_control_version_ == major_version_needed && minor_control_version_ >= minor_version_needed))
       {
         // Keep the line
         ur_script.erase(n, 4);
