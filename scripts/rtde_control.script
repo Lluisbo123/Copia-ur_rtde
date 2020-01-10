@@ -334,7 +334,7 @@ $V50        textmsg(get_target_payload())
         elif cmd == 21:
             textmsg("force_mode_set_damping")
             damping = read_input_float_register(0)
-            force_mode_set_damping(damping)
+$V35        force_mode_set_damping(damping)
             textmsg("force_mode_set_damping done")
         elif cmd == 22:
             textmsg("force_mode_set_gain_scaling")
@@ -456,7 +456,7 @@ $V53        write_output_float_register(5, target_waypoint[5])
             textmsg("get_inverse_kin done")
         elif cmd == 32:
             textmsg("protective_stop")
-            protective_stop()
+$V38        protective_stop()
             textmsg("protective_stop done")
         elif cmd == 255:
             textmsg("Received stop!")
@@ -473,7 +473,7 @@ $V53        write_output_float_register(5, target_waypoint[5])
 
     # Initialize gain and damping for force mode to a more stable default
 $V50force_mode_set_gain_scaling(0.5)
-    force_mode_set_damping(0.025)
+$V35force_mode_set_damping(0.025)
 
     keep_running = True
     executing_cmd = False
