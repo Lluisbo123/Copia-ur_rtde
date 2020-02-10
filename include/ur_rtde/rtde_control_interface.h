@@ -305,7 +305,7 @@ class RTDEControlInterface
     *
     * @returns Duration of the robot step in seconds
     */
-  RTDE_EXPORT int getStepTime();
+  RTDE_EXPORT double getStepTime();
 
   /**
     * @brief Detects when a contact between the tool and an object happens.
@@ -369,7 +369,7 @@ class RTDEControlInterface
 
   int getToolContactValue();
 
-  int getStepTimeValue();
+  double getStepTimeValue();
 
   std::vector<double> getTargetWaypointValue();
 

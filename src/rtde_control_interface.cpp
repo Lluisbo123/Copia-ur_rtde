@@ -831,7 +831,7 @@ int RTDEControlInterface::toolContact(const std::vector<double> &direction)
   }
 }
 
-int RTDEControlInterface::getStepTime()
+double RTDEControlInterface::getStepTime()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::GET_STEPTIME;
@@ -891,11 +891,11 @@ bool RTDEControlInterface::isProgramRunning()
   }
 }
 
-int RTDEControlInterface::getStepTimeValue()
+double RTDEControlInterface::getStepTimeValue()
 {
   if (robot_state_ != nullptr)
   {
-    return robot_state_->getOutput_int_register_1();
+    return robot_state_->getOutput_double_register_0();
   }
   else
   {

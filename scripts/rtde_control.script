@@ -220,7 +220,6 @@ def rtde_control():
             end
             textmsg("speedj done")
         elif cmd == 11:
-            textmsg("speedl")
             xd = [0, 0, 0, 0, 0, 0]
             xd[0] = read_input_float_register(0)
             xd[1] = read_input_float_register(1)
@@ -241,10 +240,7 @@ def rtde_control():
                     global speed_thrd = run speed_thread()
                 end
             end
-
-            textmsg("speedl done")
         elif cmd == 12:
-            textmsg("servoj")
             q = [0, 0, 0, 0, 0, 0]
             q[0] = read_input_float_register(0)
             q[1] = read_input_float_register(1)
@@ -268,7 +264,6 @@ def rtde_control():
                     global servo_thrd = run servo_thread()
                 end
             end
-            textmsg("servoj done")
         elif cmd == 13:
             textmsg("servoc")
             pose = p[0, 0, 0, 0, 0, 0]
@@ -387,7 +382,7 @@ $V54        textmsg(time_steps)
         elif cmd == 27:
             textmsg("get_steptime")
 $V54        step_time = get_steptime()
-$V54        write_output_integer_register(1, step_time)
+$V54        write_output_float_register(0, step_time)
 $V54        textmsg("get_steptime step_time:")
 $V54        textmsg(step_time)
             textmsg("get_steptime done")
