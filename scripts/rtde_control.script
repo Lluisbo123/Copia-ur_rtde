@@ -302,7 +302,7 @@ def rtde_control():
             kill servo_thrd
             servo_thrd = 0
             exit_critical
-            stopj(20)
+            stopl(20)
             textmsg("servo_stop done")
         elif cmd == 18:
             textmsg("set_payload")
@@ -338,7 +338,6 @@ $V35        force_mode_set_damping(damping)
 $V50        force_mode_set_gain_scaling(scaling)
             textmsg("force_mode_set_gain_scaling done")
         elif cmd == 25:
-            textmsg("servol")
             pose = p[0, 0, 0, 0, 0, 0]
             pose[0] = read_input_float_register(0)
             pose[1] = read_input_float_register(1)
@@ -349,8 +348,6 @@ $V50        force_mode_set_gain_scaling(scaling)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
             q = get_inverse_kin(pose)
-            textmsg("Target q:")
-            textmsg(q)
 
             enter_critical
             servo_target = q
@@ -365,7 +362,6 @@ $V50        force_mode_set_gain_scaling(scaling)
                     global servo_thrd = run servo_thread()
                 end
             end
-            textmsg("servol done")
         elif cmd == 26:
             textmsg("tool_contact")
             direction = p[0, 0, 0, 0, 0, 0]

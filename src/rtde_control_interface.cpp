@@ -1038,6 +1038,9 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
     }
     else
     {
+      // Send command to the controller
+      rtde_->send(cmd);
+
       start_time = std::chrono::high_resolution_clock::now();
       while (getControlScriptState() != UR_CONTROLLER_CMD_RECEIVED)
       {
