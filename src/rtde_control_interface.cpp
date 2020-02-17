@@ -1,7 +1,8 @@
 #include <ur_rtde/rtde_control_interface.h>
-#include <iostream>
+
 #include <bitset>
 #include <chrono>
+#include <iostream>
 
 namespace ur_rtde
 {
@@ -101,9 +102,9 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
 
   // Recipe 11
   std::vector<std::string> get_inverse_kin_input = {
-      "input_int_register_0", "input_double_register_0", "input_double_register_1", "input_double_register_2",
-      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
-      "input_double_register_7", "input_double_register_8", "input_double_register_9", "input_double_register_10",
+      "input_int_register_0",     "input_double_register_0",  "input_double_register_1", "input_double_register_2",
+      "input_double_register_3",  "input_double_register_4",  "input_double_register_5", "input_double_register_6",
+      "input_double_register_7",  "input_double_register_8",  "input_double_register_9", "input_double_register_10",
       "input_double_register_11", "input_double_register_12", "input_double_register_13"};
   rtde_->sendInputSetup(get_inverse_kin_input);
 
@@ -117,7 +118,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   // Start RTDE data synchronization
   rtde_->sendStart();
 
-  while(!rtde_->isStarted())
+  while (!rtde_->isStarted())
   {
     // Wait until RTDE data synchronization has started or timeout
     std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
@@ -277,9 +278,9 @@ bool RTDEControlInterface::reconnect()
 
   // Recipe 11
   std::vector<std::string> get_inverse_kin_input = {
-      "input_int_register_0", "input_double_register_0", "input_double_register_1", "input_double_register_2",
-      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
-      "input_double_register_7", "input_double_register_8", "input_double_register_9", "input_double_register_10",
+      "input_int_register_0",     "input_double_register_0",  "input_double_register_1", "input_double_register_2",
+      "input_double_register_3",  "input_double_register_4",  "input_double_register_5", "input_double_register_6",
+      "input_double_register_7",  "input_double_register_8",  "input_double_register_9", "input_double_register_10",
       "input_double_register_11", "input_double_register_12", "input_double_register_13"};
   rtde_->sendInputSetup(get_inverse_kin_input);
 
@@ -293,7 +294,7 @@ bool RTDEControlInterface::reconnect()
   // Start RTDE data synchronization
   rtde_->sendStart();
 
-  while(!rtde_->isStarted())
+  while (!rtde_->isStarted())
   {
     // Wait until RTDE data synchronization has started or timeout
     std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
@@ -347,7 +348,7 @@ void RTDEControlInterface::receiveCallback()
     {
       rtde_->receiveData(robot_state_);
     }
-    catch (std::exception& e)
+    catch (std::exception &e)
     {
       std::cerr << e.what() << std::endl;
       if (rtde_->isConnected())
@@ -469,13 +470,13 @@ std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector
   cmd_str += "\twrite_output_integer_register(0, 0)\n";
   for (const auto &pose : path)
   {
-    if(cmd =="movej(")
+    if (cmd == "movej(")
     {
       verifyValueIsWithin(pose[6], UR_JOINT_VELOCITY_MIN, UR_JOINT_VELOCITY_MAX);
       verifyValueIsWithin(pose[7], UR_JOINT_ACCELERATION_MIN, UR_JOINT_ACCELERATION_MAX);
       verifyValueIsWithin(pose[8], UR_BLEND_MIN, UR_BLEND_MAX);
     }
-    else if(cmd =="movel(p")
+    else if (cmd == "movel(p")
     {
       verifyValueIsWithin(pose[6], UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX);
       verifyValueIsWithin(pose[7], UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
@@ -951,10 +952,9 @@ std::vector<double> RTDEControlInterface::getInverseKinematicsValue()
 {
   if (robot_state_ != nullptr)
   {
-    std::vector<double> q = {
-        robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
-        robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
-        robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
+    std::vector<double> q = {robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
+                             robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
+                             robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
     return q;
   }
   else
@@ -973,9 +973,9 @@ bool RTDEControlInterface::setTcp(const std::vector<double> &tcp_offset)
 }
 
 std::vector<double> RTDEControlInterface::getInverseKinematics(const std::vector<double> &x,
-                                                const std::vector<double> &qnear,
-                                                double max_position_error,
-                                                double max_orientation_error){
+                                                               const std::vector<double> &qnear,
+                                                               double max_position_error, double max_orientation_error)
+{
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::GET_INVERSE_KINEMATICS;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_11;
@@ -1007,10 +1007,10 @@ int RTDEControlInterface::getControlScriptState()
 
 bool RTDEControlInterface::triggerProtectiveStop()
 {
-    RTDE::RobotCommand robot_cmd;
-    robot_cmd.type_ = RTDE::RobotCommand::Type::PROTECTIVE_STOP;
-    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
-    return sendCommand(robot_cmd);
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::PROTECTIVE_STOP;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  return sendCommand(robot_cmd);
 }
 
 bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
@@ -1028,38 +1028,46 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
         return false;
     }
 
-    // Send command to the controller
-    rtde_->send(cmd);
-
-    start_time = std::chrono::high_resolution_clock::now();
-    while (getControlScriptState() != UR_CONTROLLER_CMD_RECEIVED)
+    if (cmd.type_ == RTDE::RobotCommand::Type::SERVOJ || cmd.type_ == RTDE::RobotCommand::Type::SERVOL ||
+        cmd.type_ == RTDE::RobotCommand::Type::SPEEDJ || cmd.type_ == RTDE::RobotCommand::Type::SPEEDL)
     {
-      // Wait until the controller has received the command or timeout
-      std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-      auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-      if (duration > UR_CMD_RECEIVE_TIMEOUT)
-        return false;
+      // Send command to the controller
+      rtde_->send(cmd);
+      sendClearCommand();
+      return true;
     }
-
-    // Command has been received stop sending it.
-    sendClearCommand();
-
-    if (cmd.type_ != RTDE::RobotCommand::Type::STOP)
+    else
     {
       start_time = std::chrono::high_resolution_clock::now();
-      while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
+      while (getControlScriptState() != UR_CONTROLLER_CMD_RECEIVED)
       {
-        // Wait until the controller has finished executing or timeout
+        // Wait until the controller has received the command or timeout
         std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-        if (duration > UR_EXECUTION_TIMEOUT)
+        if (duration > UR_CMD_RECEIVE_TIMEOUT)
           return false;
       }
-    }
 
-    // Command has been received stop sending it.
-    sendClearCommand();
-    return true;
+      // Command has been received stop sending it.
+      sendClearCommand();
+
+      if (cmd.type_ != RTDE::RobotCommand::Type::STOP)
+      {
+        //start_time = std::chrono::high_resolution_clock::now();
+        while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
+        {
+          // Wait until the controller has finished executing or timeout
+          std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+          auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+          if (duration > UR_EXECUTION_TIMEOUT)
+            return false;
+        }
+      }
+
+      // Command has been received stop sending it.
+      sendClearCommand();
+      return true;
+    }
   }
   catch (std::exception &e)
   {
@@ -1078,7 +1086,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
     reconnect();
     return sendCommand(cmd);
   }
-  return false; 
+  return false;
 }
 
 void RTDEControlInterface::sendClearCommand()

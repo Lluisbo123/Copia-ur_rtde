@@ -4,6 +4,7 @@
 #include <iostream>
 
 using namespace ur_rtde;
+using namespace std::chrono; 
 
 int main(int argc, char* argv[])
 {
@@ -87,19 +88,25 @@ int main(int argc, char* argv[])
   rtde_control.speedStop();*/
 
   // Test servoJ
-  double time = 0.3;
+  double time = 0.002;
   double lookahead_time = 0.1;
   double gain = 300;
-
+  
   rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
-  for (unsigned int i = 0; i < 30; i++)
+  std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  for (unsigned int i=0; i<1000; i++)
   {
+    joint_q1[0] += 0.001;
+    joint_q1[1] += 0.001;
+    auto start = high_resolution_clock::now(); 
     rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
-    std::this_thread::sleep_for(std::chrono::milliseconds(280));
-    rtde_control.servoJ(joint_q2, velocity, acceleration, time, lookahead_time, gain);
-    std::this_thread::sleep_for(std::chrono::milliseconds(280));
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    std::cout << "Time taken by servoJ: "
+         << duration.count() << " microseconds" << std::endl; 
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
   }
-
+  
   rtde_control.servoStop();
 
   /*rtde_control.moveJ(joint_q1, velocity, acceleration);

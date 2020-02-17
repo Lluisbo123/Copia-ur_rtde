@@ -7,7 +7,7 @@ def rtde_control():
     global is_servoing = 0
     global is_speeding = 0
     global servo_target = [0, 0, 0, 0, 0, 0]
-    global servo_time = 0.2
+    global servo_time = 0.002
     global servo_lookahead_time = 0.1
     global servo_gain = 300
 
@@ -264,6 +264,7 @@ def rtde_control():
                     global servo_thrd = run servo_thread()
                 end
             end
+            
         elif cmd == 13:
             textmsg("servoc")
             pose = p[0, 0, 0, 0, 0, 0]
