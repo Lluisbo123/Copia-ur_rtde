@@ -1,8 +1,12 @@
 #include <ur_rtde/rtde_control_interface.h>
-
+#include <ur_rtde/dashboard_client.h>
+#include <ur_rtde/script_client.h>
+#include <ur_rtde/robot_state.h>
+#include <boost/thread/thread.hpp>
 #include <bitset>
 #include <chrono>
 #include <iostream>
+#include <thread>
 
 namespace ur_rtde
 {

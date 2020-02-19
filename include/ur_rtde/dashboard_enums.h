@@ -1,3 +1,4 @@
+#pragma once
 #ifndef RTDE_DASHBOARD_ENUMS_H
 #define RTDE_DASHBOARD_ENUMS_H
 #include <iostream>

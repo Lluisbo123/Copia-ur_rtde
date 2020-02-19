@@ -1,13 +1,9 @@
+#pragma once
 #ifndef RTDE_CONTROL_INTERFACE_H
 #define RTDE_CONTROL_INTERFACE_H
 
 #include <ur_rtde/rtde_export.h>
 #include <ur_rtde/rtde.h>
-#include <ur_rtde/dashboard_client.h>
-#include <ur_rtde/script_client.h>
-#include <boost/thread.hpp>
-#include <thread>
-#include <sstream>
 
 #define MAJOR_VERSION 0
 #define MINOR_VERSION 1
@@ -35,6 +31,13 @@
 #define UR_SERVO_GAIN_MIN 100
 #define UR_BLEND_MAX 2.0
 #define UR_BLEND_MIN 0.0
+
+// forward declarations
+namespace boost { class thread; }
+namespace ur_rtde { class DashboardClient; }
+namespace ur_rtde { class ScriptClient; }
+namespace ur_rtde { class RobotState; }
+namespace ur_rtde { class RTDE; }
 
 namespace ur_rtde
 {

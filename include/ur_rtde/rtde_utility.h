@@ -1,3 +1,4 @@
+#pragma once
 #ifndef RTDE_RTDE_UTILITY_H
 #define RTDE_RTDE_UTILITY_H
 

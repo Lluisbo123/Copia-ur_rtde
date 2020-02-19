@@ -8,6 +8,7 @@
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_receive_interface_doc.h>
 #include <ur_rtde/script_client.h>
+#include <ur_rtde/dashboard_client.h>
 
 namespace py = pybind11;
 using namespace ur_rtde;

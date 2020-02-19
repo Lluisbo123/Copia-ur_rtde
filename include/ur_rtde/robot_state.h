@@ -1,3 +1,4 @@
+#pragma once
 #ifndef RTDE_ROBOT_STATE_H
 #define RTDE_ROBOT_STATE_H
 

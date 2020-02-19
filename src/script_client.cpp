@@ -5,6 +5,12 @@
 #include <string>
 #include "ur_rtde/rtde_control_script.h"
 
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/write.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/asio/socket_base.hpp>
+
 using boost::asio::ip::tcp;
 
 namespace ur_rtde

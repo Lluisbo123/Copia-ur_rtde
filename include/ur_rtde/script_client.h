@@ -1,10 +1,14 @@
+#pragma once
 #ifndef RTDE_SCRIPT_CLIENT_H
 #define RTDE_SCRIPT_CLIENT_H
 
 #include <ur_rtde/rtde_export.h>
+#include <boost/asio/ip/tcp.hpp>
+#include <memory>
 #include <string>
-#include <boost/asio.hpp>
-#include <boost/filesystem.hpp>
+
+// forward declarations
+namespace boost { namespace asio { class io_service; }}
 
 namespace ur_rtde
 {

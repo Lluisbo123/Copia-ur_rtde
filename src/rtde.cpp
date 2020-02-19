@@ -1,17 +1,18 @@
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/rtde_utility.h>
+#include <ur_rtde/robot_state.h>
 #include <iostream>
-#include <fstream>
-#include <iomanip>
 #include <tuple>
 #include <string>
 #include <cstdint>
-#include <cstdio>
-#include <chrono>
-#include <iterator>
+#include <memory>
 
-#include <boost/numeric/conversion/cast.hpp>
-#include <boost/asio.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/write.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/asio/detail/socket_option.hpp>
+#include <boost/asio/socket_base.hpp>
 
 const unsigned HEADER_SIZE = 3;
 #define RTDE_PROTOCOL_VERSION 2
@@ -44,14 +45,14 @@ void RTDE::connect()
   try
   {
     io_service_ = std::make_shared<boost::asio::io_service>();
-    socket_ = std::make_shared<tcp::socket>(*io_service_);
+    socket_ = std::make_shared<boost::asio::ip::tcp::socket>(*io_service_);
     socket_->open(boost::asio::ip::tcp::v4());
     boost::asio::ip::tcp::no_delay no_delay_option(true);
     boost::asio::socket_base::reuse_address sol_reuse_option(true);
     socket_->set_option(no_delay_option);
     socket_->set_option(sol_reuse_option);
-    resolver_ = std::make_shared<tcp::resolver>(*io_service_);
-    tcp::resolver::query query(hostname_, std::to_string(port_));
+    resolver_ = std::make_shared<boost::asio::ip::tcp::resolver>(*io_service_);
+    boost::asio::ip::tcp::resolver::query query(hostname_, std::to_string(port_));
     boost::asio::connect(*socket_, resolver_->resolve(query));
     conn_state_ = ConnectionState::CONNECTED;
     std::cout << "Connected successfully to: " << hostname_ << " at " << port_ << std::endl;

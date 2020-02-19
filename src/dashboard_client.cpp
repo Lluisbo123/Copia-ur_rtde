@@ -1,5 +1,10 @@
 #include <ur_rtde/dashboard_client.h>
-#include <boost/asio.hpp>
+#include <boost/array.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/write.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/asio/socket_base.hpp>
+#include <memory>
 #include <cstring>
 #include <iostream>
 #include <regex>

@@ -1,10 +1,11 @@
+#pragma once
 #ifndef RTDE_IO_INTERFACE_H
 #define RTDE_IO_INTERFACE_H
 
 #include <ur_rtde/rtde_export.h>
 #include <ur_rtde/rtde.h>
-#include <thread>
-#include <sstream>
+#include <memory>
+#include <string>
 
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3
@@ -74,7 +75,6 @@ class RTDEIOInterface
   std::string hostname_;
   int port_;
   std::shared_ptr<RTDE> rtde_;
-  std::shared_ptr<RobotState> robot_state_;
 };
 
 }  // namespace ur_rtde

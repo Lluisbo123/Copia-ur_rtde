@@ -1,11 +1,15 @@
+#pragma once
 #ifndef RTDE_DASHBOARD_CLIENT_H
 #define RTDE_DASHBOARD_CLIENT_H
 
 #include <ur_rtde/rtde_export.h>
-#include <boost/array.hpp>
-#include <boost/asio.hpp>
-#include <string>
 #include <ur_rtde/dashboard_enums.h>
+#include <boost/asio/ip/tcp.hpp>
+#include <memory>
+#include <string>
+
+// forward declarations
+namespace boost { namespace asio { class io_service; }}
 
 namespace ur_rtde
 {

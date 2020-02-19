@@ -1,7 +1,9 @@
 #include <ur_rtde/rtde_io_interface.h>
+#include <ur_rtde/rtde.h>
 #include <iostream>
 #include <bitset>
 #include <chrono>
+#include <thread>
 
 namespace ur_rtde
 {
@@ -36,9 +38,6 @@ RTDEIOInterface::RTDEIOInterface(std::string hostname, int port) : hostname_(std
                                                     "standard_analog_output_type", "standard_analog_output_0",
                                                     "standard_analog_output_1"};
   rtde_->sendInputSetup(set_std_analog_output);
-
-  // Init Robot state
-  robot_state_ = std::make_shared<RobotState>();
 
   // Wait for connection to be fully established before returning
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -83,9 +82,6 @@ bool RTDEIOInterface::reconnect()
                                                     "standard_analog_output_type", "standard_analog_output_0",
                                                     "standard_analog_output_1"};
   rtde_->sendInputSetup(set_std_analog_output);
-
-  // Init Robot state
-  robot_state_ = std::make_shared<RobotState>();
 
   // Wait for connection to be fully established before returning
   std::this_thread::sleep_for(std::chrono::milliseconds(100));

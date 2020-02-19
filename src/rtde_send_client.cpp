@@ -91,7 +91,10 @@ int main(int argc, char* argv[])
   double time = 0.002;
   double lookahead_time = 0.1;
   double gain = 300;
-  
+  // First move to q2
+  rtde_control.moveJ(joint_q2);
+  // Move back to q1
+  rtde_control.moveJ(joint_q1);
   rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
   std::this_thread::sleep_for(std::chrono::milliseconds(2));
   for (unsigned int i=0; i<1000; i++)

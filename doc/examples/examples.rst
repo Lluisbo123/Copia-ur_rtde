@@ -93,7 +93,7 @@ upwards with 20N in the z-axis for 1 second.
 
 .. code-block:: c++
 
-   #include <rtde_control_interface.h>
+   #include <ur_rtde/rtde_control_interface.h>
    #include <iostream> // only needed for the printout
    #include <thread> // only needed for the delay
 
@@ -129,7 +129,7 @@ control loop.
 
 .. code-block:: c++
 
-   #include <rtde_control_interface.h>
+   #include <ur_rtde/rtde_control_interface.h>
    #include <thread> // only needed for the delay
 
    using namespace ur_rtde;
@@ -169,7 +169,7 @@ This example will use the **speedJ** command to move the robot with a defined sp
 
 .. code-block:: c++
 
-   #include <rtde_control_interface.h>
+   #include <ur_rtde/rtde_control_interface.h>
    #include <thread> // only needed for the delay
 
    using namespace ur_rtde;
@@ -198,7 +198,7 @@ This example will use the **moveJ** command with a path, where each joint pose i
 
 .. code-block:: c++
 
-   #include <rtde_control_interface.h>
+   #include <ur_rtde/rtde_control_interface.h>
 
    using namespace ur_rtde;
 

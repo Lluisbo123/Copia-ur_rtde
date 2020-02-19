@@ -1,12 +1,18 @@
+#pragma once
 #ifndef RTDE_H
 #define RTDE_H
 
 #include <ur_rtde/rtde_export.h>
-#include <ur_rtde/robot_state.h>
+#include <boost/asio/ip/tcp.hpp>
+#include <vector>
+#include <memory>
 #include <cstdint>
 #include <string>
 #include <utility>
-#include <boost/asio.hpp>
+
+// forward declarations
+namespace boost { namespace asio { class io_service; }}
+namespace ur_rtde { class RobotState; }
 
 namespace ur_rtde
 {

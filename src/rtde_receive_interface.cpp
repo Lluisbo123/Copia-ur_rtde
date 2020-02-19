@@ -1,5 +1,10 @@
 #include <ur_rtde/rtde_receive_interface.h>
+#include <ur_rtde/rtde.h>
+#include <ur_rtde/robot_state.h>
+#include <ur_rtde/dashboard_client.h>
+#include <boost/thread/thread.hpp>
 #include <iostream>
+#include <thread>
 
 namespace ur_rtde
 {

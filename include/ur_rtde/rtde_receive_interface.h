@@ -1,19 +1,22 @@
+#pragma once
 #ifndef RTDE_RECEIVE_INTERFACE_H
 #define RTDE_RECEIVE_INTERFACE_H
 
 #include <ur_rtde/rtde_export.h>
-#include <ur_rtde/rtde.h>
-#include <ur_rtde/dashboard_client.h>
-#include <ur_rtde/script_client.h>
-#include <thread>
-#include <future>
+#include <memory>
+#include <atomic>
+#include <string>
 #include <chrono>
-#include <sstream>
-#include <iostream>
-#include <boost/thread.hpp>
+#include <vector>
 
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3
+
+// forward declarations
+namespace boost { class thread; }
+namespace ur_rtde { class DashboardClient; }
+namespace ur_rtde { class RobotState; }
+namespace ur_rtde { class RTDE; }
 
 namespace ur_rtde
 {
