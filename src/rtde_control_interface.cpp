@@ -1037,7 +1037,12 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
     {
       // Send command to the controller
       rtde_->send(cmd);
+
+      // We do not wait for the servo and speed commands to finish since there are running continuously in a thread.
+
+      // Make controller ready for next command
       sendClearCommand();
+
       return true;
     }
     else
@@ -1045,22 +1050,9 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
       // Send command to the controller
       rtde_->send(cmd);
 
-      start_time = std::chrono::high_resolution_clock::now();
-      while (getControlScriptState() != UR_CONTROLLER_CMD_RECEIVED)
-      {
-        // Wait until the controller has received the command or timeout
-        std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-        if (duration > UR_CMD_RECEIVE_TIMEOUT)
-          return false;
-      }
-
-      // Command has been received stop sending it.
-      sendClearCommand();
-
       if (cmd.type_ != RTDE::RobotCommand::Type::STOP)
       {
-        //start_time = std::chrono::high_resolution_clock::now();
+        start_time = std::chrono::high_resolution_clock::now();
         while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
         {
           // Wait until the controller has finished executing or timeout
@@ -1071,8 +1063,9 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
         }
       }
 
-      // Command has been received stop sending it.
+      // Make controller ready for next command
       sendClearCommand();
+
       return true;
     }
   }
