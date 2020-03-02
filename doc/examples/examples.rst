@@ -124,8 +124,8 @@ Intended movement:
 
 ServoJ Example
 ==============
-This example will use the **servoJ** command to move the robot between two joint positions continuously in a
-control loop.
+This example will use the **servoJ** command to move the robot, where incremental changes are made to the base and
+shoulder joint continuously in a 500Hz control loop.
 
 .. code-block:: c++
 
@@ -139,25 +139,27 @@ control loop.
       RTDEControlInterface rtde_control("127.0.0.1");
       std::vector<double> joint_q1 = {-1.54, -1.83, -2.28, -0.59, 1.60, 0.023};
       std::vector<double> joint_q2 = {-0.69, -2.37, -1.79, -0.37, 1.93, 0.87};
-      double time = 0.3;
+      double time = 0.002; // 500Hz
       double lookahead_time = 0.1;
       double gain = 300;
-      rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
-      std::this_thread::sleep_for(std::chrono::milliseconds(280));
 
-      for (unsigned int i=0; i<30; i++)
+      rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
+      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+      for (unsigned int i=0; i<1000; i++)
       {
+        joint_q1[0] += 0.001;
+        joint_q1[1] += 0.001;
         rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
-        std::this_thread::sleep_for(std::chrono::milliseconds(280));
-        rtde_control.servoJ(joint_q2, velocity, acceleration, time, lookahead_time, gain);
-        std::this_thread::sleep_for(std::chrono::milliseconds(280));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
       }
+
       rtde_control.servoStop();
    }
 
 .. note::
-   To allow for a faster control rate when servoing, the joint positions must be close to each other e.g.
-   (dense trajectory).
+   Remember that to allow for a faster control rate when servoing, the joint positions must be close to each other e.g.
+   (dense trajectory). If the robot is not reaching the target fast enough try to increase the gain parameter.
 
 Intended movement:
 
