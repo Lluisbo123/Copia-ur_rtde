@@ -16,6 +16,7 @@ The interface can also by used with python, through the provided python bindings
    :glob:
 
    introduction/introduction
+   faq/faq
    installation/installation
    examples/examples
    api/api

@@ -138,7 +138,6 @@ shoulder joint continuously in a 500Hz control loop.
    {
       RTDEControlInterface rtde_control("127.0.0.1");
       std::vector<double> joint_q1 = {-1.54, -1.83, -2.28, -0.59, 1.60, 0.023};
-      std::vector<double> joint_q2 = {-0.69, -2.37, -1.79, -0.37, 1.93, 0.87};
       double time = 0.002; // 500Hz
       double lookahead_time = 0.1;
       double gain = 300;
