@@ -386,7 +386,7 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
   std::string line;
   std::stringstream ss(script);
   cmd_str += "def " + function_name + "():\n";
-  cmd_str += "\twrite_output_integer_register(0, 0)\n";
+  cmd_str += "\twrite_output_integer_register(0, 1)\n";
 
   while (std::getline(ss, line))
   {
@@ -394,7 +394,7 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
   }
 
   // Signal when motions are finished
-  cmd_str += "\twrite_output_integer_register(0, 1)\n";
+  cmd_str += "\twrite_output_integer_register(0, 2)\n";
   cmd_str += "end\n";
 
   // First stop the running RTDE control script
