@@ -4,6 +4,7 @@
 
 #include <ur_rtde/rtde_export.h>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/io_service.hpp>
 #include <vector>
 #include <memory>
 #include <cstdint>
@@ -11,7 +12,6 @@
 #include <utility>
 
 // forward declarations
-namespace boost { namespace asio { class io_service; }}
 namespace ur_rtde { class RobotState; }
 
 namespace ur_rtde

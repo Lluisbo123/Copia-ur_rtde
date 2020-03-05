@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <memory>
 
-#include <boost/asio/io_service.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/asio/connect.hpp>

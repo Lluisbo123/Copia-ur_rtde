@@ -4,11 +4,9 @@
 
 #include <ur_rtde/rtde_export.h>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/io_service.hpp>
 #include <memory>
 #include <string>
-
-// forward declarations
-namespace boost { namespace asio { class io_service; }}
 
 namespace ur_rtde
 {

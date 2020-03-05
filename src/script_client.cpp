@@ -5,7 +5,6 @@
 #include <string>
 #include "ur_rtde/rtde_control_script.h"
 
-#include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/asio/connect.hpp>
