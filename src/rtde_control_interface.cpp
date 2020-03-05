@@ -471,7 +471,7 @@ std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector
   std::string cmd_str;
   std::stringstream ss;
   cmd_str += "def motions():\n";
-  cmd_str += "\twrite_output_integer_register(0, 0)\n";
+  cmd_str += "\twrite_output_integer_register(0, 1)\n";
   for (const auto &pose : path)
   {
     if (cmd == "movej(")
@@ -493,7 +493,7 @@ std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector
   cmd_str += ss.str();
 
   // Signal when motions are finished
-  cmd_str += "\twrite_output_integer_register(0, 1)\n";
+  cmd_str += "\twrite_output_integer_register(0, 2)\n";
   cmd_str += "end\n";
   return cmd_str;
 }
