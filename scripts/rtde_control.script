@@ -460,6 +460,7 @@ $V38        protective_stop()
 
         if cmd != 255:
             signal_done_with_cmd()
+        end
 
         return cmd != 255
     end
