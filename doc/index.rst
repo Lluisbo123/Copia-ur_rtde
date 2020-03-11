@@ -17,6 +17,7 @@ The interface can also by used with python, through the provided python bindings
 
    introduction/introduction
    faq/faq
+   guides/guides
    installation/installation
    examples/examples
    api/api

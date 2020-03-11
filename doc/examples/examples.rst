@@ -223,3 +223,44 @@ This example will use the **moveJ** command with a path, where each joint pose i
 Intended movement:
 
 .. image:: ../_static/movej_path_blend.gif
+
+MoveP / MoveC Circle Example
+============================
+This example will use the **moveP** command in combination with the **moveC** command, to perform
+a circular movement based on waypoints defined on a circle. See the image below
+
+.. image:: ../_static/movep_circle.jpg
+
+.. code-block:: c++
+
+   #include <ur_rtde/rtde_control_interface.h>
+
+   using namespace ur_rtde;
+
+   int main(int argc, char* argv[])
+   {
+      double velocity = 0.25;
+      double acceleration = 1.2;
+      double blend = 0.1;
+      std::vector<double> waypoint_1 = {-0.300, -0.300, 0.100, -2.695, 1.605, -0.036};
+      std::vector<double> waypoint_2 = {-0.399, -0.199, 0.099, -2.694, 1.606, -0.037};
+      std::vector<double> waypoint_3 = {-0.500, -0.299, 0.099, -2.695, 1.606, -0.038};
+      std::vector<double> waypoint_4 = {-0.399, -0.400, 0.100, -2.695, 1.605, -0.038};
+      std::vector<double> waypoint_5 = {-0.300, -0.300, 0.100, -2.696, 1.605, -0.036};
+
+      // Move to init pose
+      rtde_control.moveL({-0.300, -0.300, 0.100, -2.695, 1.605, -0.036});
+
+      // Perform circular motion
+      for (unsigned int i=0; i<5; i++)
+      {
+        rtde_control.moveP(waypoint_1, velocity, acceleration, blend);
+        rtde_control.moveC(waypoint_2, waypoint_3, velocity, acceleration, blend);
+        rtde_control.moveC(waypoint_4, waypoint_5, velocity, acceleration, blend);
+      }
+      rtde_control.stopRobot();
+   }
+
+Intended movement:
+
+.. image:: ../_static/move_circle_example.gif
