@@ -13,31 +13,8 @@ RTDEIOInterface::RTDEIOInterface(std::string hostname, int port) : hostname_(std
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
 
-  // Setup input recipes
-
-  // Recipe 1
-  std::vector<std::string> no_cmd_input = {"input_int_register_20"};
-  rtde_->sendInputSetup(no_cmd_input);
-
-  // Recipe 2
-  std::vector<std::string> set_std_digital_out_input = {"input_int_register_20", "standard_digital_output_mask",
-                                                        "standard_digital_output"};
-  rtde_->sendInputSetup(set_std_digital_out_input);
-
-  // Recipe 3
-  std::vector<std::string> set_tool_digital_out_input = {"input_int_register_20", "tool_digital_output_mask",
-                                                         "tool_digital_output"};
-  rtde_->sendInputSetup(set_tool_digital_out_input);
-
-  // Recipe 4
-  std::vector<std::string> set_speed_slider = {"input_int_register_20", "speed_slider_mask", "speed_slider_fraction"};
-  rtde_->sendInputSetup(set_speed_slider);
-
-  // Recipe 5
-  std::vector<std::string> set_std_analog_output = {"input_int_register_20", "standard_analog_output_mask",
-                                                    "standard_analog_output_type", "standard_analog_output_0",
-                                                    "standard_analog_output_1"};
-  rtde_->sendInputSetup(set_std_analog_output);
+  // Setup recipes
+  setupRecipes();
 
   // Wait for connection to be fully established before returning
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -57,8 +34,17 @@ bool RTDEIOInterface::reconnect()
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
 
-  // Setup input recipes
+  // Setup recipes
+  setupRecipes();
 
+  // Wait for connection to be fully established before returning
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  return true;
+}
+
+bool RTDEIOInterface::setupRecipes()
+{
   // Recipe 1
   std::vector<std::string> no_cmd_input = {"input_int_register_20"};
   rtde_->sendInputSetup(no_cmd_input);
@@ -82,10 +68,6 @@ bool RTDEIOInterface::reconnect()
                                                     "standard_analog_output_type", "standard_analog_output_0",
                                                     "standard_analog_output_1"};
   rtde_->sendInputSetup(set_std_analog_output);
-
-  // Wait for connection to be fully established before returning
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
   return true;
 }
 

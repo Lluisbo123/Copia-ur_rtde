@@ -6,10 +6,16 @@ def rtde_control():
     global limits = [0, 0, 0, 0, 0, 0]
     global is_servoing = 0
     global is_speeding = 0
+
     global servo_target = [0, 0, 0, 0, 0, 0]
     global servo_time = 0.002
     global servo_lookahead_time = 0.1
     global servo_gain = 300
+
+    global servoc_target = p[0, 0, 0, 0, 0, 0]
+    global servoc_acceleration = 1.2
+    global servoc_velocity = 0.25
+    global servoc_blend = 0
 
     global speed_type = 0
     global speed_target = [0, 0, 0, 0, 0, 0]
@@ -17,6 +23,7 @@ def rtde_control():
     global speed_time = 0.5
 
     global servo_thrd = 0
+    global servoc_thrd = 0
     global speed_thrd = 0
 
     thread speed_thread():
@@ -40,6 +47,12 @@ def rtde_control():
     thread servo_thread():
         while (True):
             servoj(servo_target, t=servo_time, lookahead_time=servo_lookahead_time, gain=servo_gain)
+        end
+    end
+
+    thread servoc_thread():
+        while (True):
+            servoc(servoc_target, a=servoc_acceleration, v=servoc_velocity, r=servoc_blend)
         end
     end
 
@@ -139,13 +152,13 @@ def rtde_control():
             pose_to[5] = read_input_float_register(11)
             velocity = read_input_float_register(12)
             acceleration = read_input_float_register(13)
+            blend = read_input_float_register(14)
             movec_mode = read_input_integer_register(1)
             textmsg("pose_via:")
             textmsg(pose_via)
             textmsg("pose_to:")
             textmsg(pose_to)
-            movec(pose_to, pose_via, a=acceleration, v=velocity, mode=movec_mode)
-            stopl(10)
+            movec(pose_to, pose_via, a=acceleration, v=velocity, r=blend, mode=movec_mode)
             textmsg("movec done")
         elif cmd == 6:
             textmsg("force_mode_start")
@@ -181,7 +194,7 @@ def rtde_control():
             force_mode(task_frame, selection_vector, wrench, force_mode_type, limits)
             textmsg("force_mode started")
         elif cmd == 7:
-            textmsg("force_mode_update")
+            # forceModeUpdate
             wrench[0] = read_input_float_register(0)
             wrench[1] = read_input_float_register(1)
             wrench[2] = read_input_float_register(2)
@@ -189,7 +202,6 @@ def rtde_control():
             wrench[4] = read_input_float_register(4)
             wrench[5] = read_input_float_register(5)
             force_mode(task_frame, selection_vector, wrench, force_mode_type, limits)
-            textmsg("force_mode_update done")
         elif cmd == 8:
             textmsg("force_mode_stop")
             end_force_mode()
@@ -200,7 +212,7 @@ def rtde_control():
             zero_ftsensor()
             textmsg("ftsensor zeroed")
         elif cmd == 10:
-            textmsg("speedj")
+            # speedJ
             qd = [0, 0, 0, 0, 0, 0]
             qd[0] = read_input_float_register(0)
             qd[1] = read_input_float_register(1)
@@ -222,8 +234,8 @@ def rtde_control():
                     global speed_thrd = run speed_thread()
                 end
             end
-            textmsg("speedj done")
         elif cmd == 11:
+            # speedL
             xd = [0, 0, 0, 0, 0, 0]
             xd[0] = read_input_float_register(0)
             xd[1] = read_input_float_register(1)
@@ -245,6 +257,7 @@ def rtde_control():
                 end
             end
         elif cmd == 12:
+            # servoJ
             q = [0, 0, 0, 0, 0, 0]
             q[0] = read_input_float_register(0)
             q[1] = read_input_float_register(1)
@@ -270,7 +283,7 @@ def rtde_control():
             end
             
         elif cmd == 13:
-            textmsg("servoc")
+            # servoC
             pose = p[0, 0, 0, 0, 0, 0]
             pose[0] = read_input_float_register(0)
             pose[1] = read_input_float_register(1)
@@ -281,11 +294,21 @@ def rtde_control():
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
             blend = read_input_float_register(8)
-            textmsg("Target pose:")
-            textmsg(pose)
-            servoc(pose, a=acceleration, v=velocity, r=blend)
-            stopj(20)
-            textmsg("servoc done")
+
+            enter_critical
+            servoc_target = pose
+            servoc_acceleration = acceleration
+            servoc_velocity = velocity
+            servoc_blend = blend
+            exit_critical
+
+            if is_servoing == 0:
+                is_servoing = 1
+                if servoc_thrd == 0:
+                    global servo_thrd = run servoc_thread()
+                end
+            end
+
         elif cmd == 16:
             textmsg("speed_stop")
             enter_critical
@@ -304,7 +327,9 @@ def rtde_control():
             enter_critical
             is_servoing = 0
             kill servo_thrd
+            kill servoc_thrd
             servo_thrd = 0
+            servoc_thrd = 0
             exit_critical
             stopl(20)
             textmsg("servo_stop done")
@@ -454,6 +479,20 @@ $V53        write_output_float_register(5, target_waypoint[5])
             textmsg("protective_stop")
 $V38        protective_stop()
             textmsg("protective_stop done")
+        elif cmd == 33:
+            textmsg("movep")
+            pose = p[0, 0, 0, 0, 0, 0]
+            pose[0] = read_input_float_register(0)
+            pose[1] = read_input_float_register(1)
+            pose[2] = read_input_float_register(2)
+            pose[3] = read_input_float_register(3)
+            pose[4] = read_input_float_register(4)
+            pose[5] = read_input_float_register(5)
+            velocity = read_input_float_register(6)
+            acceleration = read_input_float_register(7)
+            blend = read_input_float_register(8)
+            movep(pose, a=acceleration, v=velocity, r=blend)
+            textmsg("movep done")
         elif cmd == 255:
             textmsg("Received stop!")
         end

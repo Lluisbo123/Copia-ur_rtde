@@ -32,85 +32,8 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   script_client_ = std::make_shared<ScriptClient>(hostname_, major_version, minor_version);
   script_client_->connect();
 
-  // Setup output
-  std::vector<std::string> state_names = {
-      "robot_status_bits",        "output_int_register_0",    "output_int_register_1",
-      "output_double_register_0", "output_double_register_1", "output_double_register_2",
-      "output_double_register_3", "output_double_register_4", "output_double_register_5"};
-  rtde_->sendOutputSetup(state_names, frequency);
-
-  // Setup input recipes
-  // Recipe 1
-  std::vector<std::string> setp_input = {
-      "input_int_register_0",    "input_double_register_0", "input_double_register_1",
-      "input_double_register_2", "input_double_register_3", "input_double_register_4",
-      "input_double_register_5", "input_double_register_6", "input_double_register_7"};
-  rtde_->sendInputSetup(setp_input);
-
-  // Recipe 2
-  std::vector<std::string> movec_input = {
-      "input_int_register_0",     "input_double_register_0",  "input_double_register_1",  "input_double_register_2",
-      "input_double_register_3",  "input_double_register_4",  "input_double_register_5",  "input_double_register_6",
-      "input_double_register_7",  "input_double_register_8",  "input_double_register_9",  "input_double_register_10",
-      "input_double_register_11", "input_double_register_12", "input_double_register_13", "input_int_register_1"};
-  rtde_->sendInputSetup(movec_input);
-
-  // Recipe 3
-  std::vector<std::string> servoj_input = {
-      "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
-      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
-      "input_double_register_7", "input_double_register_8", "input_double_register_9", "input_double_register_10"};
-  rtde_->sendInputSetup(servoj_input);
-
-  // Recipe 4
-  std::vector<std::string> force_mode_input = {
-      "input_int_register_0",     "input_int_register_1",     "input_int_register_2",     "input_int_register_3",
-      "input_int_register_4",     "input_int_register_5",     "input_int_register_6",     "input_int_register_7",
-      "input_double_register_0",  "input_double_register_1",  "input_double_register_2",  "input_double_register_3",
-      "input_double_register_4",  "input_double_register_5",  "input_double_register_6",  "input_double_register_7",
-      "input_double_register_8",  "input_double_register_9",  "input_double_register_10", "input_double_register_11",
-      "input_double_register_12", "input_double_register_13", "input_double_register_14", "input_double_register_15",
-      "input_double_register_16", "input_double_register_17"};
-  rtde_->sendInputSetup(force_mode_input);
-
-  // Recipe 5
-  std::vector<std::string> no_cmd_input = {"input_int_register_0"};
-  rtde_->sendInputSetup(no_cmd_input);
-
-  // Recipe 6
-  std::vector<std::string> servoc_input = {
-      "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
-      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
-      "input_double_register_7", "input_double_register_8"};
-  rtde_->sendInputSetup(servoc_input);
-
-  // Recipe 7
-  std::vector<std::string> wrench_input = {
-      "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
-      "input_double_register_3", "input_double_register_4", "input_double_register_5"};
-  rtde_->sendInputSetup(wrench_input);
-
-  // Recipe 8
-  std::vector<std::string> set_payload_input = {"input_int_register_0", "input_double_register_0",
-                                                "input_double_register_1", "input_double_register_2",
-                                                "input_double_register_3"};
-  rtde_->sendInputSetup(set_payload_input);
-
-  // Recipe 9
-  std::vector<std::string> force_mode_parameters_input = {"input_int_register_0", "input_double_register_0"};
-  rtde_->sendInputSetup(force_mode_parameters_input);
-
-  // Recipe 10
-  std::vector<std::string> get_actual_joint_positions_history_input = {"input_int_register_0", "input_int_register_1"};
-  rtde_->sendInputSetup(get_actual_joint_positions_history_input);
-
-  // Recipe 11
-  std::vector<std::string> get_inverse_kin_input = {
-      "input_int_register_0",     "input_double_register_0",  "input_double_register_1", "input_double_register_2",
-      "input_double_register_3",  "input_double_register_4",  "input_double_register_5", "input_double_register_6",
-      "input_double_register_7",  "input_double_register_8",  "input_double_register_9", "input_double_register_10",
-      "input_double_register_11", "input_double_register_12", "input_double_register_13"};
-  rtde_->sendInputSetup(get_inverse_kin_input);
+  // Setup default recipes
+  setupRecipes(frequency);
 
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
@@ -208,6 +131,66 @@ bool RTDEControlInterface::reconnect()
   if (major_version > CB3_MAJOR_VERSION)
     frequency = 500;
 
+  // Setup default recipes
+  setupRecipes(frequency);
+
+  // Init Robot state
+  robot_state_ = std::make_shared<RobotState>();
+
+  // Wait until RTDE data synchronization has started.
+  std::cout << "Waiting for RTDE data synchronization to start..." << std::endl;
+  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+
+  // Start RTDE data synchronization
+  rtde_->sendStart();
+
+  while (!rtde_->isStarted())
+  {
+    // Wait until RTDE data synchronization has started or timeout
+    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+    if (duration > RTDE_START_SYNCHRONIZATION_TIMEOUT)
+    {
+      break;
+    }
+  }
+
+  if (!rtde_->isStarted())
+    throw std::logic_error("Failed to start RTDE data synchronization, before timeout");
+
+  // Start executing receiveCallback
+  th_ = std::make_shared<boost::thread>(boost::bind(&RTDEControlInterface::receiveCallback, this));
+
+  // Wait until the first robot state has been received
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+  // Clear command register
+  sendClearCommand();
+
+  if (!isProgramRunning())
+  {
+    // Send script to the UR Controller
+    script_client_->sendScript();
+  }
+  else
+  {
+    std::cout << "A script was running on the controller, killing it!" << std::endl;
+    // Stop the running script first
+    stopRobot();
+    db_client_->stop();
+
+    // Wait until terminated
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    // Send script to the UR Controller
+    script_client_->sendScript();
+  }
+
+  return true;
+}
+
+bool RTDEControlInterface::setupRecipes(const double &frequency)
+{
   // Setup output
   std::vector<std::string> state_names = {
       "robot_status_bits",        "output_int_register_0",    "output_int_register_1",
@@ -228,7 +211,8 @@ bool RTDEControlInterface::reconnect()
       "input_int_register_0",     "input_double_register_0",  "input_double_register_1",  "input_double_register_2",
       "input_double_register_3",  "input_double_register_4",  "input_double_register_5",  "input_double_register_6",
       "input_double_register_7",  "input_double_register_8",  "input_double_register_9",  "input_double_register_10",
-      "input_double_register_11", "input_double_register_12", "input_double_register_13", "input_int_register_1"};
+      "input_double_register_11", "input_double_register_12", "input_double_register_13", "input_double_register_14",
+      "input_int_register_1"};
   rtde_->sendInputSetup(movec_input);
 
   // Recipe 3
@@ -287,58 +271,6 @@ bool RTDEControlInterface::reconnect()
       "input_double_register_7",  "input_double_register_8",  "input_double_register_9", "input_double_register_10",
       "input_double_register_11", "input_double_register_12", "input_double_register_13"};
   rtde_->sendInputSetup(get_inverse_kin_input);
-
-  // Init Robot state
-  robot_state_ = std::make_shared<RobotState>();
-
-  // Wait until RTDE data synchronization has started.
-  std::cout << "Waiting for RTDE data synchronization to start..." << std::endl;
-  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-
-  // Start RTDE data synchronization
-  rtde_->sendStart();
-
-  while (!rtde_->isStarted())
-  {
-    // Wait until RTDE data synchronization has started or timeout
-    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-    if (duration > RTDE_START_SYNCHRONIZATION_TIMEOUT)
-    {
-      break;
-    }
-  }
-
-  if (!rtde_->isStarted())
-    throw std::logic_error("Failed to start RTDE data synchronization, before timeout");
-
-  // Start executing receiveCallback
-  th_ = std::make_shared<boost::thread>(boost::bind(&RTDEControlInterface::receiveCallback, this));
-
-  // Wait until the first robot state has been received
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-  // Clear command register
-  sendClearCommand();
-
-  if (!isProgramRunning())
-  {
-    // Send script to the UR Controller
-    script_client_->sendScript();
-  }
-  else
-  {
-    std::cout << "A script was running on the controller, killing it!" << std::endl;
-    // Stop the running script first
-    stopRobot();
-    db_client_->stop();
-
-    // Wait until terminated
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-    // Send script to the UR Controller
-    script_client_->sendScript();
-  }
 
   return true;
 }
@@ -606,7 +538,7 @@ bool RTDEControlInterface::moveL_FK(const std::vector<double> &q, double speed, 
 }
 
 bool RTDEControlInterface::moveC(const std::vector<double> &pose_via, const std::vector<double> &pose_to, double speed,
-                                 double acceleration, int mode)
+                                 double acceleration, double blend, int mode)
 {
   verifyValueIsWithin(speed, UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
@@ -620,7 +552,24 @@ bool RTDEControlInterface::moveC(const std::vector<double> &pose_via, const std:
 
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
+  robot_cmd.val_.push_back(blend);
   robot_cmd.movec_mode_ = mode;
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::moveP(const std::vector<double> &pose, double speed, double acceleration, double blend)
+{
+  verifyValueIsWithin(speed, UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX);
+  verifyValueIsWithin(acceleration, UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
+  verifyValueIsWithin(blend, UR_BLEND_MIN, UR_BLEND_MAX);
+
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEP;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
+  robot_cmd.val_ = pose;
+  robot_cmd.val_.push_back(speed);
+  robot_cmd.val_.push_back(acceleration);
+  robot_cmd.val_.push_back(blend);
   return sendCommand(robot_cmd);
 }
 
@@ -1033,12 +982,13 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
     }
 
     if (cmd.type_ == RTDE::RobotCommand::Type::SERVOJ || cmd.type_ == RTDE::RobotCommand::Type::SERVOL ||
-        cmd.type_ == RTDE::RobotCommand::Type::SPEEDJ || cmd.type_ == RTDE::RobotCommand::Type::SPEEDL)
+        cmd.type_ == RTDE::RobotCommand::Type::SERVOC || cmd.type_ == RTDE::RobotCommand::Type::SPEEDJ ||
+        cmd.type_ == RTDE::RobotCommand::Type::SPEEDL)
     {
       // Send command to the controller
       rtde_->send(cmd);
 
-      // We do not wait for the servo and speed commands to finish since there are running continuously in a thread.
+      // We do not wait for 'continuous' commands to finish.
 
       // Make controller ready for next command
       sendClearCommand();

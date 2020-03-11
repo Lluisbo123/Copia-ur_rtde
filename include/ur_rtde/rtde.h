@@ -61,6 +61,7 @@ class RTDE
       SET_TCP = 30,
       GET_INVERSE_KINEMATICS = 31,
       PROTECTIVE_STOP = 32,
+      MOVEP = 33,
       STOP = 255
     };
 

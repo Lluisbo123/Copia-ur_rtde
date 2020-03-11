@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
   //rtde_control.moveC(circ_pose_via, circ_pose_to, velocity, acceleration, movec_mode);*/
 
   // Test force mode
-  /*std::vector<double> task_frame = {0, 0, 0, 0, 0, 0};
+  std::vector<double> task_frame = {0, 0, 0, 0, 0, 0};
   std::vector<int> selection_vector = {0, 0, 1, 0, 0, 0};
   std::vector<double> wrench_down = {0, 0, -20, 0, 0, 0};
   std::vector<double> wrench_up = {0, 0, 20, 0, 0, 0};
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
   std::cout << std::endl << "Going Up!" << std::endl << std::endl;
   rtde_control.forceModeUpdate(wrench_up);
   std::this_thread::sleep_for(std::chrono::seconds(1));
-  rtde_control.forceModeStop();*/
+  rtde_control.forceModeStop();
 
   /*std::vector<double> joint_speed = {0.2, 0.3, 0.1, 0.05, 0, 0};
   std::vector<double> tool_speed = {0.5, 0.4, 0.0, 1.57, 0, 0};
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
   rtde_control.speedStop();*/
 
   // Test servoJ
-  double time = 0.002;
+  /*double time = 0.002;
   double lookahead_time = 0.1;
   double gain = 300;
   // First move to q2
@@ -110,7 +110,26 @@ int main(int argc, char* argv[])
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
   }
   
-  rtde_control.servoStop();
+  rtde_control.servoStop();*/
+
+  // Test moveP and moveC
+  /*std::vector<double> waypoint_1 = {-0.300, -0.300, 0.100, -2.695, 1.605, -0.036};
+  std::vector<double> waypoint_2 = {-0.399, -0.199, 0.099, -2.694, 1.606, -0.037};
+  std::vector<double> waypoint_3 = {-0.500, -0.299, 0.099, -2.695, 1.606, -0.038};
+  std::vector<double> waypoint_4 = {-0.399, -0.400, 0.100, -2.695, 1.605, -0.038};
+  std::vector<double> waypoint_5 = {-0.300, -0.300, 0.100, -2.696, 1.605, -0.036};
+
+  // Move to init pose
+  rtde_control.moveL({-0.300, -0.300, 0.100, -2.695, 1.605, -0.036});
+
+  // Perform circular motion
+  for (unsigned int i=0; i<5; i++)
+  {
+    rtde_control.moveP(waypoint_1, 0.25, 1.2, 0.1);
+    rtde_control.moveC(waypoint_2, waypoint_3, 0.25, 1.2, 0.1);
+    rtde_control.moveC(waypoint_4, waypoint_5, 0.25, 1.2, 0.1);
+  }
+  rtde_control.stopRobot();*/
 
   /*rtde_control.moveJ(joint_q1, velocity, acceleration);
   rtde_control.moveJ(joint_q2, velocity, acceleration);

@@ -67,6 +67,8 @@ class RTDEIOInterface
   RTDE_EXPORT bool setAnalogOutputCurrent(std::uint8_t output_id, double current_ratio);
 
  private:
+  bool setupRecipes();
+
   bool sendCommand(const RTDE::RobotCommand &cmd);
 
   void verifyValueIsWithin(const double &value, const double &min, const double &max);

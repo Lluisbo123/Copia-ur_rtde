@@ -144,7 +144,17 @@ class RTDEControlInterface
     * 1: Fixed mode. Keep orientation constant relative to the tangent of the circular arc (starting from current pose)
     */
   RTDE_EXPORT bool moveC(const std::vector<double> &pose_via, const std::vector<double> &pose_to, double speed=0.25,
-                         double acceleration=1.2, int mode=0);
+                         double acceleration=1.2, double blend=0.0, int mode=0);
+
+  /**
+    * @brief Move Process: Blend circular (in tool-space) and move linear (in tool-space) to position. Accelerates to
+    * and moves with constant tool speed v.
+    * @param pose target pose
+    * @param speed tool speed [m/s]
+    * @param acceleration tool acceleration [m/s^2]
+    * @param blend blend radius [m]
+    */
+  RTDE_EXPORT bool moveP(const std::vector<double> &pose, double speed=0.25, double acceleration=1.2, double blend=0.0);
 
   /**
     * @brief Joint speed - Accelerate linearly in joint space and continue with constant joint speed
@@ -362,6 +372,8 @@ class RTDEControlInterface
   RTDE_EXPORT bool isProgramRunning();
 
  private:
+  bool setupRecipes(const double &frequency);
+
   bool sendCommand(const RTDE::RobotCommand &cmd);
 
   void sendClearCommand();

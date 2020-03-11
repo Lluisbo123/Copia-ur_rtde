@@ -22,23 +22,8 @@ RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std
   if (major_version > CB3_MAJOR_VERSION)
     frequency = 500;
 
-  if (variables_.empty())
-  {
-    // Assume all variables
-    variables_ = {
-        "timestamp",              "target_q",                   "target_qd",              "target_qdd",
-        "target_current",         "target_moment",              "actual_q",               "actual_qd",
-        "actual_current",         "joint_control_output",       "actual_TCP_pose",        "actual_TCP_speed",
-        "actual_TCP_force",       "target_TCP_pose",            "target_TCP_speed",       "actual_digital_input_bits",
-        "joint_temperatures",     "actual_execution_time",      "robot_mode",             "joint_mode",
-        "safety_mode",            "actual_tool_accelerometer",  "speed_scaling",          "target_speed_fraction",
-        "actual_momentum",        "actual_main_voltage",        "actual_robot_voltage",   "actual_robot_current",
-        "actual_joint_voltage",   "actual_digital_output_bits", "runtime_state",          "standard_analog_input0",
-        "standard_analog_input0", "standard_analog_output0",    "standard_analog_output1", "robot_status_bits"};
-  }
-
-  // Setup output
-  rtde_->sendOutputSetup(variables_, frequency);
+  // Setup recipes
+  setupRecipes(frequency);
 
   // Start RTDE data synchronization
   rtde_->sendStart();
@@ -65,6 +50,28 @@ RTDEReceiveInterface::~RTDEReceiveInterface()
   stop_thread = true;
   th_->interrupt();
   th_->join();
+}
+
+bool RTDEReceiveInterface::setupRecipes(const double &frequency)
+{
+  if (variables_.empty())
+  {
+    // Assume all variables
+    variables_ = {
+        "timestamp",              "target_q",                   "target_qd",              "target_qdd",
+        "target_current",         "target_moment",              "actual_q",               "actual_qd",
+        "actual_current",         "joint_control_output",       "actual_TCP_pose",        "actual_TCP_speed",
+        "actual_TCP_force",       "target_TCP_pose",            "target_TCP_speed",       "actual_digital_input_bits",
+        "joint_temperatures",     "actual_execution_time",      "robot_mode",             "joint_mode",
+        "safety_mode",            "actual_tool_accelerometer",  "speed_scaling",          "target_speed_fraction",
+        "actual_momentum",        "actual_main_voltage",        "actual_robot_voltage",   "actual_robot_current",
+        "actual_joint_voltage",   "actual_digital_output_bits", "runtime_state",          "standard_analog_input0",
+        "standard_analog_input1", "standard_analog_output0",    "standard_analog_output1", "robot_status_bits"};
+  }
+
+  // Setup output
+  rtde_->sendOutputSetup(variables_, frequency);
+  return true;
 }
 
 void RTDEReceiveInterface::receiveCallback()
@@ -100,22 +107,8 @@ bool RTDEReceiveInterface::reconnect()
     if (major_version > CB3_MAJOR_VERSION)
       frequency = 500;
 
-    if (variables_.empty()) {
-      // Assume all variables
-      variables_ = {
-        "timestamp", "target_q", "target_qd", "target_qdd",
-        "target_current", "target_moment", "actual_q", "actual_qd",
-        "actual_current", "joint_control_output", "actual_TCP_pose", "actual_TCP_speed",
-        "actual_TCP_force", "target_TCP_pose", "target_TCP_speed", "actual_digital_input_bits",
-        "joint_temperatures", "actual_execution_time", "robot_mode", "joint_mode",
-        "safety_mode", "actual_tool_accelerometer", "speed_scaling", "target_speed_fraction",
-        "actual_momentum", "actual_main_voltage", "actual_robot_voltage", "actual_robot_current",
-        "actual_joint_voltage", "actual_digital_output_bits", "runtime_state", "standard_analog_input0",
-        "standard_analog_input0", "standard_analog_output0", "standard_analog_output1", "robot_status_bits"};
-    }
-
-    // Setup output
-    rtde_->sendOutputSetup(variables_, frequency);
+    // Setup recipes
+    setupRecipes(frequency);
 
     // Start RTDE data synchronization
     rtde_->sendStart();
