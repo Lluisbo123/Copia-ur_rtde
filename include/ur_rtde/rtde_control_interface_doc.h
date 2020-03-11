@@ -22,13 +22,6 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
-
-static const char *__doc_boost_thread = R"doc()doc";
-
-static const char *__doc_ur_rtde_DashboardClient = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDE = R"doc()doc";
-
 static const char *__doc_ur_rtde_RTDEControlInterface = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface_RTDEControlInterface = R"doc()doc";
@@ -338,10 +331,6 @@ static const char *__doc_ur_rtde_RTDEControlInterface_zeroFtSensor =
 R"doc(@brief Zeroes the TCP force/torque measurement from the builtin
 force/torque sensor by subtracting the current measurement from the
 subsequent.)doc";
-
-static const char *__doc_ur_rtde_RobotState = R"doc()doc";
-
-static const char *__doc_ur_rtde_ScriptClient = R"doc()doc";
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop

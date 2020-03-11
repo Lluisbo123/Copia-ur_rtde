@@ -22,13 +22,6 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
-
-static const char *__doc_boost_thread = R"doc()doc";
-
-static const char *__doc_ur_rtde_DashboardClient = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDE = R"doc()doc";
-
 static const char *__doc_ur_rtde_RTDEReceiveInterface = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_RTDEReceiveInterface = R"doc()doc";
@@ -147,8 +140,6 @@ static const char *__doc_ur_rtde_RTDEReceiveInterface_stop_thread = R"doc()doc";
 static const char *__doc_ur_rtde_RTDEReceiveInterface_th = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_variables = R"doc()doc";
-
-static const char *__doc_ur_rtde_RobotState = R"doc()doc";
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop
