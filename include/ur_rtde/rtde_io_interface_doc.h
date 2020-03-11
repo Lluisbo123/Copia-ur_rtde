@@ -45,8 +45,6 @@ static const char *__doc_ur_rtde_RTDEIOInterface_reconnect =
 R"doc(@returns Can be used to reconnect to the robot after a lost
 connection.)doc";
 
-static const char *__doc_ur_rtde_RTDEIOInterface_robot_state = R"doc()doc";
-
 static const char *__doc_ur_rtde_RTDEIOInterface_rtde = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_sendCommand = R"doc()doc";
@@ -75,6 +73,8 @@ static const char *__doc_ur_rtde_RTDEIOInterface_setToolDigitalOut =
 R"doc(@brief Set tool digital output signal level @param output_id The
 number (id) of the output, integer: [0:1] @param signal_level The
 signal level. (boolean))doc";
+
+static const char *__doc_ur_rtde_RTDEIOInterface_setupRecipes = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_verifyValueIsWithin = R"doc()doc";
 

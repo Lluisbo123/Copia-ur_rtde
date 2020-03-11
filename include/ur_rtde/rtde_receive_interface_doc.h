@@ -1,4 +1,3 @@
-#pragma once
 /*
   This file contains docstrings for the Python bindings.
   Do not edit! These were automatically extracted by mkdoc.py
@@ -24,63 +23,83 @@
 #endif
 
 
+static const char *__doc_boost_thread = R"doc()doc";
+
+static const char *__doc_ur_rtde_DashboardClient = R"doc()doc";
+
+static const char *__doc_ur_rtde_RTDE = R"doc()doc";
+
 static const char *__doc_ur_rtde_RTDEReceiveInterface = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_RTDEReceiveInterface = R"doc()doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualCurrent = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualCurrent = R"doc(@returns Actual joint currents)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualDigitalInputBits = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualDigitalInputBits =
+R"doc(@returns Current state of the digital inputs. 0-7: Standard, 8-15:
+Configurable, 16-17: Tool)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualDigitalOutputBits = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualDigitalOutputBits =
+R"doc(@returns Current state of the digital outputs. 0-7: Standard, 8-15:
+Configurable, 16-17: Tool)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualExecutionTime = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualExecutionTime = R"doc(@returns Controller real-time thread execution time)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualJointVoltage = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualJointVoltage = R"doc(@returns Actual joint voltages)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualMainVoltage = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualMainVoltage = R"doc(@returns Safety Control Board: Main voltage)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualMomentum = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualMomentum = R"doc(@returns Norm of Cartesian linear momentum)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualQ = R"doc(@returns Actual joint positions)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualQd = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualQd = R"doc(@returns Actual joint velocities)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualRobotCurrent = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualRobotCurrent = R"doc(@returns Safety Control Board: Robot current)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualRobotVoltage = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualRobotVoltage = R"doc(@returns Safety Control Board: Robot voltage (48V))doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPForce = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPForce = R"doc(@returns Generalized forces in the TCP)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPPose = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPPose =
+R"doc(@returns Actual Cartesian coordinates of the tool: (x,y,z,rx,ry,rz),
+where rx, ry and rz is a rotation vector representation of the tool
+orientation)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPSpeed = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPSpeed = R"doc(@returns Actual speed of the tool given in Cartesian coordinates)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualToolAccelerometer = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualToolAccelerometer = R"doc(@returns Tool x, y and z accelerometer values)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointControlOutput = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointControlOutput = R"doc(@returns Joint control currents)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointMode = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointMode = R"doc(@returns Joint control modes)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointTemperatures = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointTemperatures = R"doc(@returns Temperature of each joint in degrees Celsius)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getRobotMode = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getRobotMode =
+R"doc(@returns Robot mode -1 = ROBOT_MODE_NO_CONTROLLER 0 =
+ROBOT_MODE_DISCONNECTED 1 = ROBOT_MODE_CONFIRM_SAFETY 2 =
+ROBOT_MODE_BOOTING 3 = ROBOT_MODE_POWER_OFF 4 = ROBOT_MODE_POWER_ON 5
+= ROBOT_MODE_IDLE 6 = ROBOT_MODE_BACKDRIVE 7 = ROBOT_MODE_RUNNING 8 =
+ROBOT_MODE_UPDATING_FIRMWARE)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getRobotStatus = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getRobotStatus =
+R"doc(@returns Robot status Bits 0-3: Is power on | Is program running | Is
+teach button pressed | Is power button pressed)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getRuntimeState = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getRuntimeState = R"doc(@returns Program state)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getSafetyMode = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getSafetyMode = R"doc(@returns Safety mode)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getSpeedScaling = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getSpeedScaling = R"doc(@returns Speed scaling of the trajectory limiter)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogInput0 = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogInput0 = R"doc(@returns Standard analog input 0 [A or V])doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogInput1 = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogInput1 = R"doc(@returns Standard analog input 1 [A or V])doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogOutput0 = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogOutput0 = R"doc(@returns Standard analog output 0 [A or V])doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogOutput1 = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogOutput1 = R"doc(@returns Standard analog output 1 [A or V])doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetCurrent = R"doc(@returns Target joint currents)doc";
 
@@ -92,11 +111,14 @@ static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetQd = R"doc(@retur
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetQdd = R"doc(@returns Target joint accelerations)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetSpeedFraction = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetSpeedFraction = R"doc(@returns Target speed fraction)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetTCPPose = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetTCPPose =
+R"doc(@returns Target Cartesian coordinates of the tool: (x,y,z,rx,ry,rz),
+where rx, ry and rz is a rotation vector representation of the tool
+orientation)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetTCPSpeed = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetTCPSpeed = R"doc(@returns Target speed of the tool given in Cartesian coordinates)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getTimestamp = R"doc(@returns Time elapsed since the controller was started [s])doc";
 
@@ -118,11 +140,15 @@ static const char *__doc_ur_rtde_RTDEReceiveInterface_robot_state = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_rtde = R"doc()doc";
 
+static const char *__doc_ur_rtde_RTDEReceiveInterface_setupRecipes = R"doc()doc";
+
 static const char *__doc_ur_rtde_RTDEReceiveInterface_stop_thread = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_th = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_variables = R"doc()doc";
+
+static const char *__doc_ur_rtde_RobotState = R"doc()doc";
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop

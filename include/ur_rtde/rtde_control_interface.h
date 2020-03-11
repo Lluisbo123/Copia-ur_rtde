@@ -140,6 +140,7 @@ class RTDEControlInterface
     * @param pose_to target pose (note: only position is used in Fixed orientation mode).
     * @param speed tool speed [m/s]
     * @param acceleration tool acceleration [m/s^2]
+    * @param blend blend radius [m]
     * @param mode 0: Unconstrained mode. Interpolate orientation from current pose to target pose (pose_to)
     * 1: Fixed mode. Keep orientation constant relative to the tangent of the circular arc (starting from current pose)
     */
@@ -400,7 +401,7 @@ class RTDEControlInterface
   std::string hostname_;
   int port_;
   std::shared_ptr<RTDE> rtde_;
-  std::atomic<bool> stop_thread{false};
+  std::atomic<bool> stop_thread_{false};
   std::shared_ptr<boost::thread> th_;
   std::shared_ptr<DashboardClient> db_client_;
   std::shared_ptr<ScriptClient> script_client_;

@@ -1,4 +1,3 @@
-#pragma once
 /*
   This file contains docstrings for the Python bindings.
   Do not edit! These were automatically extracted by mkdoc.py
@@ -23,6 +22,12 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
+
+static const char *__doc_boost_thread = R"doc()doc";
+
+static const char *__doc_ur_rtde_DashboardClient = R"doc()doc";
+
+static const char *__doc_ur_rtde_RTDE = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface = R"doc()doc";
 
@@ -168,10 +173,10 @@ R"doc(@brief Move Circular: Move to position (circular in tool-space) @param
 pose_via path point (note: only position is used) @param pose_to
 target pose (note: only position is used in Fixed orientation mode).
 @param speed tool speed [m/s] @param acceleration tool acceleration
-[m/s^2] @param mode 0: Unconstrained mode. Interpolate orientation
-from current pose to target pose (pose_to) 1: Fixed mode. Keep
-orientation constant relative to the tangent of the circular arc
-(starting from current pose))doc";
+[m/s^2] @param blend blend radius [m] @param mode 0: Unconstrained
+mode. Interpolate orientation from current pose to target pose
+(pose_to) 1: Fixed mode. Keep orientation constant relative to the
+tangent of the circular arc (starting from current pose))doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface_moveJ =
 R"doc(@brief Move to joint position (linear in joint-space) @param q joint
@@ -201,6 +206,13 @@ static const char *__doc_ur_rtde_RTDEControlInterface_moveL_FK =
 R"doc(@brief Move to position (linear in tool-space) @param q joint
 positions @param speed tool speed [m/s] @param acceleration tool
 acceleration [m/s^2])doc";
+
+static const char *__doc_ur_rtde_RTDEControlInterface_moveP =
+R"doc(@brief Move Process: Blend circular (in tool-space) and move linear
+(in tool-space) to position. Accelerates to and moves with constant
+tool speed v. @param pose target pose @param speed tool speed [m/s]
+@param acceleration tool acceleration [m/s^2] @param blend blend
+radius [m])doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface_port = R"doc()doc";
 
@@ -275,6 +287,8 @@ R"doc(@brief Sets the active tcp offset, i.e. the transformation from the
 output flange coordinate system to the TCP as a pose. @param
 tcp_offset A pose describing the transformation of the tcp offset.)doc";
 
+static const char *__doc_ur_rtde_RTDEControlInterface_setupRecipes = R"doc()doc";
+
 static const char *__doc_ur_rtde_RTDEControlInterface_speedJ =
 R"doc(@brief Joint speed - Accelerate linearly in joint space and continue
 with constant joint speed @param qd joint speeds [rad/s] @param
@@ -324,6 +338,10 @@ static const char *__doc_ur_rtde_RTDEControlInterface_zeroFtSensor =
 R"doc(@brief Zeroes the TCP force/torque measurement from the builtin
 force/torque sensor by subtracting the current measurement from the
 subsequent.)doc";
+
+static const char *__doc_ur_rtde_RobotState = R"doc()doc";
+
+static const char *__doc_ur_rtde_ScriptClient = R"doc()doc";
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop

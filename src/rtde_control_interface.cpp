@@ -1,9 +1,9 @@
-#include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/dashboard_client.h>
-#include <ur_rtde/script_client.h>
 #include <ur_rtde/robot_state.h>
-#include <boost/thread/thread.hpp>
+#include <ur_rtde/rtde_control_interface.h>
+#include <ur_rtde/script_client.h>
 #include <bitset>
+#include <boost/thread/thread.hpp>
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -109,7 +109,7 @@ RTDEControlInterface::~RTDEControlInterface()
   }
 
   // Stop the receive callback function
-  stop_thread = true;
+  stop_thread_ = true;
   th_->interrupt();
   th_->join();
 }
@@ -277,7 +277,7 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
 
 void RTDEControlInterface::receiveCallback()
 {
-  while (!stop_thread)
+  while (!stop_thread_)
   {
     // Receive and update the robot state
     try
@@ -286,12 +286,24 @@ void RTDEControlInterface::receiveCallback()
     }
     catch (std::exception &e)
     {
+      std::cout << "RTDEControlInterface: Could not receive data from robot..." << std::endl;
       std::cerr << e.what() << std::endl;
-      if (rtde_->isConnected())
-        rtde_->disconnect();
-      stop_thread = true;
-      th_->interrupt();
-      th_->join();
+      if (rtde_ != nullptr)
+      {
+        if (rtde_->isConnected())
+          rtde_->disconnect();
+
+        if (!rtde_->isConnected())
+        {
+          std::cout << "RTDEControlInterface: Robot is disconnected, reconnecting..." << std::endl;
+          reconnect();
+        }
+
+        if (rtde_->isConnected())
+          std::cout << "RTDEControlInterface: Successfully reconnected!" << std::endl;
+        else
+          throw std::runtime_error("Could not recover from losing connection to robot!");
+      }
     }
   }
 }
