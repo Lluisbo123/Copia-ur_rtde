@@ -210,6 +210,16 @@ void RobotState::setRobot_status(uint32_t robot_status)
   std::lock_guard<std::mutex> lock(mutex_);
   RobotState::robot_status_ = robot_status;
 }
+uint32_t RobotState::getSafety_status_bits()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return safety_status_bits_;
+}
+void RobotState::setSafety_status_bits(uint32_t safety_status_bits)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::safety_status_bits_ = safety_status_bits;
+}
 const std::vector<int32_t> &RobotState::getJoint_mode()
 {
   std::lock_guard<std::mutex> lock(mutex_);

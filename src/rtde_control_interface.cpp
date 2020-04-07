@@ -193,7 +193,7 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
 {
   // Setup output
   std::vector<std::string> state_names = {
-      "robot_status_bits",        "output_int_register_0",    "output_int_register_1",
+      "robot_status_bits", "safety_status_bits", "output_int_register_0", "output_int_register_1",
       "output_double_register_0", "output_double_register_1", "output_double_register_2",
       "output_double_register_3", "output_double_register_4", "output_double_register_5"};
   rtde_->sendOutputSetup(state_names, frequency);
@@ -848,7 +848,7 @@ bool RTDEControlInterface::isProgramRunning()
   if (robot_state_ != nullptr)
   {
     // Read Bits 0-3: Is power on(1) | Is program running(2) | Is teach button pressed(4) | Is power button pressed(8)
-    std::bitset<sizeof(uint32_t)> status_bits(robot_state_->getRobot_status());
+    std::bitset<32> status_bits(robot_state_->getRobot_status());
     return status_bits.test(RobotStatus::ROBOT_STATUS_PROGRAM_RUNNING);
   }
   else
@@ -970,6 +970,32 @@ int RTDEControlInterface::getControlScriptState()
   }
 }
 
+bool RTDEControlInterface::isProtectiveStopped()
+{
+  if (robot_state_ != nullptr)
+  {
+    std::bitset<32> safety_status_bits(robot_state_->getSafety_status_bits());
+    return safety_status_bits.test(SafetyStatus::IS_PROTECTIVE_STOPPED);
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
+bool RTDEControlInterface::isEmergencyStopped()
+{
+  if (robot_state_ != nullptr)
+  {
+    std::bitset<32> safety_status_bits(robot_state_->getSafety_status_bits());
+    return safety_status_bits.test(SafetyStatus::IS_EMERGENCY_STOPPED);
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
 bool RTDEControlInterface::triggerProtectiveStop()
 {
   RTDE::RobotCommand robot_cmd;
@@ -986,6 +1012,10 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
   {
     while (getControlScriptState() != UR_CONTROLLER_RDY_FOR_CMD)
     {
+      // If robot is in an emergency or protective stop return false
+      if (isProtectiveStopped() || isEmergencyStopped())
+        return false;
+
       // Wait until the controller is ready for a command or timeout
       std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
       auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
@@ -1017,7 +1047,26 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
         start_time = std::chrono::high_resolution_clock::now();
         while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
         {
+          // If robot is in an emergency or protective stop return false
+          if (isProtectiveStopped() || isEmergencyStopped())
+            return false;
+
           // Wait until the controller has finished executing or timeout
+          std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+          auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+          if (duration > UR_EXECUTION_TIMEOUT)
+            return false;
+        }
+      }
+      else
+      {
+        while (isProgramRunning())
+        {
+          // If robot is in an emergency or protective stop return false
+          if (isProtectiveStopped() || isEmergencyStopped())
+            return false;
+            
+          // Wait for program to stop running or timeout
           std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
           auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
           if (duration > UR_EXECUTION_TIMEOUT)

@@ -158,7 +158,7 @@ def rtde_control():
             textmsg(pose_via)
             textmsg("pose_to:")
             textmsg(pose_to)
-            movec(pose_to, pose_via, a=acceleration, v=velocity, r=blend, mode=movec_mode)
+            movec(pose_via, pose_to, a=acceleration, v=velocity, r=blend, mode=movec_mode)
             textmsg("movec done")
         elif cmd == 6:
             textmsg("force_mode_start")
@@ -515,13 +515,18 @@ $V50force_mode_set_gain_scaling(0.5)
 $V35force_mode_set_damping(0.025)
 
     keep_running = True
+    executing_cmd = False
     signal_ready()
 
     while keep_running:
         if rtde_cmd() == 0:
+            executing_cmd = False
             signal_ready()
         else:
-            keep_running = process_cmd()
+            if not executing_cmd:
+                keep_running = process_cmd()
+            end
+            executing_cmd = True
         end
         sync()
     end

@@ -54,6 +54,21 @@ class RTDEControlInterface
     ROBOT_STATUS_POWER_BUTTON_PRESSED = 3
   };
 
+  enum SafetyStatus
+  {
+    IS_NORMAL_MODE = 0,
+    IS_REDUCED_MODE = 1,
+    IS_PROTECTIVE_STOPPED = 2,
+    IS_RECOVERY_MODE = 3,
+    IS_SAFEGUARD_STOPPED = 4,
+    IS_SYSTEM_EMERGENCY_STOPPED = 5,
+    IS_ROBOT_EMERGENCY_STOPPED = 6,
+    IS_EMERGENCY_STOPPED = 7,
+    IS_VIOLATION = 8,
+    IS_FAULT = 9,
+    IS_STOPPED_DUE_TO_SAFETY = 10
+  };
+
   /**
     * @returns Can be used to reconnect to the robot after a lost connection.
     */
@@ -380,6 +395,10 @@ class RTDEControlInterface
   void sendClearCommand();
 
   int getControlScriptState();
+
+  bool isProtectiveStopped();
+
+  bool isEmergencyStopped();
 
   int getToolContactValue();
 
