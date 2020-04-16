@@ -1051,7 +1051,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
       // We do not wait for 'continuous' commands to finish.
 
       // Make controller ready for next command
-      sendClearCommand();
+      //sendClearCommand();
 
       return true;
     }
