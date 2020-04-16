@@ -28,7 +28,7 @@ PYBIND11_MODULE(rtde_control, m)
            DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFunction), py::call_guard<py::gil_scoped_release>())
       .def("sendCustomScriptFile", &RTDEControlInterface::sendCustomScriptFile,
            DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFile), py::call_guard<py::gil_scoped_release>())
-      .def("stopRobot", &RTDEControlInterface::stopRobot, DOC(ur_rtde, RTDEControlInterface, stopRobot),
+      .def("stopScript", &RTDEControlInterface::stopScript, DOC(ur_rtde, RTDEControlInterface, stopScript),
            py::call_guard<py::gil_scoped_release>())
       .def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveJ,

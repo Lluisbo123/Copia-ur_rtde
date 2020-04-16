@@ -493,8 +493,18 @@ $V38        protective_stop()
             blend = read_input_float_register(8)
             movep(pose, a=acceleration, v=velocity, r=blend)
             textmsg("movep done")
+        elif cmd == 34:
+            textmsg("stopl")
+            deceleration_rate = read_input_float_register(0)
+            stopl(deceleration_rate)
+            textmsg("stopl done")
+        elif cmd == 35:
+            textmsg("stopj")
+            deceleration_rate = read_input_float_register(0)
+            stopj(deceleration_rate)
+            textmsg("stopj done")
         elif cmd == 255:
-            textmsg("Received stop!")
+            textmsg("Received stop script!")
         end
 
         if cmd != 255:

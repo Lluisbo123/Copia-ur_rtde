@@ -66,7 +66,11 @@ bool RTDEReceiveInterface::setupRecipes(const double &frequency)
         "safety_mode",            "actual_tool_accelerometer",  "speed_scaling",          "target_speed_fraction",
         "actual_momentum",        "actual_main_voltage",        "actual_robot_voltage",   "actual_robot_current",
         "actual_joint_voltage",   "actual_digital_output_bits", "runtime_state",          "standard_analog_input0",
-        "standard_analog_input1", "standard_analog_output0",    "standard_analog_output1", "robot_status_bits"};
+        "standard_analog_input1", "standard_analog_output0",    "standard_analog_output1", "robot_status_bits",
+        "output_int_register_0",  "output_int_register_1",      "output_int_register_2",  "output_int_register_3",
+        "output_int_register_4", "output_int_register_5",       "output_int_register_6",  "output_int_register_7",
+        "output_double_register_0", "output_double_register_1", "output_double_register_2", "output_double_register_3",
+        "output_double_register_4", "output_double_register_5", "output_double_register_6", "output_double_register_7"};
   }
 
   // Setup output

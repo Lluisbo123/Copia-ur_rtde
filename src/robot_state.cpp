@@ -640,6 +640,246 @@ void RobotState::setOutput_int_register_23(int32_t output_int_register_23)
   std::lock_guard<std::mutex> lock(mutex_);
   RobotState::output_int_register_23_ = output_int_register_23;
 }
+int32_t RobotState::getOutput_int_register_24()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_24_;
+}
+void RobotState::setOutput_int_register_24(int32_t output_int_register_24)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_24_ = output_int_register_24;
+}
+int32_t RobotState::getOutput_int_register_25()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_25_;
+}
+void RobotState::setOutput_int_register_25(int32_t output_int_register_25)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_25_ = output_int_register_25;
+}
+int32_t RobotState::getOutput_int_register_26()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_26_;
+}
+void RobotState::setOutput_int_register_26(int32_t output_int_register_26)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_26_ = output_int_register_26;
+}
+int32_t RobotState::getOutput_int_register_27()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_27_;
+}
+void RobotState::setOutput_int_register_27(int32_t output_int_register_27)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_27_ = output_int_register_27;
+}
+int32_t RobotState::getOutput_int_register_28()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_28_;
+}
+void RobotState::setOutput_int_register_28(int32_t output_int_register_28)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_28_ = output_int_register_28;
+}
+int32_t RobotState::getOutput_int_register_29()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_29_;
+}
+void RobotState::setOutput_int_register_29(int32_t output_int_register_29)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_29_ = output_int_register_29;
+}
+int32_t RobotState::getOutput_int_register_30()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_30_;
+}
+void RobotState::setOutput_int_register_30(int32_t output_int_register_30)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_30_ = output_int_register_30;
+}
+int32_t RobotState::getOutput_int_register_31()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_31_;
+}
+void RobotState::setOutput_int_register_31(int32_t output_int_register_31)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_31_ = output_int_register_31;
+}
+int32_t RobotState::getOutput_int_register_32()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_32_;
+}
+void RobotState::setOutput_int_register_32(int32_t output_int_register_32)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_32_ = output_int_register_32;
+}
+int32_t RobotState::getOutput_int_register_33()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_33_;
+}
+void RobotState::setOutput_int_register_33(int32_t output_int_register_33)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_33_ = output_int_register_33;
+}
+int32_t RobotState::getOutput_int_register_34()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_34_;
+}
+void RobotState::setOutput_int_register_34(int32_t output_int_register_34)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_34_ = output_int_register_34;
+}
+int32_t RobotState::getOutput_int_register_35()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_35_;
+}
+void RobotState::setOutput_int_register_35(int32_t output_int_register_35)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_35_ = output_int_register_35;
+}
+int32_t RobotState::getOutput_int_register_36()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_36_;
+}
+void RobotState::setOutput_int_register_36(int32_t output_int_register_36)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_36_ = output_int_register_36;
+}
+int32_t RobotState::getOutput_int_register_37()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_37_;
+}
+void RobotState::setOutput_int_register_37(int32_t output_int_register_37)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_37_ = output_int_register_37;
+}
+int32_t RobotState::getOutput_int_register_38()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_38_;
+}
+void RobotState::setOutput_int_register_38(int32_t output_int_register_38)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_38_ = output_int_register_38;
+}
+int32_t RobotState::getOutput_int_register_39()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_39_;
+}
+void RobotState::setOutput_int_register_39(int32_t output_int_register_39)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_39_ = output_int_register_39;
+}
+int32_t RobotState::getOutput_int_register_40()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_40_;
+}
+void RobotState::setOutput_int_register_40(int32_t output_int_register_40)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_40_ = output_int_register_40;
+}
+int32_t RobotState::getOutput_int_register_41()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_41_;
+}
+void RobotState::setOutput_int_register_41(int32_t output_int_register_41)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_41_ = output_int_register_41;
+}
+int32_t RobotState::getOutput_int_register_42()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_42_;
+}
+void RobotState::setOutput_int_register_42(int32_t output_int_register_42)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_42_ = output_int_register_42;
+}
+int32_t RobotState::getOutput_int_register_43()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_43_;
+}
+void RobotState::setOutput_int_register_43(int32_t output_int_register_43)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_43_ = output_int_register_43;
+}
+int32_t RobotState::getOutput_int_register_44()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_44_;
+}
+void RobotState::setOutput_int_register_44(int32_t output_int_register_44)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_44_ = output_int_register_44;
+}
+int32_t RobotState::getOutput_int_register_45()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_45_;
+}
+void RobotState::setOutput_int_register_45(int32_t output_int_register_45)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_45_ = output_int_register_45;
+}
+int32_t RobotState::getOutput_int_register_46()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_46_;
+}
+void RobotState::setOutput_int_register_46(int32_t output_int_register_46)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_46_ = output_int_register_46;
+}
+int32_t RobotState::getOutput_int_register_47()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_int_register_47_;
+}
+void RobotState::setOutput_int_register_47(int32_t output_int_register_47)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_int_register_47_ = output_int_register_47;
+}
 double RobotState::getOutput_double_register_0()
 {
   std::lock_guard<std::mutex> lock(mutex_);
@@ -879,6 +1119,246 @@ void RobotState::setOutput_double_register_23(double output_double_register_23)
 {
   std::lock_guard<std::mutex> lock(mutex_);
   RobotState::output_double_register_23_ = output_double_register_23;
+}
+double RobotState::getOutput_double_register_24()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_24_;
+}
+void RobotState::setOutput_double_register_24(double output_double_register_24)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_24_ = output_double_register_24;
+}
+double RobotState::getOutput_double_register_25()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_25_;
+}
+void RobotState::setOutput_double_register_25(double output_double_register_25)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_25_ = output_double_register_25;
+}
+double RobotState::getOutput_double_register_26()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_26_;
+}
+void RobotState::setOutput_double_register_26(double output_double_register_26)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_26_ = output_double_register_26;
+}
+double RobotState::getOutput_double_register_27()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_27_;
+}
+void RobotState::setOutput_double_register_27(double output_double_register_27)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_27_ = output_double_register_27;
+}
+double RobotState::getOutput_double_register_28()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_28_;
+}
+void RobotState::setOutput_double_register_28(double output_double_register_28)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_28_ = output_double_register_28;
+}
+double RobotState::getOutput_double_register_29()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_29_;
+}
+void RobotState::setOutput_double_register_29(double output_double_register_29)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_29_ = output_double_register_29;
+}
+double RobotState::getOutput_double_register_30()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_30_;
+}
+void RobotState::setOutput_double_register_30(double output_double_register_30)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_30_ = output_double_register_30;
+}
+double RobotState::getOutput_double_register_31()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_31_;
+}
+void RobotState::setOutput_double_register_31(double output_double_register_31)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_31_ = output_double_register_31;
+}
+double RobotState::getOutput_double_register_32()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_32_;
+}
+void RobotState::setOutput_double_register_32(double output_double_register_32)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_32_ = output_double_register_32;
+}
+double RobotState::getOutput_double_register_33()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_33_;
+}
+void RobotState::setOutput_double_register_33(double output_double_register_33)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_33_ = output_double_register_33;
+}
+double RobotState::getOutput_double_register_34()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_34_;
+}
+void RobotState::setOutput_double_register_34(double output_double_register_34)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_34_ = output_double_register_34;
+}
+double RobotState::getOutput_double_register_35()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_35_;
+}
+void RobotState::setOutput_double_register_35(double output_double_register_35)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_35_ = output_double_register_35;
+}
+double RobotState::getOutput_double_register_36()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_36_;
+}
+void RobotState::setOutput_double_register_36(double output_double_register_36)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_36_ = output_double_register_36;
+}
+double RobotState::getOutput_double_register_37()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_37_;
+}
+void RobotState::setOutput_double_register_37(double output_double_register_37)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_37_ = output_double_register_37;
+}
+double RobotState::getOutput_double_register_38()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_38_;
+}
+void RobotState::setOutput_double_register_38(double output_double_register_38)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_38_ = output_double_register_38;
+}
+double RobotState::getOutput_double_register_39()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_39_;
+}
+void RobotState::setOutput_double_register_39(double output_double_register_39)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_39_ = output_double_register_39;
+}
+double RobotState::getOutput_double_register_40()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_40_;
+}
+void RobotState::setOutput_double_register_40(double output_double_register_40)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_40_ = output_double_register_40;
+}
+double RobotState::getOutput_double_register_41()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_41_;
+}
+void RobotState::setOutput_double_register_41(double output_double_register_41)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_41_ = output_double_register_41;
+}
+double RobotState::getOutput_double_register_42()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_42_;
+}
+void RobotState::setOutput_double_register_42(double output_double_register_42)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_42_ = output_double_register_42;
+}
+double RobotState::getOutput_double_register_43()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_43_;
+}
+void RobotState::setOutput_double_register_43(double output_double_register_43)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_43_ = output_double_register_43;
+}
+double RobotState::getOutput_double_register_44()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_44_;
+}
+void RobotState::setOutput_double_register_44(double output_double_register_44)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_44_ = output_double_register_44;
+}
+double RobotState::getOutput_double_register_45()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_45_;
+}
+void RobotState::setOutput_double_register_45(double output_double_register_45)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_45_ = output_double_register_45;
+}
+double RobotState::getOutput_double_register_46()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_46_;
+}
+void RobotState::setOutput_double_register_46(double output_double_register_46)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_46_ = output_double_register_46;
+}
+double RobotState::getOutput_double_register_47()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  return output_double_register_47_;
+}
+void RobotState::setOutput_double_register_47(double output_double_register_47)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  RobotState::output_double_register_47_ = output_double_register_47;
 }
 
 }  // namespace ur_rtde

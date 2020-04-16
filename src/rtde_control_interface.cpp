@@ -77,7 +77,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   {
     std::cout << "A script was running on the controller, killing it!" << std::endl;
     // Stop the running script first
-    stopRobot();
+    stopScript();
     db_client_->stop();
 
     // Wait until terminated
@@ -176,7 +176,7 @@ bool RTDEControlInterface::reconnect()
   {
     std::cout << "A script was running on the controller, killing it!" << std::endl;
     // Stop the running script first
-    stopRobot();
+    stopScript();
     db_client_->stop();
 
     // Wait until terminated
@@ -308,11 +308,29 @@ void RTDEControlInterface::receiveCallback()
   }
 }
 
-void RTDEControlInterface::stopRobot()
+void RTDEControlInterface::stopScript()
 {
   RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::STOP;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::STOP_SCRIPT;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  sendCommand(robot_cmd);
+}
+
+void RTDEControlInterface::stopL(double a)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::STOPL;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.val_.push_back(a);
+  sendCommand(robot_cmd);
+}
+
+void RTDEControlInterface::stopJ(double a)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::STOPJ;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.val_.push_back(a);
   sendCommand(robot_cmd);
 }
 
@@ -342,7 +360,7 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
   cmd_str += "end\n";
 
   // First stop the running RTDE control script
-  stopRobot();
+  stopScript();
 
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 
@@ -369,7 +387,7 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
 bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
 {
   // First stop the running RTDE control script
-  stopRobot();
+  stopScript();
 
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 
@@ -445,7 +463,7 @@ std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector
 bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path)
 {
   // First stop the running RTDE control script
-  stopRobot();
+  stopScript();
 
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 
@@ -499,7 +517,7 @@ bool RTDEControlInterface::moveJ_IK(const std::vector<double> &transform, double
 bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path)
 {
   // First stop the running RTDE control script
-  stopRobot();
+  stopScript();
 
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
   // Send motions
@@ -1042,7 +1060,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
       // Send command to the controller
       rtde_->send(cmd);
 
-      if (cmd.type_ != RTDE::RobotCommand::Type::STOP)
+      if (cmd.type_ != RTDE::RobotCommand::Type::STOP_SCRIPT)
       {
         start_time = std::chrono::high_resolution_clock::now();
         while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)

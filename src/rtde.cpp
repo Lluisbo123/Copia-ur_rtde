@@ -518,6 +518,54 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
           robot_state->setOutput_int_register_22(RTDEUtility::getInt32(data, message_offset));
         else if (output_name == "output_int_register_23")
           robot_state->setOutput_int_register_23(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_24")
+          robot_state->setOutput_int_register_24(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_25")
+          robot_state->setOutput_int_register_25(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_26")
+          robot_state->setOutput_int_register_26(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_27")
+          robot_state->setOutput_int_register_27(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_28")
+          robot_state->setOutput_int_register_28(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_29")
+          robot_state->setOutput_int_register_29(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_30")
+          robot_state->setOutput_int_register_30(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_31")
+          robot_state->setOutput_int_register_31(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_32")
+          robot_state->setOutput_int_register_32(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_33")
+          robot_state->setOutput_int_register_33(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_34")
+          robot_state->setOutput_int_register_34(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_35")
+          robot_state->setOutput_int_register_35(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_36")
+          robot_state->setOutput_int_register_36(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_37")
+          robot_state->setOutput_int_register_37(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_38")
+          robot_state->setOutput_int_register_38(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_39")
+          robot_state->setOutput_int_register_39(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_40")
+          robot_state->setOutput_int_register_40(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_41")
+          robot_state->setOutput_int_register_41(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_42")
+          robot_state->setOutput_int_register_42(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_43")
+          robot_state->setOutput_int_register_43(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_44")
+          robot_state->setOutput_int_register_44(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_45")
+          robot_state->setOutput_int_register_45(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_46")
+          robot_state->setOutput_int_register_46(RTDEUtility::getInt32(data, message_offset));
+        else if (output_name == "output_int_register_47")
+          robot_state->setOutput_int_register_47(RTDEUtility::getInt32(data, message_offset));
         else if (output_name == "output_double_register_0")
           robot_state->setOutput_double_register_0(RTDEUtility::getDouble(data, message_offset));
         else if (output_name == "output_double_register_1")
@@ -566,6 +614,54 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
           robot_state->setOutput_double_register_22(RTDEUtility::getDouble(data, message_offset));
         else if (output_name == "output_double_register_23")
           robot_state->setOutput_double_register_23(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_24")
+          robot_state->setOutput_double_register_24(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_25")
+          robot_state->setOutput_double_register_25(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_26")
+          robot_state->setOutput_double_register_26(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_27")
+          robot_state->setOutput_double_register_27(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_28")
+          robot_state->setOutput_double_register_28(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_29")
+          robot_state->setOutput_double_register_29(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_30")
+          robot_state->setOutput_double_register_30(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_31")
+          robot_state->setOutput_double_register_31(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_32")
+          robot_state->setOutput_double_register_32(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_33")
+          robot_state->setOutput_double_register_33(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_34")
+          robot_state->setOutput_double_register_34(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_35")
+          robot_state->setOutput_double_register_35(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_36")
+          robot_state->setOutput_double_register_36(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_37")
+          robot_state->setOutput_double_register_37(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_38")
+          robot_state->setOutput_double_register_38(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_39")
+          robot_state->setOutput_double_register_39(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_40")
+          robot_state->setOutput_double_register_40(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_41")
+          robot_state->setOutput_double_register_41(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_42")
+          robot_state->setOutput_double_register_42(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_43")
+          robot_state->setOutput_double_register_43(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_44")
+          robot_state->setOutput_double_register_44(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_45")
+          robot_state->setOutput_double_register_45(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_46")
+          robot_state->setOutput_double_register_46(RTDEUtility::getDouble(data, message_offset));
+        else if (output_name == "output_double_register_47")
+          robot_state->setOutput_double_register_47(RTDEUtility::getDouble(data, message_offset));
         else
           DEBUG("Unknown variable name: " << output_name << " please verify the output setup!");
       }

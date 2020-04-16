@@ -62,7 +62,9 @@ class RTDE
       GET_INVERSE_KINEMATICS = 31,
       PROTECTIVE_STOP = 32,
       MOVEP = 33,
-      STOP = 255
+      STOPL = 34,
+      STOPJ = 35,
+      STOP_SCRIPT = 255
     };
 
     enum Recipe

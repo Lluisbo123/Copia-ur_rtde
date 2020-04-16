@@ -297,9 +297,8 @@ acceleration [m/s^2] @param time time [s] before the function returns
 
 static const char *__doc_ur_rtde_RTDEControlInterface_speedStop = R"doc(@brief Stop speeding)doc";
 
-static const char *__doc_ur_rtde_RTDEControlInterface_stopRobot =
-R"doc(@brief This function will stop whatever the robot is doing, and
-terminate script on controller)doc";
+static const char *__doc_ur_rtde_RTDEControlInterface_stopScript =
+R"doc(@brief This function will terminate the script on controller.)doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface_stop_thread = R"doc()doc";
 

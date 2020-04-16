@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     rtde_control.moveC(waypoint_2, waypoint_3, 0.25, 1.2, 0.1);
     rtde_control.moveC(waypoint_4, waypoint_5, 0.25, 1.2, 0.1);
   }
-  rtde_control.stopRobot();*/
+  rtde_control.stopScript();*/
 
   /*rtde_control.moveJ(joint_q1, velocity, acceleration);
   rtde_control.moveJ(joint_q2, velocity, acceleration);
@@ -166,7 +166,7 @@ int main(int argc, char* argv[])
   // rtde_control.setStandardDigitalOut(2, true);
   // rtde_control.setToolDigitalOut(1, true);
 
-  rtde_control.stopRobot();
+  rtde_control.stopScript();
 
   return 0;
 }

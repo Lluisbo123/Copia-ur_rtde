@@ -101,9 +101,21 @@ class RTDEControlInterface
   RTDE_EXPORT bool sendCustomScriptFile(const std::string &file_path);
 
   /**
-    * @brief This function will stop whatever the robot is doing, and terminate script on controller
+    * @brief This function will terminate the script on controller.
     */
-  RTDE_EXPORT void stopRobot();
+  RTDE_EXPORT void stopScript();
+
+  /**
+    * @brief Stop (linear in tool space) - decelerate tool speed to zero
+    * @param a tool acceleration [m/s^2] (rate of deceleration of the tool)
+    */
+  RTDE_EXPORT void stopL(double a=10.0);
+
+    /**
+    * @brief Stop (linear in joint space) - decelerate joint speeds to zero
+    * @param a joint acceleration [rad/s^2] (rate of deceleration of the leading axis).
+    */
+  RTDE_EXPORT void stopJ(double a=2.0);
 
   /**
     * @brief Move to joint position (linear in joint-space)
