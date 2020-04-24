@@ -30,6 +30,8 @@ PYBIND11_MODULE(rtde_control, m)
            DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFile), py::call_guard<py::gil_scoped_release>())
       .def("stopScript", &RTDEControlInterface::stopScript, DOC(ur_rtde, RTDEControlInterface, stopScript),
            py::call_guard<py::gil_scoped_release>())
+      .def("reuploadScript", &RTDEControlInterface::reuploadScript, DOC(ur_rtde, RTDEControlInterface, reuploadScript),
+           py::call_guard<py::gil_scoped_release>())
       .def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveJ,
            DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::call_guard<py::gil_scoped_release>())
@@ -73,6 +75,8 @@ PYBIND11_MODULE(rtde_control, m)
            py::call_guard<py::gil_scoped_release>())
       .def("forceModeStop", &RTDEControlInterface::forceModeStop, DOC(ur_rtde, RTDEControlInterface, forceModeStop),
            py::call_guard<py::gil_scoped_release>())
+      .def("forceModeUpdate", &RTDEControlInterface::forceModeUpdate, DOC(ur_rtde, RTDEControlInterface, forceModeUpdate),
+           py::call_guard<py::gil_scoped_release>())
       .def("forceModeSetDamping", &RTDEControlInterface::forceModeSetDamping,
            DOC(ur_rtde, RTDEControlInterface, forceModeSetDamping), py::call_guard<py::gil_scoped_release>())
       .def("toolContact", &RTDEControlInterface::toolContact, DOC(ur_rtde, RTDEControlInterface, toolContact),
@@ -101,6 +105,8 @@ PYBIND11_MODULE(rtde_control, m)
            py::call_guard<py::gil_scoped_release>())
       .def("triggerProtectiveStop", &RTDEControlInterface::triggerProtectiveStop,
            DOC(ur_rtde, RTDEControlInterface, triggerProtectiveStop), py::call_guard<py::gil_scoped_release>())
+      .def("stopL", &RTDEControlInterface::stopL, py::call_guard<py::gil_scoped_release>())
+      .def("stopJ", &RTDEControlInterface::stopJ, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control
