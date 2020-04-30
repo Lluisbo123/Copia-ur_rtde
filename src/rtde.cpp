@@ -464,8 +464,8 @@ namespace details
   template<class T>
   inline T parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
   {
-    // should not be reached at runtime
-    DEBUG("Something went wrong deducing the type within a callback function of recieveData");
+    // should never be reached at runtime
+    DEBUG("Something went wrong deducing the type within a callback function of receiveData");
     std::terminate();
   }
 
@@ -537,7 +537,7 @@ namespace details
     map.emplace(key,
     [fun,parse_fun](std::shared_ptr<ur_rtde::RobotState> state_ptr, const std::vector<char>& data, uint32_t msg_offset)
     {
-      // calls robot_state->setVarFun(RTDEUtility::parseVar(data,offset))
+      // calls robot_state->setVarFun(RTDEUtility::parseVarFun(data,offset))
       (*state_ptr.*fun)((*parse_fun)(data,msg_offset));
     });
   }
@@ -549,8 +549,8 @@ namespace details
     const std::string& key,
     void (ur_rtde::RobotState::*fun)(T))
   {
-    // remove all type qualifiers to deduce the parsing function, without having to provide const overloads for all types
-    setupCallback(map,key,fun,&details::parsingFunction<std::remove_reference<std::remove_const<T>::type>::type>);
+    // remove all type qualifiers of T to deduce the parsing function without having to provide const overloads for all types
+    setupCallback(map,key,fun,&details::parsingFunction<std::decay<T>::type>);
   }
 
   // helper makros to reduce the manually written code for registration of callbacks for output_registers
