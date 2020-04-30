@@ -457,69 +457,6 @@ std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> RTDE::get
 
 namespace details
 {
-  /*! @brief This template and its specializations deduce the correct RTDEUtitilty function to parse a given input message
-      @tparam the type data shall be parsed to
-      @return T value from within data
-    */
-  template<class T>
-  inline T parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
-  {
-    // should never be reached at runtime
-    DEBUG("Something went wrong deducing the type within a callback function of receiveData");
-    std::terminate();
-  }
-
-  template<>
-  inline unsigned char parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
-  {
-    return RTDEUtility::getUChar(data,message_offset);
-  }
-
-  template<>
-  inline uint16_t parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
-  {
-    return RTDEUtility::getUInt16(data,message_offset);
-  }
-
-  template<>
-  inline uint32_t parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
-  {
-    return RTDEUtility::getUInt32(data,message_offset);
-  }
-
-  template<>
-  inline int32_t parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
-  {
-    // despite the name getInt32 returns uint32_t. Explicit cast to int32 added, as this will
-    // be implicitly casted to int32_t by consuming functions anyhow.
-    // possibly affects code after both consumers: setRobotMode and setSafetyMode
-    return static_cast<int32_t>(RTDEUtility::getInt32(data,message_offset));
-  }
-
-  template<>
-  inline uint64_t parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
-  {
-    return RTDEUtility::getUInt64(data,message_offset);
-  }
-
-  template<>
-  inline double parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
-  {
-    return RTDEUtility::getDouble(data,message_offset);
-  }
-
-  template<>
-  inline std::vector<double> parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
-  {
-    return RTDEUtility::unpackVector6d(data,message_offset);
-  }
-
-  template<>
-  inline std::vector<int32_t> parsingFunction(const std::vector<char>& data, uint32_t& message_offset)
-  {
-    return RTDEUtility::unpackVector6Int32(data,message_offset);
-  }
-
   /*! @brief This function creates a callback map entry for a given key
     @tparam T Fully qualified type of the signature of the function to be called
     @tparam S Return type of the parsing function, should be of type T with equal or less qualifiers
@@ -542,24 +479,13 @@ namespace details
     });
   }
 
-  /*! @brief Convenience overload of setupCallback that automatically deduces the correct parsing function */ 
-  template<class T>
-  void setupCallback(
-    ur_rtde::details::cb_map& map, 
-    const std::string& key,
-    void (ur_rtde::RobotState::*fun)(T))
-  {
-    // remove all type qualifiers of T to deduce the parsing function without having to provide const overloads for all types
-    setupCallback(map,key,fun,&details::parsingFunction<typename std::remove_const<typename std::remove_reference<T>::type>::type>);
-  }
-
   // helper makros to reduce the manually written code for registration of callbacks for output_registers
   #define NUMBERED_REGISTER_NAME(type, num) "output_"#type"_register_"#num
   #define NUMBERED_REGISTER_FUN(type, num) setOutput_## type ##_register_## num
 
   #define OUTPUT_REGISTER_CALLBACK(num) \
-    setupCallback(cb_map_,NUMBERED_REGISTER_NAME(int,num),&ur_rtde::RobotState::NUMBERED_REGISTER_FUN(int, num)); \
-    setupCallback(cb_map_,NUMBERED_REGISTER_NAME(double,num),&ur_rtde::RobotState::NUMBERED_REGISTER_FUN(double, num));
+    setupCallback(cb_map_,NUMBERED_REGISTER_NAME(int,num),&ur_rtde::RobotState::NUMBERED_REGISTER_FUN(int, num),&RTDEUtility::getInt32); \
+    setupCallback(cb_map_,NUMBERED_REGISTER_NAME(double,num),&ur_rtde::RobotState::NUMBERED_REGISTER_FUN(double, num),&RTDEUtility::getDouble);
 }
 
 void RTDE::setupCallbacks()
@@ -567,41 +493,41 @@ void RTDE::setupCallbacks()
   using namespace ur_rtde::details;
 
   // general
-  setupCallback(cb_map_,"timestamp",&ur_rtde::RobotState::setTimestamp);
-  setupCallback(cb_map_,"actual_execution_time",&ur_rtde::RobotState::setActual_execution_time);
-  setupCallback(cb_map_,"robot_mode",&ur_rtde::RobotState::setRobot_mode); 
-  setupCallback(cb_map_,"joint_mode",&ur_rtde::RobotState::setJoint_mode); 
-  setupCallback(cb_map_,"safety_mode",&ur_rtde::RobotState::setSafety_mode);
-  setupCallback(cb_map_,"runtime_state",&ur_rtde::RobotState::setRuntime_state);
+  setupCallback(cb_map_,"timestamp",&ur_rtde::RobotState::setTimestamp,&RTDEUtility::getDouble);
+  setupCallback(cb_map_,"actual_execution_time",&ur_rtde::RobotState::setActual_execution_time,&RTDEUtility::getDouble);
+  setupCallback(cb_map_,"robot_mode",&ur_rtde::RobotState::setRobot_mode , &RTDEUtility::getInt32); 
+  setupCallback(cb_map_,"joint_mode",&ur_rtde::RobotState::setJoint_mode, &RTDEUtility::unpackVector6Int32); 
+  setupCallback(cb_map_,"safety_mode",&ur_rtde::RobotState::setSafety_mode, &RTDEUtility::getInt32);
+  setupCallback(cb_map_,"runtime_state",&ur_rtde::RobotState::setRuntime_state, &RTDEUtility::getUInt32);
 
   // joint space
-  setupCallback(cb_map_,"target_q",&ur_rtde::RobotState::setTarget_q);
-  setupCallback(cb_map_,"target_qd",&ur_rtde::RobotState::setTarget_qd);
-  setupCallback(cb_map_,"target_qdd",&ur_rtde::RobotState::setTarget_qdd);
-  setupCallback(cb_map_,"actual_q",&ur_rtde::RobotState::setActual_q);
-  setupCallback(cb_map_,"actual_qd",&ur_rtde::RobotState::setActual_qd);
+  setupCallback(cb_map_,"target_q",&ur_rtde::RobotState::setTarget_q, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"target_qd",&ur_rtde::RobotState::setTarget_qd, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"target_qdd",&ur_rtde::RobotState::setTarget_qdd, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"actual_q",&ur_rtde::RobotState::setActual_q, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"actual_qd",&ur_rtde::RobotState::setActual_qd, &RTDEUtility::unpackVector6d);
 
   // cartesian space
-  setupCallback(cb_map_,"actual_TCP_pose",&ur_rtde::RobotState::setActual_TCP_pose);
-  setupCallback(cb_map_,"actual_TCP_speed",&ur_rtde::RobotState::setActual_TCP_speed);
-  setupCallback(cb_map_,"target_TCP_pose",&ur_rtde::RobotState::setTarget_TCP_pose);
-  setupCallback(cb_map_,"target_TCP_speed",&ur_rtde::RobotState::setTarget_TCP_speed);
+  setupCallback(cb_map_,"actual_TCP_pose",&ur_rtde::RobotState::setActual_TCP_pose, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"actual_TCP_speed",&ur_rtde::RobotState::setActual_TCP_speed, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"target_TCP_pose",&ur_rtde::RobotState::setTarget_TCP_pose, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"target_TCP_speed",&ur_rtde::RobotState::setTarget_TCP_speed, &RTDEUtility::unpackVector6d);
 
   // drives and control
-  setupCallback(cb_map_,"joint_control_output",&ur_rtde::RobotState::setJoint_control_output);
-  setupCallback(cb_map_,"joint_temperatures",&ur_rtde::RobotState::setJoint_temperatures);
-  setupCallback(cb_map_,"speed_scaling",&ur_rtde::RobotState::setSpeed_scaling);
-  setupCallback(cb_map_,"target_speed_fraction",&ur_rtde::RobotState::setTarget_speed_fraction);
+  setupCallback(cb_map_,"joint_control_output",&ur_rtde::RobotState::setJoint_control_output, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"joint_temperatures",&ur_rtde::RobotState::setJoint_temperatures, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"speed_scaling",&ur_rtde::RobotState::setSpeed_scaling, &RTDEUtility::getDouble);
+  setupCallback(cb_map_,"target_speed_fraction",&ur_rtde::RobotState::setTarget_speed_fraction,&RTDEUtility::getDouble);
 
   // currents and torque
-  setupCallback(cb_map_,"target_current",&ur_rtde::RobotState::setTarget_current);
-  setupCallback(cb_map_,"actual_current",&ur_rtde::RobotState::setActual_current);
-  setupCallback(cb_map_,"target_moment",&ur_rtde::RobotState::setTarget_moment);
-  setupCallback(cb_map_,"actual_momentum",&ur_rtde::RobotState::setActual_momentum);
-  setupCallback(cb_map_,"actual_main_voltage",&ur_rtde::RobotState::setActual_main_voltage);
-  setupCallback(cb_map_,"actual_robot_voltage",&ur_rtde::RobotState::setActual_robot_voltage);
-  setupCallback(cb_map_,"actual_robot_current",&ur_rtde::RobotState::setActual_robot_current);
-  setupCallback(cb_map_,"actual_joint_voltage",&ur_rtde::RobotState::setActual_joint_voltage);
+  setupCallback(cb_map_,"target_current",&ur_rtde::RobotState::setTarget_current, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"actual_current",&ur_rtde::RobotState::setActual_current, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"target_moment",&ur_rtde::RobotState::setTarget_moment, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_,"actual_momentum",&ur_rtde::RobotState::setActual_momentum,&RTDEUtility::getDouble);
+  setupCallback(cb_map_,"actual_main_voltage",&ur_rtde::RobotState::setActual_main_voltage,&RTDEUtility::getDouble);
+  setupCallback(cb_map_,"actual_robot_voltage",&ur_rtde::RobotState::setActual_robot_voltage,&RTDEUtility::getDouble);
+  setupCallback(cb_map_,"actual_robot_current",&ur_rtde::RobotState::setActual_robot_current,&RTDEUtility::getDouble);
+  setupCallback(cb_map_,"actual_joint_voltage",&ur_rtde::RobotState::setActual_joint_voltage, &RTDEUtility::unpackVector6d);
 
   /* actual_tool_acc is the only function relying on unpackVec3 which can not be differentiated from unpackVec6 
     by the templates of setupCallback() as both are type vec<double>. Therefore pass the parsing function manually (4th arg)
@@ -609,16 +535,16 @@ void RTDE::setupCallbacks()
   setupCallback(cb_map_,"actual_tool_accelerometer",&ur_rtde::RobotState::setActual_tool_accelerometer, &RTDEUtility::unpackVector3d);
  
   // I/O
-  setupCallback(cb_map_,"actual_digital_input_bits",&ur_rtde::RobotState::setActual_digital_input_bits);
-  setupCallback(cb_map_,"actual_digital_output_bits",&ur_rtde::RobotState::setActual_digital_output_bits);
-  setupCallback(cb_map_,"robot_status_bits",&ur_rtde::RobotState::setRobot_status);
-  setupCallback(cb_map_,"safety_status_bits",&ur_rtde::RobotState::setSafety_status_bits);
+  setupCallback(cb_map_,"actual_digital_input_bits",&ur_rtde::RobotState::setActual_digital_input_bits, &RTDEUtility::getUInt64);
+  setupCallback(cb_map_,"actual_digital_output_bits",&ur_rtde::RobotState::setActual_digital_output_bits, &RTDEUtility::getUInt64);
+  setupCallback(cb_map_,"robot_status_bits",&ur_rtde::RobotState::setRobot_status,&RTDEUtility::getUInt32);
+  setupCallback(cb_map_,"safety_status_bits",&ur_rtde::RobotState::setSafety_status_bits,&RTDEUtility::getUInt32);
 
   // io registers preliminary - strongly suggest refactoring their storage to arrays to reduce code duplication and improve maintainability and remove the macros again :)
-  setupCallback(cb_map_,"standard_analog_input0",&ur_rtde::RobotState::setStandard_analog_input_0);
-  setupCallback(cb_map_,"standard_analog_input1",&ur_rtde::RobotState::setStandard_analog_input_1);
-  setupCallback(cb_map_,"standard_analog_output0",&ur_rtde::RobotState::setStandard_analog_output_0);
-  setupCallback(cb_map_,"standard_analog_output1",&ur_rtde::RobotState::setStandard_analog_output_1);
+  setupCallback(cb_map_,"standard_analog_input0",&ur_rtde::RobotState::setStandard_analog_input_0, &RTDEUtility::getDouble);
+  setupCallback(cb_map_,"standard_analog_input1",&ur_rtde::RobotState::setStandard_analog_input_1, &RTDEUtility::getDouble);
+  setupCallback(cb_map_,"standard_analog_output0",&ur_rtde::RobotState::setStandard_analog_output_0, &RTDEUtility::getDouble);
+  setupCallback(cb_map_,"standard_analog_output1",&ur_rtde::RobotState::setStandard_analog_output_1, &RTDEUtility::getDouble);
 
   OUTPUT_REGISTER_CALLBACK(0)
   OUTPUT_REGISTER_CALLBACK(1)
