@@ -10,12 +10,22 @@
 #include <cstdint>
 #include <string>
 #include <utility>
+#include <functional> // for std::function in callback_map
+#include <unordered_map> // for callback_map
 
 // forward declarations
 namespace ur_rtde { class RobotState; }
 
 namespace ur_rtde
 {
+  namespace details
+  {
+    // convenience alias for callback functions used within RTDE::recieveData()
+    using cb_fun = std::function<void(std::shared_ptr<RobotState>, std::vector<char>&, uint32_t)>;
+    // convenience alias for the callback map of string ids and callback funtion objects
+    using cb_map = std::unordered_map<std::string, details::cb_fun>;
+  }
+
 class RTDE
 {
  public:
@@ -143,6 +153,9 @@ class RTDE
   RTDE_EXPORT bool sendInputSetup(const std::vector<std::string> &input_names);
 
  private:
+  void setupCallbacks(); //!< creates all callback functions on startup of the controller
+  details::cb_map cb_map_; //!< stores callback functions for handling the messages recieved by recieveData
+
   std::string hostname_;
   int port_;
   ConnectionState conn_state_;
