@@ -550,7 +550,7 @@ namespace details
     void (ur_rtde::RobotState::*fun)(T))
   {
     // remove all type qualifiers of T to deduce the parsing function without having to provide const overloads for all types
-    setupCallback(map,key,fun,&details::parsingFunction<std::decay<T>::type>);
+    setupCallback(map,key,fun,&details::parsingFunction<typename std::decay<T>::type>);
   }
 
   // helper makros to reduce the manually written code for registration of callbacks for output_registers
