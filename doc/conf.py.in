@@ -40,11 +40,11 @@ sphinx.environment.BuildEnvironment.warn_node = _warn_node
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['breathe', 'sphinx.ext.autodoc']
+extensions = ['breathe'] # 'sphinx.ext.autodoc'
 
 # breathe config
 breathe_default_project = "@PROJECT_NAME@"
-breathe_domain_by_extension = {"c": "c", "h": "c", "cpp": "cpp", "hpp": "cpp"}
+breathe_domain_by_extension = {"h": "cpp"}
 breathe_projects = {"@PROJECT_NAME@": "@DOXY_OUTPUT_DIR@/xml"}
 breathe_show_define_initializer = False
 
