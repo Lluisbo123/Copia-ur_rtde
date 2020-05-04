@@ -1,17 +1,18 @@
+#include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/rtde_utility.h>
-#include <ur_rtde/robot_state.h>
-#include <iostream>
-#include <tuple>
-#include <string>
-#include <cstdint>
-#include <memory>
 
-#include <boost/asio/write.hpp>
-#include <boost/asio/read.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/detail/socket_option.hpp>
+#include <boost/asio/read.hpp>
 #include <boost/asio/socket_base.hpp>
+#include <boost/asio/write.hpp>
+#include <cstdint>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <tuple>
+#include <type_traits>
 
 const unsigned HEADER_SIZE = 3;
 #define RTDE_PROTOCOL_VERSION 2
@@ -35,6 +36,7 @@ namespace ur_rtde
 RTDE::RTDE(const std::string hostname, int port)
     : hostname_(std::move(hostname)), port_(port), conn_state_(ConnectionState::DISCONNECTED)
 {
+  setupCallbacks();
 }
 
 RTDE::~RTDE() = default;
@@ -56,7 +58,7 @@ void RTDE::connect()
     conn_state_ = ConnectionState::CONNECTED;
     std::cout << "Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
   }
-  catch (boost::system::system_error const& e)
+  catch (boost::system::system_error const &e)
   {
     std::cout << "Warning: Could not connect to: " << hostname_ << " at " << port_ << ", verify the IP" << std::endl;
     throw;
@@ -347,7 +349,7 @@ void RTDE::receive()
       break;
     }
 
-    // TODO: Handle IN_USE and NOT_FOUND case
+      // TODO: Handle IN_USE and NOT_FOUND case
 
     default:
       std::cout << "Unknown Command: " << static_cast<int>(msg_cmd) << std::endl;
@@ -392,278 +394,20 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
       message_offset = 0;
 
       RTDEUtility::getUChar(data, message_offset);
-      
+
       // Read all the variables specified by the user.
       for (const auto &output_name : output_names_)
       {
-        if (output_name == "timestamp")
-          robot_state->setTimestamp(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "target_q")
-          robot_state->setTarget_q(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "target_qd")
-          robot_state->setTarget_qd(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "target_qdd")
-          robot_state->setTarget_qdd(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "target_current")
-          robot_state->setTarget_current(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "target_moment")
-          robot_state->setTarget_moment(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "actual_q")
-          robot_state->setActual_q(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "actual_qd")
-          robot_state->setActual_qd(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "actual_current")
-          robot_state->setActual_current(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "joint_control_output")
-          robot_state->setJoint_control_output(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "actual_TCP_pose")
-          robot_state->setActual_TCP_pose(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "actual_TCP_speed")
-          robot_state->setActual_TCP_speed(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "actual_TCP_force")
-          robot_state->setActual_TCP_force(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "target_TCP_pose")
-          robot_state->setTarget_TCP_pose(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "target_TCP_speed")
-          robot_state->setTarget_TCP_speed(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "actual_digital_input_bits")
-          robot_state->setActual_digital_input_bits(RTDEUtility::getUInt64(data, message_offset));
-        else if (output_name == "joint_temperatures")
-          robot_state->setJoint_temperatures(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "actual_execution_time")
-          robot_state->setActual_execution_time(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "robot_mode")
-          robot_state->setRobot_mode(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "robot_status_bits")
-          robot_state->setRobot_status(RTDEUtility::getUInt32(data, message_offset));
-        else if (output_name == "safety_status_bits")
-          robot_state->setSafety_status_bits(RTDEUtility::getUInt32(data, message_offset));
-        else if (output_name == "joint_mode")
-          robot_state->setJoint_mode(RTDEUtility::unpackVector6Int32(data, message_offset));
-        else if (output_name == "safety_mode")
-          robot_state->setSafety_mode(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "actual_tool_accelerometer")
-          robot_state->setActual_tool_accelerometer(RTDEUtility::unpackVector3d(data, message_offset));
-        else if (output_name == "speed_scaling")
-          robot_state->setSpeed_scaling(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "target_speed_fraction")
-          robot_state->setTarget_speed_fraction(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "actual_momentum")
-          robot_state->setActual_momentum(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "actual_main_voltage")
-          robot_state->setActual_main_voltage(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "actual_robot_voltage")
-          robot_state->setActual_robot_voltage(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "actual_robot_current")
-          robot_state->setActual_robot_current(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "actual_joint_voltage")
-          robot_state->setActual_joint_voltage(RTDEUtility::unpackVector6d(data, message_offset));
-        else if (output_name == "actual_digital_output_bits")
-          robot_state->setActual_digital_output_bits(RTDEUtility::getUInt64(data, message_offset));
-        else if (output_name == "runtime_state")
-          robot_state->setRuntime_state(RTDEUtility::getUInt32(data, message_offset));
-        else if (output_name == "standard_analog_input0")
-          robot_state->setStandard_analog_input_0(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "standard_analog_input1")
-          robot_state->setStandard_analog_input_1(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "standard_analog_output0")
-          robot_state->setStandard_analog_output_0(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "standard_analog_output1")
-          robot_state->setStandard_analog_output_1(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_int_register_0")
-          robot_state->setOutput_int_register_0(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_1")
-          robot_state->setOutput_int_register_1(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_2")
-          robot_state->setOutput_int_register_2(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_3")
-          robot_state->setOutput_int_register_3(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_4")
-          robot_state->setOutput_int_register_4(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_5")
-          robot_state->setOutput_int_register_5(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_6")
-          robot_state->setOutput_int_register_6(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_7")
-          robot_state->setOutput_int_register_7(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_8")
-          robot_state->setOutput_int_register_8(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_9")
-          robot_state->setOutput_int_register_9(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_10")
-          robot_state->setOutput_int_register_10(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_11")
-          robot_state->setOutput_int_register_11(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_12")
-          robot_state->setOutput_int_register_12(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_13")
-          robot_state->setOutput_int_register_13(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_14")
-          robot_state->setOutput_int_register_14(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_15")
-          robot_state->setOutput_int_register_15(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_16")
-          robot_state->setOutput_int_register_16(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_17")
-          robot_state->setOutput_int_register_17(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_18")
-          robot_state->setOutput_int_register_18(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_19")
-          robot_state->setOutput_int_register_19(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_20")
-          robot_state->setOutput_int_register_20(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_21")
-          robot_state->setOutput_int_register_21(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_22")
-          robot_state->setOutput_int_register_22(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_23")
-          robot_state->setOutput_int_register_23(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_24")
-          robot_state->setOutput_int_register_24(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_25")
-          robot_state->setOutput_int_register_25(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_26")
-          robot_state->setOutput_int_register_26(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_27")
-          robot_state->setOutput_int_register_27(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_28")
-          robot_state->setOutput_int_register_28(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_29")
-          robot_state->setOutput_int_register_29(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_30")
-          robot_state->setOutput_int_register_30(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_31")
-          robot_state->setOutput_int_register_31(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_32")
-          robot_state->setOutput_int_register_32(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_33")
-          robot_state->setOutput_int_register_33(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_34")
-          robot_state->setOutput_int_register_34(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_35")
-          robot_state->setOutput_int_register_35(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_36")
-          robot_state->setOutput_int_register_36(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_37")
-          robot_state->setOutput_int_register_37(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_38")
-          robot_state->setOutput_int_register_38(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_39")
-          robot_state->setOutput_int_register_39(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_40")
-          robot_state->setOutput_int_register_40(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_41")
-          robot_state->setOutput_int_register_41(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_42")
-          robot_state->setOutput_int_register_42(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_43")
-          robot_state->setOutput_int_register_43(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_44")
-          robot_state->setOutput_int_register_44(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_45")
-          robot_state->setOutput_int_register_45(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_46")
-          robot_state->setOutput_int_register_46(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_int_register_47")
-          robot_state->setOutput_int_register_47(RTDEUtility::getInt32(data, message_offset));
-        else if (output_name == "output_double_register_0")
-          robot_state->setOutput_double_register_0(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_1")
-          robot_state->setOutput_double_register_1(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_2")
-          robot_state->setOutput_double_register_2(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_3")
-          robot_state->setOutput_double_register_3(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_4")
-          robot_state->setOutput_double_register_4(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_5")
-          robot_state->setOutput_double_register_5(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_6")
-          robot_state->setOutput_double_register_6(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_7")
-          robot_state->setOutput_double_register_7(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_8")
-          robot_state->setOutput_double_register_8(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_9")
-          robot_state->setOutput_double_register_9(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_10")
-          robot_state->setOutput_double_register_10(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_11")
-          robot_state->setOutput_double_register_11(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_12")
-          robot_state->setOutput_double_register_12(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_13")
-          robot_state->setOutput_double_register_13(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_14")
-          robot_state->setOutput_double_register_14(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_15")
-          robot_state->setOutput_double_register_15(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_16")
-          robot_state->setOutput_double_register_16(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_17")
-          robot_state->setOutput_double_register_17(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_18")
-          robot_state->setOutput_double_register_18(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_19")
-          robot_state->setOutput_double_register_19(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_20")
-          robot_state->setOutput_double_register_20(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_21")
-          robot_state->setOutput_double_register_21(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_22")
-          robot_state->setOutput_double_register_22(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_23")
-          robot_state->setOutput_double_register_23(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_24")
-          robot_state->setOutput_double_register_24(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_25")
-          robot_state->setOutput_double_register_25(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_26")
-          robot_state->setOutput_double_register_26(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_27")
-          robot_state->setOutput_double_register_27(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_28")
-          robot_state->setOutput_double_register_28(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_29")
-          robot_state->setOutput_double_register_29(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_30")
-          robot_state->setOutput_double_register_30(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_31")
-          robot_state->setOutput_double_register_31(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_32")
-          robot_state->setOutput_double_register_32(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_33")
-          robot_state->setOutput_double_register_33(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_34")
-          robot_state->setOutput_double_register_34(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_35")
-          robot_state->setOutput_double_register_35(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_36")
-          robot_state->setOutput_double_register_36(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_37")
-          robot_state->setOutput_double_register_37(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_38")
-          robot_state->setOutput_double_register_38(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_39")
-          robot_state->setOutput_double_register_39(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_40")
-          robot_state->setOutput_double_register_40(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_41")
-          robot_state->setOutput_double_register_41(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_42")
-          robot_state->setOutput_double_register_42(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_43")
-          robot_state->setOutput_double_register_43(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_44")
-          robot_state->setOutput_double_register_44(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_45")
-          robot_state->setOutput_double_register_45(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_46")
-          robot_state->setOutput_double_register_46(RTDEUtility::getDouble(data, message_offset));
-        else if (output_name == "output_double_register_47")
-          robot_state->setOutput_double_register_47(RTDEUtility::getDouble(data, message_offset));
+        // check if key exists
+        if (cb_map_.count(output_name) > 0)
+        {
+          // call handling function
+          cb_map_[output_name](robot_state, data, message_offset);
+        }
         else
+        {
           DEBUG("Unknown variable name: " << output_name << " please verify the output setup!");
+        }
       }
 
       // TODO: Handle IN_USE and NOT_FOUND case
@@ -711,4 +455,161 @@ std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> RTDE::get
   }
 }
 
+namespace details
+{
+/*! @brief This function creates a callback map entry for a given key
+  @tparam T Fully qualified type of the signature of the function to be called
+  @tparam S Return type of the parsing function, should be of type T with equal or less qualifiers
+  @param map A reference to the callback map
+  @param key The key of the function callback
+  @param fun A pointer to the robot state function that shall be called for the given key with data value T
+  @param parse_fun A pointer to the parsing function, which will parse data and msg_offset to the data value S */
+template <class T, class S>
+void setupCallback(ur_rtde::details::cb_map &map, const std::string &key, void (ur_rtde::RobotState::*fun)(T),
+                   S (*parse_fun)(const std::vector<char> &, uint32_t &))
+{
+  map.emplace(key, [fun, parse_fun](std::shared_ptr<ur_rtde::RobotState> state_ptr, const std::vector<char> &data,
+                                    uint32_t &msg_offset) {
+    // calls robot_state->setVarFun(RTDEUtility::parseVarFun(data,offset))
+    (*state_ptr.*fun)((*parse_fun)(data, msg_offset));
+  });
+}
+
+// helper makros to reduce the manually written code for registration of callbacks for output_registers
+#define NUMBERED_REGISTER_NAME(type, num) "output_" #type "_register_" #num
+#define NUMBERED_REGISTER_FUN(type, num) setOutput_##type##_register_##num
+
+#define OUTPUT_REGISTER_CALLBACK(num)                                                                             \
+  setupCallback(cb_map_, NUMBERED_REGISTER_NAME(int, num), &ur_rtde::RobotState::NUMBERED_REGISTER_FUN(int, num), \
+                &RTDEUtility::getInt32);                                                                          \
+  setupCallback(cb_map_, NUMBERED_REGISTER_NAME(double, num),                                                     \
+                &ur_rtde::RobotState::NUMBERED_REGISTER_FUN(double, num), &RTDEUtility::getDouble);
+}  // namespace details
+
+void RTDE::setupCallbacks()
+{
+  using namespace ur_rtde::details;
+
+  // general
+  setupCallback(cb_map_, "timestamp", &ur_rtde::RobotState::setTimestamp, &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "actual_execution_time", &ur_rtde::RobotState::setActual_execution_time,
+                &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "robot_mode", &ur_rtde::RobotState::setRobot_mode, &RTDEUtility::getInt32);
+  setupCallback(cb_map_, "joint_mode", &ur_rtde::RobotState::setJoint_mode, &RTDEUtility::unpackVector6Int32);
+  setupCallback(cb_map_, "safety_mode", &ur_rtde::RobotState::setSafety_mode, &RTDEUtility::getInt32);
+  setupCallback(cb_map_, "runtime_state", &ur_rtde::RobotState::setRuntime_state, &RTDEUtility::getUInt32);
+
+  // joint space
+  setupCallback(cb_map_, "target_q", &ur_rtde::RobotState::setTarget_q, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "target_qd", &ur_rtde::RobotState::setTarget_qd, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "target_qdd", &ur_rtde::RobotState::setTarget_qdd, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "actual_q", &ur_rtde::RobotState::setActual_q, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "actual_qd", &ur_rtde::RobotState::setActual_qd, &RTDEUtility::unpackVector6d);
+
+  // cartesian space
+  setupCallback(cb_map_, "actual_TCP_pose", &ur_rtde::RobotState::setActual_TCP_pose, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "actual_TCP_speed", &ur_rtde::RobotState::setActual_TCP_speed, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "target_TCP_pose", &ur_rtde::RobotState::setTarget_TCP_pose, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "target_TCP_speed", &ur_rtde::RobotState::setTarget_TCP_speed, &RTDEUtility::unpackVector6d);
+
+  // drives and control
+  setupCallback(cb_map_, "joint_control_output", &ur_rtde::RobotState::setJoint_control_output,
+                &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "joint_temperatures", &ur_rtde::RobotState::setJoint_temperatures,
+                &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "speed_scaling", &ur_rtde::RobotState::setSpeed_scaling, &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "target_speed_fraction", &ur_rtde::RobotState::setTarget_speed_fraction,
+                &RTDEUtility::getDouble);
+
+  // currents and torque
+  setupCallback(cb_map_, "target_current", &ur_rtde::RobotState::setTarget_current, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "actual_current", &ur_rtde::RobotState::setActual_current, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "target_moment", &ur_rtde::RobotState::setTarget_moment, &RTDEUtility::unpackVector6d);
+  setupCallback(cb_map_, "actual_momentum", &ur_rtde::RobotState::setActual_momentum, &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "actual_main_voltage", &ur_rtde::RobotState::setActual_main_voltage, &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "actual_robot_voltage", &ur_rtde::RobotState::setActual_robot_voltage,
+                &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "actual_robot_current", &ur_rtde::RobotState::setActual_robot_current,
+                &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "actual_joint_voltage", &ur_rtde::RobotState::setActual_joint_voltage,
+                &RTDEUtility::unpackVector6d);
+
+  /* actual_tool_acc is the only function relying on unpackVec3 which can not be differentiated from unpackVec6
+    by the templates of setupCallback() as both are type vec<double>. Therefore pass the parsing function manually (4th
+    arg) Long term fix would be to change vec6 to arr6 and and vec3 to arr3 which makes them different types */
+  setupCallback(cb_map_, "actual_tool_accelerometer", &ur_rtde::RobotState::setActual_tool_accelerometer,
+                &RTDEUtility::unpackVector3d);
+
+  // I/O
+  setupCallback(cb_map_, "actual_digital_input_bits", &ur_rtde::RobotState::setActual_digital_input_bits,
+                &RTDEUtility::getUInt64);
+  setupCallback(cb_map_, "actual_digital_output_bits", &ur_rtde::RobotState::setActual_digital_output_bits,
+                &RTDEUtility::getUInt64);
+  setupCallback(cb_map_, "robot_status_bits", &ur_rtde::RobotState::setRobot_status, &RTDEUtility::getUInt32);
+  setupCallback(cb_map_, "safety_status_bits", &ur_rtde::RobotState::setSafety_status_bits, &RTDEUtility::getUInt32);
+
+  // io registers
+  setupCallback(cb_map_, "standard_analog_input0", &ur_rtde::RobotState::setStandard_analog_input_0,
+                &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "standard_analog_input1", &ur_rtde::RobotState::setStandard_analog_input_1,
+                &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "standard_analog_output0", &ur_rtde::RobotState::setStandard_analog_output_0,
+                &RTDEUtility::getDouble);
+  setupCallback(cb_map_, "standard_analog_output1", &ur_rtde::RobotState::setStandard_analog_output_1,
+                &RTDEUtility::getDouble);
+
+  OUTPUT_REGISTER_CALLBACK(0)
+  OUTPUT_REGISTER_CALLBACK(1)
+  OUTPUT_REGISTER_CALLBACK(2)
+  OUTPUT_REGISTER_CALLBACK(3)
+  OUTPUT_REGISTER_CALLBACK(4)
+  OUTPUT_REGISTER_CALLBACK(5)
+  OUTPUT_REGISTER_CALLBACK(6)
+  OUTPUT_REGISTER_CALLBACK(7)
+
+  OUTPUT_REGISTER_CALLBACK(8)
+  OUTPUT_REGISTER_CALLBACK(9)
+  OUTPUT_REGISTER_CALLBACK(10)
+  OUTPUT_REGISTER_CALLBACK(11)
+  OUTPUT_REGISTER_CALLBACK(12)
+  OUTPUT_REGISTER_CALLBACK(13)
+  OUTPUT_REGISTER_CALLBACK(14)
+  OUTPUT_REGISTER_CALLBACK(15)
+
+  OUTPUT_REGISTER_CALLBACK(16)
+  OUTPUT_REGISTER_CALLBACK(17)
+  OUTPUT_REGISTER_CALLBACK(18)
+  OUTPUT_REGISTER_CALLBACK(19)
+  OUTPUT_REGISTER_CALLBACK(20)
+  OUTPUT_REGISTER_CALLBACK(21)
+  OUTPUT_REGISTER_CALLBACK(22)
+  OUTPUT_REGISTER_CALLBACK(23)
+
+  OUTPUT_REGISTER_CALLBACK(24)
+  OUTPUT_REGISTER_CALLBACK(25)
+  OUTPUT_REGISTER_CALLBACK(26)
+  OUTPUT_REGISTER_CALLBACK(27)
+  OUTPUT_REGISTER_CALLBACK(28)
+  OUTPUT_REGISTER_CALLBACK(29)
+  OUTPUT_REGISTER_CALLBACK(30)
+  OUTPUT_REGISTER_CALLBACK(31)
+
+  OUTPUT_REGISTER_CALLBACK(32)
+  OUTPUT_REGISTER_CALLBACK(33)
+  OUTPUT_REGISTER_CALLBACK(34)
+  OUTPUT_REGISTER_CALLBACK(35)
+  OUTPUT_REGISTER_CALLBACK(36)
+  OUTPUT_REGISTER_CALLBACK(37)
+  OUTPUT_REGISTER_CALLBACK(38)
+  OUTPUT_REGISTER_CALLBACK(39)
+
+  OUTPUT_REGISTER_CALLBACK(40)
+  OUTPUT_REGISTER_CALLBACK(41)
+  OUTPUT_REGISTER_CALLBACK(42)
+  OUTPUT_REGISTER_CALLBACK(43)
+  OUTPUT_REGISTER_CALLBACK(44)
+  OUTPUT_REGISTER_CALLBACK(45)
+  OUTPUT_REGISTER_CALLBACK(46)
+  OUTPUT_REGISTER_CALLBACK(47)
+}
 }  // namespace ur_rtde
