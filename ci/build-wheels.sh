@@ -9,6 +9,7 @@ cd ${PYHOME}
 /opt/python/cp35-cp35m/bin/pip3.5 install pip --upgrade
 /opt/python/cp36-cp36m/bin/pip3.6 install pip --upgrade
 /opt/python/cp37-cp37m/bin/pip3.7 install pip --upgrade
+/opt/python/cp38-cp38m/bin/pip3.8 install pip --upgrade
 
 /opt/python/cp37-cp37m/bin/pip install twine
 /opt/python/cp37-cp37m/bin/pip install --prefer-binary cmake

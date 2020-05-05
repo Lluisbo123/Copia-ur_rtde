@@ -6,7 +6,9 @@ stages:
 
 build:
   stage: build
-  image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1604
+  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - mkdir build
     - cd build
@@ -17,20 +19,18 @@ build_pypi:
   stage: build_pypi
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:manylinux
   when: manual
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - ./ci/build-wheels.sh
 
 sphinx_html:
   stage: doc
-  image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1804-doc
-  before_script:
-      # Install doc dependencies
-      - apt-get update && apt-get -y install fonts-dejavu fonts-liberation fonts-noto 
-      - pip3 install breathe
+  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804-doc
   script:
     - mkdir build
     - cd build
-    - cmake -DCODE:BOOL=OFF -DPYTHON_BINDINGS:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
+    - cmake -DCODE:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
     - make doc
   artifacts:
     paths:
@@ -44,7 +44,7 @@ pages:
 #    - tags@prier/ur_rtde
   dependencies:
     - sphinx_html
-  image: registry.gitlab.com/sdurobotics/docker-images/robwork-build:ubuntu-1804-doc
+  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804-doc
   script:
     - mv build/doc/html public
   artifacts:

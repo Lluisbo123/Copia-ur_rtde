@@ -38,19 +38,12 @@ You can install Boost on Ubuntu using:
 
    sudo apt-get install libboost-all-dev
 
-*Optionally* if you want to use ur_rtde with Python install pybind11 using:
-
-*Python 2*
-
-.. code-block:: shell
-
-   pip install --user pybind11
-
-*Python 3*
+*Optionally* if you want to use ur_rtde with Python make sure pybind11 is checked out from
+the submodule before attempting to build using:
 
 .. code-block:: shell
 
-   pip3 install --user pybind11
+   git submodule update --init --recursive
 
 
 macOS
@@ -61,11 +54,12 @@ On macOS install boost with:
 
    brew install boost 
 
-and optionally pybind11 using:
+*Optionally* if you want to use ur_rtde with Python make sure pybind11 is checked out from
+the submodule before attempting to build using:
 
 .. code-block:: shell
 
-   brew install pybind11
+   git submodule update --init --recursive
 
 
 Windows
@@ -79,6 +73,13 @@ https://sourceforge.net/projects/boost/files/boost-binaries/
 
 Depending on your setup it may be required to add the Boost library path
 to the system environment variables.
+
+*Optionally* if you want to use ur_rtde with Python make sure pybind11 is checked out from
+the submodule before attempting to build using:
+
+.. code-block:: shell
+
+   git submodule update --init --recursive
 
 Compatible Robots
 =================
@@ -109,6 +110,7 @@ Linux (Ubuntu) and macOS
 
     git clone https://gitlab.com/sdurobotics/ur_rtde.git
     cd ur_rtde
+    git submodule update --init --recursive
     mkdir build
     cd build
     cmake ..
@@ -120,7 +122,7 @@ Linux (Ubuntu) and macOS
    :language: bash
 
 .. note::
-    If you want Python 2.x support you must use :bash:`cmake -DPYBIND11_PYTHON_VERSION=2.x ..` in this step also, since the
+    If you want Python 2.x support you must use :bash:`cmake -DPYBIND11_PYTHON_VERSION=2.x ..` in this step, since the
     default interpreter is Python3. If you do not want to use Python at all, please
     use :bash:`cmake -DPYTHON_BINDINGS:BOOL=OFF ..`
 
