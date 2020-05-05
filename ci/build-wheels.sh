@@ -25,7 +25,6 @@ pys=(${pys[@]//*34*/})
 
 # Compile wheels
 for PYBIN in "${pys[@]}"; do
-    "${PYBIN}/pip" install pybind11
     "${PYBIN}/pip" wheel . -w wheelhouse/
     "${PYBIN}/python" setup.py sdist -d wheelhouse/
 done
