@@ -7,6 +7,7 @@ list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # options
 option(CODE "Build primary libraries and executables." ON)
 option(PYTHON_BINDINGS "Build python bindings for libraries" ON)
+option(USE_WERROR "Use more strict compile flags" OFF)
 
 if(NOT DEFINED DOC)
 	set(DOC OFF CACHE STRING
@@ -21,8 +22,8 @@ if(${CODE})
 	set(CMAKE_CXX_STANDARD 11)
 	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 	set(CMAKE_CXX_EXTENSIONS OFF)
-	if( DEFINED USE_WERROR)
-		set(WALL "-Wall -Wno-strict-aliasing -Wno-unused-function -Wno-pragmas ")
+	if(${USE_WERROR})
+		set(WALL "-Wall -Wno-strict-aliasing -Wno-unused-function -Wno-pragmas")
 		set(WERROR "-Werror")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WALL} ${WERROR}")
 		message(STATUS "CompileFlags: ${CMAKE_CXX_FLAGS}")
@@ -46,8 +47,15 @@ if(${CODE})
 	find_package(Threads)
 
 	if(${PYTHON_BINDINGS})
-		set(pybind11_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-		find_package(pybind11 REQUIRED)
+		# This is required to find python site-packages for installation of ur_rtde python bindings.
+		if(NOT PYBIND11_PYTHON_VERSION)
+			set(PYBIND11_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling modules")
+		endif()
+		set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4)
+		find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
+
+		# Find pybind11 from submodule
+		add_subdirectory(pybind11)
 	endif()
 endif()
 
@@ -74,10 +82,6 @@ set(LIB_HEADER_FILES
 		include/ur_rtde/rtde_receive_interface_doc.h
 		include/ur_rtde/rtde_io_interface.h
 		include/ur_rtde/rtde_io_interface_doc.h)
-
-if(${PYTHON_BINDINGS})
-	find_package(pybind11 REQUIRED)
-endif()
 
 if(NOT DOC STREQUAL "OFF")
 	add_subdirectory(doc)
