@@ -399,6 +399,23 @@ class RTDEControlInterface
     */
   RTDE_EXPORT bool isProgramRunning();
 
+  /**
+    * @brief Enable a watchdog for the communication with a specified minimum frequency for which an input update is
+    * expected to arrive. The watchdog is useful for safety critical realtime applications eg. servoing. The default
+    * action taken is to shutdown the control, if the watchdog is not kicked with the minimum frequency.
+    *
+    * Preferably you would call this function right after the RTDEControlInterface has been constructed.
+    *
+    * @param min_frequency The minimum frequency an input update is expected to arrive defaults to 10Hz.
+    */
+  RTDE_EXPORT bool setWatchdog(double min_frequency=10.0);
+
+  /**
+    * @brief Kicks the watchdog safeguarding the communication. Normally you would kick the watchdog in your control
+    * loop. Be sure to kick it as often as specified by the minimum frequency of the watchdog.
+    */
+  RTDE_EXPORT bool kickWatchdog();
+
  private:
   bool setupRecipes(const double &frequency);
 

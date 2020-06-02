@@ -272,6 +272,10 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
       "input_double_register_11", "input_double_register_12", "input_double_register_13"};
   rtde_->sendInputSetup(get_inverse_kin_input);
 
+  // Recipe 12
+  std::vector<std::string> watchdog_input = {"input_int_register_23"};
+  rtde_->sendInputSetup(watchdog_input);
+
   return true;
 }
 
@@ -1037,6 +1041,23 @@ bool RTDEControlInterface::triggerProtectiveStop()
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::PROTECTIVE_STOP;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::setWatchdog(double min_frequency)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SET_WATCHDOG;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.val_.push_back(min_frequency);
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::kickWatchdog()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::NO_CMD;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_12;
   return sendCommand(robot_cmd);
 }
 

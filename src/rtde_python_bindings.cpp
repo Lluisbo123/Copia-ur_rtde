@@ -107,6 +107,8 @@ PYBIND11_MODULE(rtde_control, m)
            DOC(ur_rtde, RTDEControlInterface, triggerProtectiveStop), py::call_guard<py::gil_scoped_release>())
       .def("stopL", &RTDEControlInterface::stopL, py::call_guard<py::gil_scoped_release>())
       .def("stopJ", &RTDEControlInterface::stopJ, py::call_guard<py::gil_scoped_release>())
+      .def("setWatchdog", &RTDEControlInterface::setWatchdog, py::arg("min_frequency") = 10.0, py::call_guard<py::gil_scoped_release>())
+      .def("kickWatchdog", &RTDEControlInterface::kickWatchdog, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control

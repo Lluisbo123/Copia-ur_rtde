@@ -78,6 +78,7 @@ class RTDE
       MOVEP = 33,
       STOPL = 34,
       STOPJ = 35,
+      SET_WATCHDOG = 36,
       STOP_SCRIPT = 255
     };
 
@@ -93,7 +94,8 @@ class RTDE
       RECIPE_8 = 8,
       RECIPE_9 = 9,
       RECIPE_10 = 10,
-      RECIPE_11 = 11
+      RECIPE_11 = 11,
+      RECIPE_12 = 12
     };
 
     RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)

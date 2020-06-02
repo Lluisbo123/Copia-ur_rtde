@@ -521,6 +521,9 @@ void RTDE::setupCallbacks()
   setupCallback(cb_map_, "target_speed_fraction", &ur_rtde::RobotState::setTarget_speed_fraction,
                 &RTDEUtility::getDouble);
 
+  // forces
+  setupCallback(cb_map_, "actual_TCP_force", &ur_rtde::RobotState::setActual_TCP_force, &RTDEUtility::unpackVector6d);
+
   // currents and torque
   setupCallback(cb_map_, "target_current", &ur_rtde::RobotState::setTarget_current, &RTDEUtility::unpackVector6d);
   setupCallback(cb_map_, "actual_current", &ur_rtde::RobotState::setActual_current, &RTDEUtility::unpackVector6d);
