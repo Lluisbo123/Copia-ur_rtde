@@ -93,7 +93,7 @@ class Gripper2f85:
         :return: True on successful reception of ack, false if no ack was received, indicating the set may not
         have been effective.
         """
-        return self._set_vars(OrderedDict[(variable, value)])
+        return self._set_vars(OrderedDict([(variable, value)]))
 
     def _get_var(self, variable: str):
         """Sends the appropriate command to retrieve the value of a variable from the gripper, blocking until the
