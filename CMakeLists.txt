@@ -217,39 +217,9 @@ if(${CODE})
 				)
 	endif()
 
-	set(RTDE_RECEIVE_CLIENT_SOURCE_FILES src/rtde_receive_client.cpp)
-	add_executable(rtde_receive_client ${RTDE_RECEIVE_CLIENT_SOURCE_FILES})
-	target_include_directories(rtde_receive_client
-			PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
-	target_link_libraries(rtde_receive_client PRIVATE
-			rtde
-			${Boost_SYSTEM_LIBRARY}
-			${Boost_THREAD_LIBRARY})
-
-	set(RTDE_SEND_CLIENT_SOURCE_FILES src/rtde_send_client.cpp)
-	add_executable(rtde_send_client ${RTDE_SEND_CLIENT_SOURCE_FILES})
-	target_include_directories(rtde_send_client
-			PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
-	target_link_libraries(rtde_send_client PRIVATE
-			rtde
-			${Boost_SYSTEM_LIBRARY}
-			${Boost_THREAD_LIBRARY})
-
-	set(RTDE_IO_CLIENT_SOURCE_FILES src/rtde_io_client.cpp)
-	add_executable(rtde_io_client ${RTDE_IO_CLIENT_SOURCE_FILES})
-	target_include_directories(rtde_io_client
-			PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
-	target_link_libraries(rtde_io_client PRIVATE
-			rtde
-			${Boost_SYSTEM_LIBRARY}
-			${Boost_THREAD_LIBRARY})
-
 	generate_export_header(rtde EXPORT_FILE_NAME ${CMAKE_CURRENT_SOURCE_DIR}/include/ur_rtde/rtde_export.h)
 
 	add_library(ur_rtde::rtde ALIAS rtde)
-	add_executable(ur_rtde::rtde_receive_client ALIAS rtde_receive_client)
-	add_executable(ur_rtde::rtde_send_client ALIAS rtde_send_client)
-	add_executable(ur_rtde::rtde_io_client ALIAS rtde_io_client)
 
 	if(${EXAMPLES})
 		add_executable(ur_rtde::servoj_example ALIAS servoj_example)
