@@ -40,8 +40,8 @@ pages:
   stage: deploy
   variables:
     GIT_STRATEGY: none
-#  only:
-#    - tags@prier/ur_rtde
+  only:
+    - master
   dependencies:
     - sphinx_html
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804-doc

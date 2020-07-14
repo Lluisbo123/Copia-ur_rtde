@@ -163,6 +163,7 @@ PYBIND11_MODULE(rtde_receive, m)
            py::call_guard<py::gil_scoped_release>())
       .def("getActualDigitalOutputBits", &RTDEReceiveInterface::getActualDigitalOutputBits, DOC(ur_rtde, RTDEReceiveInterface, getActualDigitalOutputBits),
            py::call_guard<py::gil_scoped_release>())
+      .def("getDigitalOutState", &RTDEReceiveInterface::getDigitalOutState, py::call_guard<py::gil_scoped_release>())
       .def("getRuntimeState", &RTDEReceiveInterface::getRuntimeState, DOC(ur_rtde, RTDEReceiveInterface, getRuntimeState), py::call_guard<py::gil_scoped_release>())
       .def("getStandardAnalogInput0", &RTDEReceiveInterface::getStandardAnalogInput0, DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogInput0),
            py::call_guard<py::gil_scoped_release>())

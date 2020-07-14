@@ -4,6 +4,7 @@ import sys
 import platform
 import subprocess
 
+from os import path
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
@@ -18,6 +19,9 @@ class CMakeExtension(Extension):
 
 class CMakeBuild(build_ext):
     def run(self):
+        if path.exists('.git'):
+            subprocess.check_call(['git', 'submodule', 'update', '--init', '--recursive'])
+
         try:
             out = subprocess.check_output(['cmake', '--version'])
         except OSError:
@@ -78,7 +82,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name="ur_rtde",
-    version="1.2.3",
+    version="1.2.4",
     author="Anders Prier Lindvig",
     author_email="anpl@mmmi.sdu.dk",
     description="Python interface for sending and receiving data to/from a UR robot using the Real-Time Data Exchange (RTDE) interface of the robot",

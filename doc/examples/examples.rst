@@ -6,7 +6,10 @@ This section contains examples of how to use the :ref:`RTDE Control Interface <r
 
 .. warning::
    It is your own responsibility to verify that the movements performed by these examples are collision-free and safe
-   to execute on the robot. When in doubt use the simulator provided by Universal Robots.
+   to execute on the robot. When in doubt, use the simulator provided by Universal Robots.
+
+.. role:: bash(code)
+   :language: bash
 
 CMake Example
 =============
@@ -50,7 +53,7 @@ C++:
 .. code-block:: c++
 
    /* The constructor takes the IP address of the robot, by default all variables are
-    * transmitted. Optionally only a subset of variables, specified by vector, are transmitted.
+    * transmitted. Optionally only a subset of variables, specified by a vector, are transmitted.
     */
    RTDEReceiveInterface rtde_receive("127.0.0.1");
    std::vector<double> joint_positions = rtde_receive.getActualQ();
@@ -88,35 +91,73 @@ Python:
 
 Forcemode Example
 =================
-This example will start moving the robot downwards with -20N in the z-axis for 1 second, followed by a move
-upwards with 20N in the z-axis for 1 second.
+This example will start moving the robot downwards with -10N in the z-axis for 2 seconds, followed by a move
+upwards with 10N in the z-axis for 2 seconds.
+
+You can find the source code of this example under :file:`examples/cpp/forcemode_example.cpp`, if you compiled
+ur_rtde with examples you can run this example from the *bin* folder. If you want to run the python example
+navigate to :file:`examples/py/` and run :bash:`python3 forcemode_example.py`.
+
+C++:
 
 .. code-block:: c++
 
    #include <ur_rtde/rtde_control_interface.h>
-   #include <iostream> // only needed for the printout
-   #include <thread> // only needed for the delay
+   #include <thread>
+   #include <chrono>
+   #include <iostream>
 
    using namespace ur_rtde;
+   using namespace std::chrono;
 
    int main(int argc, char* argv[])
    {
-      RTDEControlInterface rtde_control("127.0.0.1");
-      std::vector<double> task_frame = {0, 0, 0, 0, 0, 0};
-      std::vector<int> selection_vector = {0, 0, 1, 0, 0, 0};
-      std::vector<double> wrench_down = {0, 0, -20, 0, 0, 0};
-      std::vector<double> wrench_up = {0, 0, 20, 0, 0, 0};
-      int force_type = 2;
-      std::vector<double> limits = {2, 2, 1.5, 1, 1, 1};
+     RTDEControlInterface rtde_control("127.0.0.1");
 
-      rtde_control.forceModeStart(task_frame, selection_vector, wrench_down, force_type, limits);
-      std::cout << std::endl << "Going Down!" << std::endl;
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      std::cout << std::endl << "Going Up!" << std::endl << std::endl;
-      rtde_control.forceModeUpdate(wrench_up);
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      rtde_control.forceModeStop();
+     std::vector<double> task_frame = {0, 0, 0, 0, 0, 0};
+     std::vector<int> selection_vector = {0, 0, 1, 0, 0, 0};
+     std::vector<double> wrench_down = {0, 0, -10, 0, 0, 0};
+     std::vector<double> wrench_up = {0, 0, 10, 0, 0, 0};
+     int force_type = 2;
+     std::vector<double> limits = {2, 2, 1.5, 1, 1, 1};
+
+     rtde_control.forceModeStart(task_frame, selection_vector, wrench_down, force_type, limits);
+     std::cout << std::endl << "Going Down!" << std::endl;
+     std::this_thread::sleep_for(std::chrono::seconds(2));
+     std::cout << std::endl << "Going Up!" << std::endl << std::endl;
+     rtde_control.forceModeUpdate(wrench_up);
+     std::this_thread::sleep_for(std::chrono::seconds(2));
+     rtde_control.forceModeStop();
+     rtde_control.stopScript();
+
+     return 0;
    }
+
+Python:
+
+.. code-block:: python
+
+   import rtde_control
+   import time
+
+   rtde_c = rtde_control.RTDEControlInterface("127.0.0.1")
+
+   task_frame = [0, 0, 0, 0, 0, 0]
+   selection_vector = [0, 0, 1, 0, 0, 0]
+   wrench_down = [0, 0, -10, 0, 0, 0]
+   wrench_up = [0, 0, 10, 0, 0, 0]
+   force_type = 2
+   limits = [2, 2, 1.5, 1, 1, 1]
+
+   rtde_c.forceModeStart(task_frame, selection_vector, wrench_down, force_type, limits)
+   print("Going Down!")
+   time.sleep(2)
+   print("Going Up!")
+   rtde_c.forceModeUpdate(wrench_up)
+   time.sleep(2)
+   rtde_c.forceModeStop()
+   rtde_c.stopScript()
+
 
 Intended movement:
 
@@ -125,40 +166,99 @@ Intended movement:
 ServoJ Example
 ==============
 This example will use the **servoJ** command to move the robot, where incremental changes are made to the base and
-shoulder joint continuously in a 500Hz control loop.
+shoulder joint continuously in a 500Hz control loop for 2 seconds.
+
+You can find the source code of this example under :file:`examples/cpp/servoj_example.cpp`, if you compiled
+ur_rtde with examples you can run this example from the *bin* folder. If you want to run the python example
+navigate to :file:`examples/py/` and run :bash:`python3 servoj_example.py`.
+
+C++:
 
 .. code-block:: c++
 
    #include <ur_rtde/rtde_control_interface.h>
-   #include <thread> // only needed for the delay
+   #include <thread>
+   #include <chrono>
 
    using namespace ur_rtde;
+   using namespace std::chrono;
 
    int main(int argc, char* argv[])
    {
-      RTDEControlInterface rtde_control("127.0.0.1");
-      std::vector<double> joint_q1 = {-1.54, -1.83, -2.28, -0.59, 1.60, 0.023};
-      double time = 0.002; // 500Hz
-      double lookahead_time = 0.1;
-      double gain = 300;
+     RTDEControlInterface rtde_control("127.0.0.1");
 
-      rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
-      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+     // Parameters
+     double velocity = 0.5;
+     double acceleration = 0.5;
+     double dt = 1.0/500; // 2ms
+     double lookahead_time = 0.1;
+     double gain = 300;
+     std::vector<double> joint_q = {-1.54, -1.83, -2.28, -0.59, 1.60, 0.023};
 
-      for (unsigned int i=0; i<1000; i++)
-      {
-        joint_q1[0] += 0.001;
-        joint_q1[1] += 0.001;
-        rtde_control.servoJ(joint_q1, velocity, acceleration, time, lookahead_time, gain);
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
-      }
+     // Move to initial joint position with a regular moveJ
+     rtde_control.moveJ(joint_q);
 
-      rtde_control.servoStop();
+     // Execute 500Hz control loop for 2 seconds, each cycle is ~2ms
+     for (unsigned int i=0; i<1000; i++)
+     {
+       auto t_start = high_resolution_clock::now();
+       rtde_control.servoJ(joint_q, velocity, acceleration, dt, lookahead_time, gain);
+       joint_q[0] += 0.001;
+       joint_q[1] += 0.001;
+       auto t_stop = high_resolution_clock::now();
+       auto t_duration = std::chrono::duration<double>(t_stop - t_start);
+
+       if (t_duration.count() < dt)
+       {
+         std::this_thread::sleep_for(std::chrono::duration<double>(dt - t_duration.count()));
+       }
+     }
+
+     rtde_control.servoStop();
+     rtde_control.stopScript();
+
+     return 0;
    }
 
+Python:
+
+.. code-block:: python
+
+   import rtde_control
+   import time
+
+   rtde_c = rtde_control.RTDEControlInterface("127.0.0.1")
+
+   # Parameters
+   velocity = 0.5
+   acceleration = 0.5
+   dt = 1.0/500  # 2ms
+   lookahead_time = 0.1
+   gain = 300
+   joint_q = [-1.54, -1.83, -2.28, -0.59, 1.60, 0.023]
+
+   # Move to initial joint position with a regular moveJ
+   rtde_c.moveJ(joint_q)
+
+   # Execute 500Hz control loop for 2 seconds, each cycle is 2ms
+   for i in range(1000):
+       start = time.time()
+       rtde_c.servoJ(joint_q, velocity, acceleration, dt, lookahead_time, gain)
+       joint_q[0] += 0.001
+       joint_q[1] += 0.001
+       end = time.time()
+       duration = end - start
+       if duration < dt:
+           time.sleep(dt - duration)
+
+   rtde_c.servoStop()
+   rtde_c.stopScript()
+
+
 .. note::
-   Remember that to allow for a faster control rate when servoing, the joint positions must be close to each other e.g.
-   (dense trajectory). If the robot is not reaching the target fast enough try to increase the gain parameter.
+   Remember that to allow for a fast control rate when servoing, the joint positions must be close to each other e.g.
+   (dense trajectory). If the robot is not reaching the target fast enough try to increase the acceleration or the
+   gain parameter.
 
 Intended movement:
 
@@ -166,28 +266,91 @@ Intended movement:
 
 SpeedJ Example
 ==============
-This example will use the **speedJ** command to move the robot with a defined speed for a given time period.
+This example will use the **speedJ** command to move the robot, where the first 2 joints are speeding continuously
+in a 500Hz control loop for 2 seconds.
+
+You can find the source code of this example under :file:`examples/cpp/speedj_example.cpp`, if you compiled
+ur_rtde with examples you can run this example from the *bin* folder. If you want to run the python example
+navigate to :file:`examples/py/` and run :bash:`python3 speedj_example.py`.
+
+C++:
 
 .. code-block:: c++
 
    #include <ur_rtde/rtde_control_interface.h>
-   #include <thread> // only needed for the delay
+   #include <thread>
+   #include <chrono>
 
    using namespace ur_rtde;
+   using namespace std::chrono;
 
    int main(int argc, char* argv[])
    {
-      RTDEControlInterface rtde_control("127.0.0.1");
-      std::vector<double> joint_speed = {0.2, 0.3, 0.1, 0.05, 0, 0};
-      double time = 0.5;
-      double acceleration = 0.5;
-      for (unsigned int i=0; i<10; i++)
-      {
-        rtde_control.speedJ(joint_speed, acceleration, time);
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-      }
-      rtde_control.speedStop();
+     RTDEControlInterface rtde_control("127.0.0.1");
+
+     // Parameters
+     double acceleration = 0.5;
+     double dt = 1.0/500; // 2ms
+     std::vector<double> joint_q = {-1.54, -1.83, -2.28, -0.59, 1.60, 0.023};
+     std::vector<double> joint_speed = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+     // Move to initial joint position with a regular moveJ
+     rtde_control.moveJ(joint_q);
+
+     // Execute 500Hz control loop for 2 seconds, each cycle is ~2ms
+     for (unsigned int i=0; i<1000; i++)
+     {
+       auto t_start = high_resolution_clock::now();
+       rtde_control.speedJ(joint_speed, acceleration, dt);
+       joint_speed[0] += 0.0005;
+       joint_speed[1] += 0.0005;
+       auto t_stop = high_resolution_clock::now();
+       auto t_duration = std::chrono::duration<double>(t_stop - t_start);
+
+       if (t_duration.count() < dt)
+       {
+         std::this_thread::sleep_for(std::chrono::duration<double>(dt - t_duration.count()));
+       }
+     }
+
+     rtde_control.speedStop();
+     rtde_control.stopScript();
+
+     return 0;
    }
+
+Python:
+
+.. code-block:: python
+
+   import rtde_control
+   import time
+
+   rtde_c = rtde_control.RTDEControlInterface("127.0.0.1")
+
+   # Parameters
+   acceleration = 0.5
+   dt = 1.0/500  # 2ms
+   joint_q = [-1.54, -1.83, -2.28, -0.59, 1.60, 0.023]
+   joint_speed = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+   # Move to initial joint position with a regular moveJ
+   rtde_c.moveJ(joint_q)
+
+   # Execute 500Hz control loop for 2 seconds, each cycle is 2ms
+   for i in range(1000):
+       start = time.time()
+       rtde_c.speedJ(joint_speed, acceleration, dt)
+       joint_speed[0] += 0.0005
+       joint_speed[1] += 0.0005
+       end = time.time()
+       duration = end - start
+       if duration < dt:
+           time.sleep(dt - duration)
+
+   rtde_c.speedStop()
+   rtde_c.stopScript()
+
 
 Intended movement:
 
@@ -195,7 +358,15 @@ Intended movement:
 
 MoveJ Path With Blending Example
 ================================
-This example will use the **moveJ** command with a path, where each joint pose in the path has a defined velocity, acceleration and blend. The joint poses in the path are defined by a 9-dimensional vector, where the first six values constitutes the joint pose, followed by the last three values *velocity*, *acceleration* and *blend*.
+This example will use the **moveJ** command with a path, where each joint pose in the path has a defined velocity,
+acceleration and blend. The joint poses in the path are defined by a 9-dimensional vector, where the first six
+values constitutes the joint pose, followed by the last three values *velocity*, *acceleration* and *blend*.
+
+You can find the source code of this example under :file:`examples/cpp/movej_path_with_blend_example.cpp`, if you compiled
+ur_rtde with examples you can run this example from the *bin* folder. If you want to run the python example
+navigate to :file:`examples/py/` and run :bash:`python3 movej_path_with_blend_example.py`.
+
+C++:
 
 .. code-block:: c++
 
@@ -205,62 +376,154 @@ This example will use the **moveJ** command with a path, where each joint pose i
 
    int main(int argc, char* argv[])
    {
-     double velocity = 0.8;
-     double acceleration = 1.2;
-     double blend1 = 0;
-     double blend2 = 0.3;
-     double blend3 = 0;
+     RTDEControlInterface rtde_control("127.0.0.1");
+
+     double velocity = 0.5;
+     double acceleration = 0.5;
+     double blend_1 = 0.0;
+     double blend_2 = 0.02;
+     double blend_3 = 0.0;
+     std::vector<double> path_pose1 = {-0.143, -0.435, 0.20, -0.001, 3.12, 0.04, velocity, acceleration, blend_1};
+     std::vector<double> path_pose2 = {-0.143, -0.51, 0.21, -0.001, 3.12, 0.04, velocity, acceleration, blend_2};
+     std::vector<double> path_pose3 = {-0.32, -0.61, 0.31, -0.001, 3.12, 0.04, velocity, acceleration, blend_3};
+
      std::vector<std::vector<double>> path;
-     std::vector<double> pose1 = {-1.6, -1.8, -2.09, -0.844, 1.59, -0.0255, velocity, acceleration, blend1};
-     std::vector<double> pose2 = {-0.738, -1.99, -1.83, -0.894, 1.60, 0.827, velocity, acceleration, blend2};
-     std::vector<double> pose3 = {-1.6, -1.63, -1.07, -2.03, 1.59, -0.0202, velocity, acceleration, blend3};
-     path.push_back(pose1);
-     path.push_back(pose2);
-     path.push_back(pose3);
-     rtde_control.moveJ(path);
+     path.push_back(path_pose1);
+     path.push_back(path_pose2);
+     path.push_back(path_pose3);
+
+     // Send a linear path with blending in between - (currently uses separate script)
+     rtde_control.moveL(path);
+     rtde_control.stopScript();
+
+     return 0;
    }
+
+Python:
+
+.. code-block:: python
+
+   import rtde_control
+
+   rtde_c = rtde_control.RTDEControlInterface("127.0.0.1")
+
+   velocity = 0.5
+   acceleration = 0.5
+   blend_1 = 0.0
+   blend_2 = 0.02
+   blend_3 = 0.0
+   path_pose1 = [-0.143, -0.435, 0.20, -0.001, 3.12, 0.04, velocity, acceleration, blend_1]
+   path_pose2 = [-0.143, -0.51, 0.21, -0.001, 3.12, 0.04, velocity, acceleration, blend_2]
+   path_pose3 = [-0.32, -0.61, 0.31, -0.001, 3.12, 0.04, velocity, acceleration, blend_3]
+   path = [path_pose1, path_pose2, path_pose3]
+
+   # Send a linear path with blending in between - (currently uses separate script)
+   rtde_c.moveL(path)
+   rtde_c.stopScript()
+
 
 Intended movement:
 
 .. image:: ../_static/movej_path_blend.gif
 
-MoveP / MoveC Circle Example
-============================
-This example will use the **moveP** command in combination with the **moveC** command, to perform
-a circular movement based on waypoints defined on a circle. See the image below
+IO Example
+==========
+This example will print out the state of a standard digital output, change the state of that output and print the
+state again. Furthermore it will set the current ratio of an analog output.
 
-.. image:: ../_static/movep_circle.jpg
+You can find the source code of this example under :file:`examples/cpp/io_example.cpp`, if you compiled
+ur_rtde with examples you can run this example from the *bin* folder. If you want to run the python example
+navigate to :file:`examples/py/` and run :bash:`python3 io_example.py`.
+
+C++:
 
 .. code-block:: c++
 
-   #include <ur_rtde/rtde_control_interface.h>
+   #include <ur_rtde/rtde_io_interface.h>
+   #include <ur_rtde/rtde_receive_interface.h>
+   #include <iostream>
+   #include <thread>
 
    using namespace ur_rtde;
 
    int main(int argc, char* argv[])
    {
-      double velocity = 0.25;
-      double acceleration = 1.2;
-      double blend = 0.1;
-      std::vector<double> waypoint_1 = {-0.300, -0.300, 0.100, -2.695, 1.605, -0.036};
-      std::vector<double> waypoint_2 = {-0.399, -0.199, 0.099, -2.694, 1.606, -0.037};
-      std::vector<double> waypoint_3 = {-0.500, -0.299, 0.099, -2.695, 1.606, -0.038};
-      std::vector<double> waypoint_4 = {-0.399, -0.400, 0.100, -2.695, 1.605, -0.038};
-      std::vector<double> waypoint_5 = {-0.300, -0.300, 0.100, -2.696, 1.605, -0.036};
+     RTDEIOInterface rtde_io("127.0.0.1");
+     RTDEReceiveInterface rtde_receive("127.0.0.1");
 
-      // Move to init pose
-      rtde_control.moveL({-0.300, -0.300, 0.100, -2.695, 1.605, -0.036});
+     /** How-to set and get standard and tool digital outputs. Notice that we need the
+       * RTDEIOInterface for setting an output and RTDEReceiveInterface for getting the state
+       * of an output.
+       */
 
-      // Perform circular motion
-      for (unsigned int i=0; i<5; i++)
-      {
-        rtde_control.moveP(waypoint_1, velocity, acceleration, blend);
-        rtde_control.moveC(waypoint_2, waypoint_3, velocity, acceleration, blend);
-        rtde_control.moveC(waypoint_4, waypoint_5, velocity, acceleration, blend);
-      }
-      rtde_control.stopRobot();
+     if (rtde_receive.getDigitalOutState(7))
+       std::cout << "Standard digital out (7) is HIGH" << std::endl;
+     else
+       std::cout << "Standard digital out (7) is LOW" << std::endl;
+
+     if (rtde_receive.getDigitalOutState(16))
+       std::cout << "Tool digital out (16) is HIGH" << std::endl;
+     else
+       std::cout << "Tool digital out (16) is LOW" << std::endl;
+
+     rtde_io.setStandardDigitalOut(7, true);
+     rtde_io.setToolDigitalOut(0, true);
+     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+     if (rtde_receive.getDigitalOutState(7))
+       std::cout << "Standard digital out (7) is HIGH" << std::endl;
+     else
+       std::cout << "Standard digital out (7) is LOW" << std::endl;
+
+     if (rtde_receive.getDigitalOutState(16))
+       std::cout << "Tool digital out (16) is HIGH" << std::endl;
+     else
+       std::cout << "Tool digital out (16) is LOW" << std::endl;
+
+     // How to set a analog output with a specified current ratio
+     rtde_io.setAnalogOutputCurrent(1, 0.25);
+
+     return 0;
    }
 
-Intended movement:
+Python:
 
-.. image:: ../_static/move_circle_example.gif
+.. code-block:: python
+
+   import rtde_io
+   import rtde_receive
+   import time
+
+   rtde_io_ = rtde_io.RTDEIOInterface("127.0.0.1")
+   rtde_receive_ = rtde_receive.RTDEReceiveInterface("127.0.0.1")
+
+   # How-to set and get standard and tool digital outputs. Notice that we need the
+   # RTDEIOInterface for setting an output and RTDEReceiveInterface for getting the state
+   # of an output.
+
+   if rtde_receive_.getDigitalOutState(7):
+       print("Standard digital out (7) is HIGH")
+   else:
+       print("Standard digital out (7) is LOW")
+
+   if rtde_receive_.getDigitalOutState(16):
+       print("Tool digital out (16) is HIGH")
+   else:
+       print("Tool digital out (16) is LOW")
+
+   rtde_io_.setStandardDigitalOut(7, True)
+   rtde_io_.setToolDigitalOut(0, True)
+   time.sleep(0.01)
+
+   if rtde_receive_.getDigitalOutState(7):
+       print("Standard digital out (7) is HIGH")
+   else:
+       print("Standard digital out (7) is LOW")
+
+   if rtde_receive_.getDigitalOutState(16):
+       print("Tool digital out (16) is HIGH")
+   else:
+       print("Tool digital out (16) is LOW")
+
+   # How to set a analog output with a specified current ratio
+   rtde_io_.setAnalogOutputCurrent(1, 0.25)

@@ -5,7 +5,8 @@ endif()
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # options
-option(CODE "Build primary libraries and executables." ON)
+option(CODE "Build primary libraries" ON)
+option(EXAMPLES "Build example executables." ON)
 option(PYTHON_BINDINGS "Build python bindings for libraries" ON)
 option(USE_WERROR "Use more strict compile flags" OFF)
 
@@ -34,7 +35,7 @@ if(${CODE})
 	endif()
 endif()
 
-project(ur_rtde VERSION 1.2.3 LANGUAGES ${PROJECT_LANGUAGES})
+project(ur_rtde VERSION 1.2.4 LANGUAGES ${PROJECT_LANGUAGES})
 set(PROJECT_VERSION_SUFFIX "") # alpha/beta/rc, e.g. "-rc0"
 set(PROJECT_VERSION "${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX}")
 set(PROJECT_AUTHOR "Anders Prier Lindvig")
@@ -189,6 +190,33 @@ if(${CODE})
 
 	endif()
 
+	if(${EXAMPLES})
+		add_executable(servoj_example examples/cpp/servoj_example.cpp)
+		target_include_directories(servoj_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+		target_link_libraries(servoj_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+
+		add_executable(forcemode_example examples/cpp/forcemode_example.cpp)
+		target_include_directories(forcemode_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+		target_link_libraries(forcemode_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+
+		add_executable(speedj_example examples/cpp/speedj_example.cpp)
+		target_include_directories(speedj_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+		target_link_libraries(speedj_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+
+		add_executable(movej_path_with_blend_example examples/cpp/movej_path_with_blend_example.cpp)
+		target_include_directories(movej_path_with_blend_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+		target_link_libraries(movej_path_with_blend_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+
+		add_executable(io_example examples/cpp/io_example.cpp)
+		target_include_directories(io_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+		target_link_libraries(io_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+
+		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example
+				PROPERTIES
+				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+				)
+	endif()
+
 	set(RTDE_RECEIVE_CLIENT_SOURCE_FILES src/rtde_receive_client.cpp)
 	add_executable(rtde_receive_client ${RTDE_RECEIVE_CLIENT_SOURCE_FILES})
 	target_include_directories(rtde_receive_client
@@ -222,6 +250,14 @@ if(${CODE})
 	add_executable(ur_rtde::rtde_receive_client ALIAS rtde_receive_client)
 	add_executable(ur_rtde::rtde_send_client ALIAS rtde_send_client)
 	add_executable(ur_rtde::rtde_io_client ALIAS rtde_io_client)
+
+	if(${EXAMPLES})
+		add_executable(ur_rtde::servoj_example ALIAS servoj_example)
+		add_executable(ur_rtde::forcemode_example ALIAS forcemode_example)
+		add_executable(ur_rtde::speedj_example ALIAS speedj_example)
+		add_executable(ur_rtde::movej_path_with_blend_example ALIAS movej_path_with_blend_example)
+		add_executable(ur_rtde::io_example ALIAS io_example)
+	endif()
 
 	if (CMAKE_COMPILER_IS_GNUCXX)
 		# Give error in Linux if library is not fully linked (like Windows)

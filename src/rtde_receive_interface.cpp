@@ -287,6 +287,13 @@ uint64_t RTDEReceiveInterface::getActualDigitalOutputBits()
   return robot_state_->getActual_digital_output_bits();
 }
 
+bool RTDEReceiveInterface::getDigitalOutState(std::uint8_t output_id)
+{
+  uint64_t output_bits = robot_state_->getActual_digital_output_bits();
+  std::bitset<std::numeric_limits<uint64_t>::digits> output_bitset(output_bits);
+  return output_bitset.test(output_id);
+}
+
 uint32_t RTDEReceiveInterface::getRuntimeState()
 {
   return robot_state_->getRuntime_state();

@@ -206,6 +206,13 @@ class RTDEReceiveInterface
     */
   RTDE_EXPORT uint64_t getActualDigitalOutputBits();
 
+  /** @brief Test if a digital output is set 'high' or 'low' the range is
+    * 0-7: Standard, 8-15: Configurable, 16-17: Tool
+    * @param output_id the id of the digital output to test
+    * @returns a bool indicating the state of the digital output
+    */
+  RTDE_EXPORT bool getDigitalOutState(std::uint8_t output_id);
+
   /**
     * @returns Program state
     */
