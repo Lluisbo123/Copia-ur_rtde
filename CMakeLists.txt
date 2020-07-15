@@ -109,6 +109,9 @@ if(${CODE})
 			${Boost_SYSTEM_LIBRARY}
 			${Boost_THREAD_LIBRARY}
 			${CMAKE_THREAD_LIBS_INIT})
+	set_target_properties(rtde PROPERTIES 
+			VERSION ${PROJECT_VERSION} 
+			SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR})
 
 	if(${PYTHON_BINDINGS})
 		pybind11_add_module(rtde_control SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES}	src/rtde_python_bindings.cpp)
