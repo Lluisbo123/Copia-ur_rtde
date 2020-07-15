@@ -33,7 +33,7 @@ using cb_map = std::unordered_map<std::string, details::cb_fun>;
 class RTDE
 {
  public:
-  RTDE_EXPORT explicit RTDE(const std::string hostname, int port = 30004);
+  RTDE_EXPORT explicit RTDE(const std::string hostname, int port = 30004, bool verbose = false);
 
   RTDE_EXPORT virtual ~RTDE();
 
@@ -164,6 +164,7 @@ class RTDE
 
   std::string hostname_;
   int port_;
+  bool verbose_;
   ConnectionState conn_state_;
   std::vector<std::string> output_types_;
   std::vector<std::string> output_names_;

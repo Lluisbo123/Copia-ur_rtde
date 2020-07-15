@@ -1,15 +1,17 @@
-#include <ur_rtde/rtde_io_interface.h>
 #include <ur_rtde/rtde.h>
-#include <iostream>
+#include <ur_rtde/rtde_io_interface.h>
+
 #include <bitset>
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 namespace ur_rtde
 {
-RTDEIOInterface::RTDEIOInterface(std::string hostname, int port) : hostname_(std::move(hostname)), port_(port)
+RTDEIOInterface::RTDEIOInterface(std::string hostname, int port, bool verbose)
+    : hostname_(std::move(hostname)), port_(port), verbose_(verbose)
 {
-  rtde_ = std::make_shared<RTDE>(hostname_);
+  rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
 
@@ -175,7 +177,7 @@ bool RTDEIOInterface::sendCommand(const RTDE::RobotCommand &cmd)
     rtde_->send(cmd);
     return true;
   }
-  catch (std::exception& e)
+  catch (std::exception &e)
   {
     std::cout << "RTDEIOInterface: Lost connection to robot..." << std::endl;
     std::cerr << e.what() << std::endl;
@@ -186,7 +188,7 @@ bool RTDEIOInterface::sendCommand(const RTDE::RobotCommand &cmd)
     }
   }
 
-  if(!rtde_->isConnected())
+  if (!rtde_->isConnected())
   {
     std::cout << "RTDEIOInterface: Robot is disconnected, reconnecting..." << std::endl;
     reconnect();

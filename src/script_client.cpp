@@ -15,11 +15,12 @@ using boost::asio::ip::tcp;
 namespace ur_rtde
 {
 ScriptClient::ScriptClient(std::string hostname, uint32_t major_control_version, uint32_t minor_control_version,
-                           int port)
+                           int port, bool verbose)
     : hostname_(std::move(hostname)),
       major_control_version_(major_control_version),
       minor_control_version_(minor_control_version),
       port_(port),
+      verbose_(verbose),
       conn_state_(ConnectionState::DISCONNECTED)
 {
 }
@@ -39,7 +40,8 @@ void ScriptClient::connect()
   tcp::resolver::query query(hostname_, std::to_string(port_));
   boost::asio::connect(*socket_, resolver_->resolve(query));
   conn_state_ = ConnectionState::CONNECTED;
-  std::cout << "Connected successfully to UR script server: " << hostname_ << " at " << port_ << std::endl;
+  if (verbose_)
+    std::cout << "Connected successfully to UR script server: " << hostname_ << " at " << port_ << std::endl;
 }
 
 bool ScriptClient::isConnected()
@@ -52,7 +54,8 @@ void ScriptClient::disconnect()
   // Close socket
   socket_->close();
   conn_state_ = ConnectionState::DISCONNECTED;
-  std::cout << "Script Client - Socket disconnected" << std::endl;
+  if (verbose_)
+    std::cout << "Script Client - Socket disconnected" << std::endl;
 }
 
 bool ScriptClient::sendScriptCommand(const std::string &cmd_str)

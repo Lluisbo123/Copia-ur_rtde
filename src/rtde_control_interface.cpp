@@ -2,6 +2,7 @@
 #include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/script_client.h>
+
 #include <bitset>
 #include <boost/thread/thread.hpp>
 #include <chrono>
@@ -10,9 +11,10 @@
 
 namespace ur_rtde
 {
-RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hostname_(std::move(hostname)), port_(port)
+RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool verbose)
+    : hostname_(std::move(hostname)), port_(port), verbose_(verbose)
 {
-  rtde_ = std::make_shared<RTDE>(hostname_);
+  rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
   auto controller_version = rtde_->getControllerVersion();
@@ -38,8 +40,9 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
 
-  // Wait until RTDE data synchronization has started.
-  std::cout << "Waiting for RTDE data synchronization to start..." << std::endl;
+  // Wait until RTDE data synchronization has started
+  if (verbose_)
+    std::cout << "Waiting for RTDE data synchronization to start..." << std::endl;
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 
   // Start RTDE data synchronization
@@ -75,7 +78,8 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port) : hos
   }
   else
   {
-    std::cout << "A script was running on the controller, killing it!" << std::endl;
+    if (verbose_)
+      std::cout << "A script was running on the controller, killing it!" << std::endl;
     // Stop the running script first
     stopScript();
     db_client_->stop();
@@ -138,7 +142,8 @@ bool RTDEControlInterface::reconnect()
   robot_state_ = std::make_shared<RobotState>();
 
   // Wait until RTDE data synchronization has started.
-  std::cout << "Waiting for RTDE data synchronization to start..." << std::endl;
+  if (verbose_)
+    std::cout << "Waiting for RTDE data synchronization to start..." << std::endl;
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 
   // Start RTDE data synchronization
@@ -174,7 +179,8 @@ bool RTDEControlInterface::reconnect()
   }
   else
   {
-    std::cout << "A script was running on the controller, killing it!" << std::endl;
+    if (verbose_)
+      std::cout << "A script was running on the controller, killing it!" << std::endl;
     // Stop the running script first
     stopScript();
     db_client_->stop();
@@ -193,9 +199,9 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
 {
   // Setup output
   std::vector<std::string> state_names = {
-      "robot_status_bits", "safety_status_bits", "output_int_register_0", "output_int_register_1",
-      "output_double_register_0", "output_double_register_1", "output_double_register_2",
-      "output_double_register_3", "output_double_register_4", "output_double_register_5"};
+      "robot_status_bits",        "safety_status_bits",       "output_int_register_0",    "output_int_register_1",
+      "output_double_register_0", "output_double_register_1", "output_double_register_2", "output_double_register_3",
+      "output_double_register_4", "output_double_register_5"};
   rtde_->sendOutputSetup(state_names, frequency);
 
   // Setup input recipes
@@ -290,7 +296,7 @@ void RTDEControlInterface::receiveCallback()
     }
     catch (std::exception &e)
     {
-      std::cout << "RTDEControlInterface: Could not receive data from robot..." << std::endl;
+      std::cerr << "RTDEControlInterface: Could not receive data from robot..." << std::endl;
       std::cerr << e.what() << std::endl;
       if (rtde_ != nullptr)
       {
@@ -299,7 +305,7 @@ void RTDEControlInterface::receiveCallback()
 
         if (!rtde_->isConnected())
         {
-          std::cout << "RTDEControlInterface: Robot is disconnected, reconnecting..." << std::endl;
+          std::cerr << "RTDEControlInterface: Robot is disconnected, reconnecting..." << std::endl;
           reconnect();
         }
 
@@ -342,7 +348,8 @@ bool RTDEControlInterface::reuploadScript()
 {
   if (isProgramRunning())
   {
-    std::cout << "A script was running on the controller, killing it!" << std::endl;
+    if (verbose_)
+      std::cout << "A script was running on the controller, killing it!" << std::endl;
 
     // Stop the running script first
     stopScript();
@@ -353,14 +360,14 @@ bool RTDEControlInterface::reuploadScript()
   }
 
   // Re-upload RTDE script to the UR Controller
-  if(script_client_->sendScript())
+  if (script_client_->sendScript())
   {
     db_client_->popup("The RTDE Control script has been re-uploaded due to an error.");
     return true;
   }
   else
   {
-   return false;
+    return false;
   }
 }
 
@@ -1096,7 +1103,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
       // We do not wait for 'continuous' commands to finish.
 
       // Make controller ready for next command
-      //sendClearCommand();
+      // sendClearCommand();
 
       return true;
     }
@@ -1137,7 +1144,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
             sendClearCommand();
             return false;
           }
-            
+
           // Wait for program to stop running or timeout
           std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
           auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
@@ -1157,7 +1164,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
   }
   catch (std::exception &e)
   {
-    std::cout << "RTDEControlInterface: Lost connection to robot..." << std::endl;
+    std::cerr << "RTDEControlInterface: Lost connection to robot..." << std::endl;
     std::cerr << e.what() << std::endl;
     if (rtde_ != nullptr)
     {
@@ -1168,7 +1175,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 
   if (!rtde_->isConnected())
   {
-    std::cout << "RTDEControlInterface: Robot is disconnected, reconnecting..." << std::endl;
+    std::cerr << "RTDEControlInterface: Robot is disconnected, reconnecting..." << std::endl;
     reconnect();
     return sendCommand(cmd);
   }

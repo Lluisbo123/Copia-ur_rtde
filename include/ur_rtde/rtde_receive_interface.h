@@ -24,7 +24,7 @@ class RTDEReceiveInterface
 {
  public:
   RTDE_EXPORT explicit RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables = {},
-                                            int port = 30004);
+                                            int port = 30004, bool verbose = false);
 
   RTDE_EXPORT virtual ~RTDEReceiveInterface();
 
@@ -247,6 +247,7 @@ class RTDEReceiveInterface
   std::vector<std::string> variables_;
   std::string hostname_;
   int port_;
+  bool verbose_;
   std::shared_ptr<RTDE> rtde_;
   std::atomic<bool> stop_thread{false};
   std::shared_ptr<boost::thread> th_;

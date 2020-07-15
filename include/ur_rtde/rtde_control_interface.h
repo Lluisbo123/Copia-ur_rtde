@@ -42,7 +42,7 @@ namespace ur_rtde
 class RTDEControlInterface
 {
  public:
-  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, int port = 30004);
+  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, int port = 30004, bool verbose = false);
 
   RTDE_EXPORT virtual ~RTDEControlInterface();
 
@@ -448,6 +448,7 @@ class RTDEControlInterface
  private:
   std::string hostname_;
   int port_;
+  bool verbose_;
   std::shared_ptr<RTDE> rtde_;
   std::atomic<bool> stop_thread_{false};
   std::shared_ptr<boost::thread> th_;

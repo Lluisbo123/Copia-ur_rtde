@@ -19,7 +19,7 @@ PYBIND11_MODULE(rtde_control, m)
 {
   m.doc() = "RTDE Control Interface";
   py::class_<RTDEControlInterface>(m, "RTDEControlInterface")
-      .def(py::init<std::string>())
+      .def(py::init<std::string, int, bool>())
       .def("reconnect", &RTDEControlInterface::reconnect, DOC(ur_rtde, RTDEControlInterface, reconnect),
            py::call_guard<py::gil_scoped_release>())
       .def("isConnected", &RTDEControlInterface::isConnected, DOC(ur_rtde, RTDEControlInterface, isConnected),
@@ -119,7 +119,7 @@ PYBIND11_MODULE(rtde_receive, m)
 {
   m.doc() = "RTDE Receive Interface";
   py::class_<RTDEReceiveInterface>(m, "RTDEReceiveInterface")
-      .def(py::init<std::string>())
+      .def(py::init<std::string, std::vector<std::string>, int, bool>())
       .def("reconnect", &RTDEReceiveInterface::reconnect, DOC(ur_rtde, RTDEReceiveInterface, reconnect), py::call_guard<py::gil_scoped_release>())
       .def("isConnected", &RTDEReceiveInterface::isConnected, DOC(ur_rtde, RTDEReceiveInterface, isConnected), py::call_guard<py::gil_scoped_release>())
       .def("getTimestamp", &RTDEReceiveInterface::getTimestamp, DOC(ur_rtde, RTDEReceiveInterface, getTimestamp), py::call_guard<py::gil_scoped_release>())
@@ -183,7 +183,7 @@ PYBIND11_MODULE(rtde_io, m)
 {
   m.doc() = "RTDE IO Interface";
   py::class_<RTDEIOInterface>(m, "RTDEIOInterface")
-      .def(py::init<std::string>())
+      .def(py::init<std::string, int, bool>())
       .def("reconnect", &RTDEIOInterface::reconnect)
       .def("setStandardDigitalOut", &RTDEIOInterface::setStandardDigitalOut, DOC(ur_rtde, RTDEIOInterface, setStandardDigitalOut), py::call_guard<py::gil_scoped_release>())
       .def("setToolDigitalOut", &RTDEIOInterface::setToolDigitalOut, DOC(ur_rtde, RTDEIOInterface, setToolDigitalOut), py::call_guard<py::gil_scoped_release>())

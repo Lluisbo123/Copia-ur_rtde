@@ -14,7 +14,7 @@ class ScriptClient
 {
  public:
   RTDE_EXPORT explicit ScriptClient(std::string hostname, uint32_t major_control_version,
-                                    uint32_t minor_control_version, int port = 30002);
+                                    uint32_t minor_control_version, int port = 30002, bool verbose = false);
 
   RTDE_EXPORT virtual ~ScriptClient();
 
@@ -37,6 +37,7 @@ class ScriptClient
   uint32_t major_control_version_;
   uint32_t minor_control_version_;
   int port_;
+  bool verbose_;
   ConnectionState conn_state_;
   std::shared_ptr<boost::asio::io_service> io_service_;
   std::shared_ptr<boost::asio::ip::tcp::socket> socket_;

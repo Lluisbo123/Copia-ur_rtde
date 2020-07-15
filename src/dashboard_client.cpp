@@ -12,8 +12,8 @@ using boost::asio::ip::tcp;
 
 namespace ur_rtde
 {
-DashboardClient::DashboardClient(std::string hostname, int port)
-    : hostname_(std::move(hostname)), port_(port), conn_state_(ConnectionState::DISCONNECTED)
+DashboardClient::DashboardClient(std::string hostname, int port, bool verbose)
+    : hostname_(std::move(hostname)), port_(port), verbose_(verbose), conn_state_(ConnectionState::DISCONNECTED)
 {
 }
 
@@ -33,7 +33,8 @@ void DashboardClient::connect()
   boost::asio::connect(*socket_, resolver_->resolve(query));
   conn_state_ = ConnectionState::CONNECTED;
   receive();
-  std::cout << "Connected successfully to UR dashboard server: " << hostname_ << " at " << port_ << std::endl;
+  if (verbose_)
+    std::cout << "Connected successfully to UR dashboard server: " << hostname_ << " at " << port_ << std::endl;
 }
 
 bool DashboardClient::isConnected()
@@ -46,7 +47,8 @@ void DashboardClient::disconnect()
   // Close socket
   socket_->close();
   conn_state_ = ConnectionState::DISCONNECTED;
-  std::cout << "Dashboard Client - Socket disconnected" << std::endl;
+  if (verbose_)
+    std::cout << "Dashboard Client - Socket disconnected" << std::endl;
 }
 
 void DashboardClient::send(const std::string &str)

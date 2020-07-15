@@ -15,7 +15,7 @@ class DashboardClient
 {
  public:
 
-  RTDE_EXPORT explicit DashboardClient(std::string hostname, int port = 29999);
+  RTDE_EXPORT explicit DashboardClient(std::string hostname, int port = 29999, bool verbose = false);
 
   RTDE_EXPORT virtual ~DashboardClient();
 
@@ -59,6 +59,7 @@ class DashboardClient
  private:
   std::string hostname_;
   int port_;
+  bool verbose_;
   ConnectionState conn_state_;
   std::shared_ptr<boost::asio::io_service> io_service_;
   std::shared_ptr<boost::asio::ip::tcp::socket> socket_;

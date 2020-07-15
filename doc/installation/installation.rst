@@ -3,6 +3,15 @@ Installation
 ************
 This section contains information on how to build and install the ur_rtde library.
 
+If you are on Linux (Ubuntu), you can install ur_rtde with:
+
+.. code-block:: shell
+
+    sudo add-apt-repository ppa:sdurobotics/ur-rtde
+    sudo apt-get update
+    sudo apt install librtde
+
+
 If you only want to the use the Python interface, you can install ur_rtde through pip:
 
 .. code-block:: shell

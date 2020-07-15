@@ -33,8 +33,8 @@ using boost::asio::ip::tcp;
 
 namespace ur_rtde
 {
-RTDE::RTDE(const std::string hostname, int port)
-    : hostname_(std::move(hostname)), port_(port), conn_state_(ConnectionState::DISCONNECTED)
+RTDE::RTDE(const std::string hostname, int port, bool verbose)
+    : hostname_(std::move(hostname)), port_(port), verbose_(verbose), conn_state_(ConnectionState::DISCONNECTED)
 {
   setupCallbacks();
 }
@@ -56,11 +56,12 @@ void RTDE::connect()
     boost::asio::ip::tcp::resolver::query query(hostname_, std::to_string(port_));
     boost::asio::connect(*socket_, resolver_->resolve(query));
     conn_state_ = ConnectionState::CONNECTED;
-    std::cout << "Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
+    if (verbose_)
+      std::cout <<"Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
   }
   catch (boost::system::system_error const &e)
   {
-    std::cout << "Warning: Could not connect to: " << hostname_ << " at " << port_ << ", verify the IP" << std::endl;
+    std::cerr << "Error: Could not connect to: " << hostname_ << " at " << port_ << ", verify the IP" << std::endl;
     throw;
   }
 }
@@ -69,7 +70,8 @@ void RTDE::disconnect()
 {
   // We rely on the socket_ destructor to do its job.
   conn_state_ = ConnectionState::DISCONNECTED;
-  std::cout << "RTDE - Socket disconnected" << std::endl;
+  if (verbose_)
+    std::cout <<"RTDE - Socket disconnected" << std::endl;
 }
 
 bool RTDE::isConnected()
@@ -278,7 +280,7 @@ void RTDE::receive()
       uint8_t msg_length = data.at(0);
       for (int i = 1; i < msg_length; i++)
       {
-        std::cout << data[i];
+        DEBUG(data[i]);
       }
       break;
     }
@@ -327,7 +329,8 @@ void RTDE::receive()
       if (rtde_success)
       {
         conn_state_ = ConnectionState::STARTED;
-        std::cout << "RTDE synchronization started" << std::endl;
+        if (verbose_)
+          std::cout << "RTDE synchronization started" << std::endl;
       }
       else
         std::cerr << "Unable to start synchronization" << std::endl;
@@ -342,7 +345,7 @@ void RTDE::receive()
       if (pause_success)
       {
         conn_state_ = ConnectionState::PAUSED;
-        std::cout << "RTDE synchronization paused!" << std::endl;
+        DEBUG("RTDE synchronization paused!");
       }
       else
         std::cerr << "Unable to pause synchronization" << std::endl;
@@ -352,7 +355,7 @@ void RTDE::receive()
       // TODO: Handle IN_USE and NOT_FOUND case
 
     default:
-      std::cout << "Unknown Command: " << static_cast<int>(msg_cmd) << std::endl;
+      DEBUG("Unknown Command: " << static_cast<int>(msg_cmd));
       break;
   }
 }
@@ -383,7 +386,7 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
       uint8_t msg_length = data.at(0);
       for (int i = 1; i < msg_length; i++)
       {
-        std::cout << data[i];
+        DEBUG(data[i]);
       }
       break;
     }
@@ -416,7 +419,7 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
     }
 
     default:
-      std::cout << "Unknown Command: " << static_cast<int>(msg_cmd) << std::endl;
+      DEBUG("Unknown Command: " << static_cast<int>(msg_cmd));
       break;
   }
 }
