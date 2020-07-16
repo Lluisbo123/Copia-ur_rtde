@@ -10,7 +10,7 @@ If you are on Ubuntu, you can install ur_rtde with:
 
     sudo add-apt-repository ppa:sdurobotics/ur-rtde
     sudo apt-get update
-    sudo apt install librtde
+    sudo apt install librtde librtde-dev
 
 If you only want to the use the Python interface, you can install ur_rtde through pip:
 
