@@ -1,3 +1,16 @@
+ur-rtde (1.2.4-4) focal; urgency=medium
+
+  [ Anders Prier Lindvig ]
+  * Output of connection status is now optional through a verbose flag + updated README
+
+ -- Kasper Høj Lorenzen <kalor@mmmi.sdu.dk>  Thu, 16 Jul 2020 09:54:58 +0200
+
+ur-rtde (1.2.4-3) focal; urgency=medium
+
+  * initial focal Release 
+
+ -- Kasper Høj Lorenzen <kalor@mmmi.sdu.dk>  Wed, 15 Jul 2020 12:38:45 +0200
+
 ur-rtde (1.2.4-2) focal; urgency=medium
 
   * initial debian Release 
