@@ -173,16 +173,15 @@ class RTDEUtility
     return output;
   }
 
-  static inline uint32_t getInt32(const std::vector<char> &data, uint32_t &message_offset)
+  static inline int32_t getInt32(const std::vector<char> &data, uint32_t &message_offset)
   {
-    uint32_t output = 0;
+    int32_t output = 0;
     ((char *)(&output))[3] = data[message_offset];
     ((char *)(&output))[2] = data[message_offset + 1];
     ((char *)(&output))[1] = data[message_offset + 2];
     ((char *)(&output))[0] = data[message_offset + 3];
     message_offset += 4;
-
-    return -(output & 0x80000000) + (output & 0x7fffffff);
+    return output;
   }
 
   static inline uint64_t getUInt64(const std::vector<char> &data, uint32_t &message_offset)

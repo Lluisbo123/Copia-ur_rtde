@@ -4,8 +4,6 @@
 install the following packages
 `sudo apt-get install build-essential devscripts ubuntu-dev-tools debhelper dh-make patch cdbs quilt gnupg fakeroot lintian`
 
-
-
 ##### DPUT config
 make a ~/.dput.cf file and input the following:
 ```
@@ -31,7 +29,8 @@ export DEBEMAIL="kalor@mmmi.sdu.dk"
 ```
 ##### gpg key
 
-to uploade a package to launchpad you need a gpg key. Use the following to tutorial to set up a gpg key or follow along for a brief over view.
+to upload a package to launchpad you need a gpg key. Use the following to tutorial to set up a gpg key or follow along 
+for a brief overview.
 https://help.ubuntu.com/community/GnuPrivacyGuardHowto#Using_GnuPG_to_generate_a_key
 
 ```
@@ -73,7 +72,7 @@ gpg --send-keys --keyserver keyserver.ubuntu.com $UR_RTDE_DEB_KEY
 
 go to the root of the git repository and run:
 `./debian/ur_rtde_build.sh -c deb-upload`
-This script will take you trough the whole procedure of uploading the package
+This script will take you through the whole procedure of uploading the package
 the -c option is for configuring the changelog before doing a upload.
 
 To test if the .deb files will build run 
