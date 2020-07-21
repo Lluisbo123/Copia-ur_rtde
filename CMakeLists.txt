@@ -313,13 +313,29 @@ if(${CODE})
 	)
 endif()
 
-if(WINDOWS_INSTALLER)
-	set(BOOST_LIBRARIES_INSTALL "")
-	foreach(s ${Boost_LIBRARIES})
+macro(getBoostLibraryList output list)
+	foreach(s ${list})
 		if("${s}" STREQUAL "optimized")
 
 		elseif("${s}" STREQUAL "debug")
 
+		elseif("${s}" MATCHES "NOTFOUND")
+
+		elseif("${s}" STREQUAL "Boost::headers")
+
+		elseif("${s}" STREQUAL "Threads::Threads")
+
+		elseif("${s}" IN_LIST ${output})
+
+		elseif(TARGET ${s})
+			get_target_property(LIB ${s} IMPORTED_LOCATION_RELEASE)
+			if(LIB)
+				list(APPEND ${output} "${LIB}")
+			endif()
+			
+
+			get_target_property(L_LIBS ${s} INTERFACE_LINK_LIBRARIES)
+			getBoostLibraryList(${output} "${L_LIBS}")
 		else()
 			get_filename_component(_dir "${s}" DIRECTORY)
 			get_filename_component(_file "${s}" NAME_WLE)
@@ -330,6 +346,13 @@ if(WINDOWS_INSTALLER)
 			endforeach()
 		endif()
 	endforeach()
+endmacro()
+
+
+if(WINDOWS_INSTALLER)
+	set(BOOST_LIBRARIES_INSTALL "")
+
+	getBoostLibraryList(BOOST_LIBRARIES_INSTALL "${Boost_LIBRARIES}")
 
 	# Install external libraries
 	install(

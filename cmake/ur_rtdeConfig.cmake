@@ -19,21 +19,23 @@ if(IS_WINDOWS_INSTALLER)
   #If use internal boost
   if(EXISTS "${URRTDE_CMAKE_DIR}/../../../include/ext")
 
-
-    #find boost path to be replaced
-    set(boost_DIR ${I_DIR})
-    list(FILTER boost_DIR INCLUDE REGEX "/boost.*")
-    get_filename_component(MOD_ROOT ${boost_DIR} NAME)
-    set(regex "${boost_DIR}\/[a-z0-9.-]*")
-    string(REGEX MATCH "${regex}" boost_LIB_DIR ${L_LIBS})
-
     #replace boost path
-    string(REPLACE "${boost_DIR}" "${URRTDE_CMAKE_DIR}/../../../include/ext" I_DIR "${I_DIR}")
-    string(REPLACE "${boost_LIB_DIR}" "${URRTDE_CMAKE_DIR}/../.." L_LIBS "${L_LIBS}")
-    set_target_properties(ur_rtde::rtde PROPERTIES
+    if("${RTDE_BOOST_LIBRARY_DIR}" STREQUAL "" ) 
+      string(REPLACE "${RTDE_BOOST_INCLUDE_DIRS}" "${URRTDE_CMAKE_DIR}/../../../include/ext" I_DIR "${I_DIR}")
+      file(GLOB L_LIBS ${URRTDE_CMAKE_DIR}/../../libboost*.lib)
+
+      set_target_properties(ur_rtde::rtde PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${I_DIR}"
         INTERFACE_LINK_LIBRARIES  "${L_LIBS}"
-    )
+      )
+    else()
+      string(REPLACE "${RTDE_BOOST_INCLUDE_DIRS}" "${URRTDE_CMAKE_DIR}/../../../include/ext" I_DIR "${I_DIR}")
+      string(REPLACE "${RTDE_BOOST_LIBRARY_DIR}" "${URRTDE_CMAKE_DIR}/../.." L_LIBS "${L_LIBS}")
+      set_target_properties(ur_rtde::rtde PROPERTIES
+          INTERFACE_INCLUDE_DIRECTORIES "${I_DIR}"
+          INTERFACE_LINK_LIBRARIES  "${L_LIBS}"
+      )
+    endif()
 
   #if use external boost
   else()
