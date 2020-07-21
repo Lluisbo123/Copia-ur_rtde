@@ -1,14 +1,14 @@
-<p align="center">
+<div align="center">
+
 <img width=30% src="https://gitlab.com/sdurobotics/ur_rtde/-/raw/master/doc/_static/ur_rtde_logo.png">
-</p>
-
-
-<p align="center">
+</div>
+&nbsp;
+<div align="center">
 
 [![build status](https://gitlab.com/sdurobotics/ur_rtde/badges/master/pipeline.svg)](https://gitlab.com/sdurobotics/ur_rtde/commits/master)
 [![pypi](https://badgen.net/pypi/v/ur_rtde)](https://pypi.org/project/ur-rtde/)
 [![Gitter](https://badges.gitter.im/ur_rtde/community.svg)](https://gitter.im/ur_rtde/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-</p>
+</div>
 
 A C++ interface for sending and receiving data to/from a UR robot using the 
 [Real-Time Data Exchange (RTDE)](https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/real-time-data-exchange-rtde-guide-22229/)
