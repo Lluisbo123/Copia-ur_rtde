@@ -88,6 +88,7 @@ pages:
     - sphinx_html
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804-doc
   script:
+    - mv build/doc/html/_static/googled5bfdc1684e49924.html build/doc/html/googled5bfdc1684e49924.html
     - mv build/doc/html public
   artifacts:
     paths:

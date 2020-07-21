@@ -25,6 +25,7 @@ A C++ interface for sending and receiving data to/from a UR robot using the
 ### Documentation ###
 Documentation with installation and build instructions, examples and API resides at <https://sdurobotics.gitlab.io/ur_rtde/>
 
+### Quick Install ##
 If you are on Ubuntu, you can install ur_rtde with:
 
     sudo add-apt-repository ppa:sdurobotics/ur-rtde
@@ -34,6 +35,10 @@ If you are on Ubuntu, you can install ur_rtde with:
 If you only want to the use the Python interface, you can install ur_rtde through pip:
 
     pip install --user ur_rtde
+
+If you are on Windows you can install ur_rtde from the installer found here:
+                     
+[ur_rtde-install](https://sdurobotics.gitlab.io/ur_rtde/installation/installation.html)
 
 ### Dependencies ###
 *  [Boost](https://www.boost.org/)
