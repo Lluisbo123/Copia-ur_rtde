@@ -63,7 +63,10 @@ sphinx_html:
   script:
     - "[ -d build ] || mkdir build"
     - cd build
-    - zip ur_rtde-install.zip ./ur_rtde-install.exe
+    - mkdir ur_rtde
+    - mv ./ur_rtde-install.exe ./ur_rtde/ur_rtde-install.exe
+    - zip -r ur_rtde-install.zip ./ur_rtde
+    - rm -r ./ur_rtde
     - mv ./ur_rtde-install.zip ../doc/_static/ur_rtde-install.zip
     - cmake -DCODE:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
     - make doc
