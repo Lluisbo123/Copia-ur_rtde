@@ -59,7 +59,7 @@ void RTDE::connect()
     if (verbose_)
       std::cout <<"Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
   }
-  catch (boost::system::system_error const &e)
+  catch (boost::system::system_error)
   {
     std::cerr << "Error: Could not connect to: " << hostname_ << " at " << port_ << ", verify the IP" << std::endl;
     throw;
@@ -218,7 +218,7 @@ void RTDE::sendAll(const std::uint8_t &command, std::string payload)
 {
   DEBUG("Payload size is: " << payload.size());
   // Pack size and command into header
-  uint16_t size = htons(HEADER_SIZE + payload.size());
+  uint16_t size = htons(HEADER_SIZE + (uint16_t) payload.size());
   uint8_t type = command;
 
   char buffer[3];

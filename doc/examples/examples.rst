@@ -25,6 +25,15 @@ Here is an example of how to find the library and link it against your C++ execu
    add_executable(ur_rtde_cmake_example main.cpp)
    target_link_libraries(ur_rtde_cmake_example PRIVATE ur_rtde::rtde)
 
+if the library is not installed or installed to a none standard system path, use one of the following methods:
+
+- call cmake with -Dur_rtde_DIR=/path/to/ur_rtde
+- set the path in find_package
+   - find_package(ur_rtde REQUIRED PATHS "/a/possible/path/to/ur_rtde" "/another/possible/path/to/ur_rtde"
+
+The path to ur_rtde is the one where ur_rtdeTargets.cmake can be found. For a none install it should be /path/to/ur_rtde/Build/ur_rtde.
+For an install it is /path/to/lib/cmake/ur_rtde.
+
 Basic use
 =========
 Simple example using the RTDE Control Interface to move the robot to a pose with the **moveL** command.
