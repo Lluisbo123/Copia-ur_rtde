@@ -1,11 +1,13 @@
-<p align="center"><img width=30% src="https://gitlab.com/sdurobotics/ur_rtde/-/raw/master/doc/_static/ur_rtde_logo.png">
+<p align="center">
+<img width=30% src="https://gitlab.com/sdurobotics/ur_rtde/-/raw/master/doc/_static/ur_rtde_logo.png">
+</p>
+
 
 <p align="center">
 
 [![build status](https://gitlab.com/sdurobotics/ur_rtde/badges/master/pipeline.svg)](https://gitlab.com/sdurobotics/ur_rtde/commits/master)
 [![pypi](https://badgen.net/pypi/v/ur_rtde)](https://pypi.org/project/ur-rtde/)
 [![Gitter](https://badges.gitter.im/ur_rtde/community.svg)](https://gitter.im/ur_rtde/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-
 </p>
 
 A C++ interface for sending and receiving data to/from a UR robot using the 
