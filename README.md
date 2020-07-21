@@ -1,10 +1,27 @@
-# Universal Robots RTDE C++ Interface #
+<p align="center"><img width=30% src="https://gitlab.com/sdurobotics/ur_rtde/-/raw/master/doc/_static/ur_rtde_logo.png">
+
+<p align="center">
+
+[![build status](https://gitlab.com/sdurobotics/ur_rtde/badges/master/pipeline.svg)](https://gitlab.com/sdurobotics/ur_rtde/commits/master)
+[![pypi](https://badgen.net/pypi/v/ur_rtde)](https://pypi.org/project/ur-rtde/)
+[![Gitter](https://badges.gitter.im/ur_rtde/community.svg)](https://gitter.im/ur_rtde/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+</p>
+
 A C++ interface for sending and receiving data to/from a UR robot using the 
 [Real-Time Data Exchange (RTDE)](https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/real-time-data-exchange-rtde-guide-22229/)
  interface of the robot. The interface can also by used with python, through the provided python bindings.
+
+### Key Features ###
+ * Fast and lightweight interface for programming UR robots.
+ * Uses the [Real-Time Data Exchange (RTDE)](https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/real-time-data-exchange-rtde-guide-22229/) of the robot.
+ * Available on multiple platforms (Linux, Windows, macOS)
+ * Can be used from C++ and Python.
+ * Relies only on STL datatypes and can be used with various robot frameworks.
+ * Easy to install and setup.
  
 ### Documentation ###
-Documentation with installation instructions, examples and API resides at <https://sdurobotics.gitlab.io/ur_rtde/>
+Documentation with installation and build instructions, examples and API resides at <https://sdurobotics.gitlab.io/ur_rtde/>
 
 If you are on Ubuntu, you can install ur_rtde with:
 
@@ -15,15 +32,6 @@ If you are on Ubuntu, you can install ur_rtde with:
 If you only want to the use the Python interface, you can install ur_rtde through pip:
 
     pip install --user ur_rtde
-
-### Motivation ###
-No widely available C++ interface that utilizes the RTDE of the UR's existed. Most of the available ROS interfaces lacks a lot of features or are very restricted in terms of control.
-This interface is meant to be usable with various robot frameworks, which is why the receive and control interface relies only on STL datatypes. One can choose to convert to STL types or
-simply rewrite the control and receive interfaces to the desired datatypes to avoid any overhead. The interface aims to make all the functions on the controller available externally in C++ and Python
-with bindings.
-
-### Build Status ###
-[![build status](https://gitlab.com/sdurobotics/ur_rtde/badges/master/pipeline.svg)](https://gitlab.com/sdurobotics/ur_rtde/commits/master)
 
 ### Dependencies ###
 *  [Boost](https://www.boost.org/)
