@@ -61,10 +61,10 @@ sphinx_html:
   stage: doc
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804-doc
   script:
-    - "[ -d Build ] || mkdir Build"
+    - "[ -d build ] || mkdir build"
     - cd build
-    - ls
-    - mv ./ur_rtde-install.exe ../doc/_static/ur_rtde-install.exe
+    - zip ur_rtde-install.zip ./ur_rtde-install.exe
+    - mv ./ur_rtde-install.zip ../doc/_static/ur_rtde-install.zip
     - cmake -DCODE:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
     - make doc
   dependencies:
@@ -72,7 +72,7 @@ sphinx_html:
   artifacts:
     paths:
       - build/doc/html
-      - doc/_static/ur_rtde-install.exe
+      - doc/_static/ur_rtde-install.zip
     expire_in: 2 days
   tags:
     - linux
