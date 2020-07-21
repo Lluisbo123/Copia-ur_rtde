@@ -14,7 +14,7 @@ If you are on Linux (Ubuntu), you can install ur_rtde with:
 
 If you are on Windows and use vs2019, you can download and extract the ur_rtde ur_rtde here:
 
-:download:`Download ur_rtde-install.exe <../_static/ur_rtde-install.zip>`
+:download:`Download ur_rtde-install.exe <../_static/ur_rtde-install.exe>`
 
 
 If you only want to the use the Python interface, you can install ur_rtde through pip:
