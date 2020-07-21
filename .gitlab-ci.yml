@@ -4,7 +4,7 @@ stages:
   - doc
   - deploy
 
-build:
+build-LINUX:
   stage: build
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804
   variables:
@@ -14,6 +14,37 @@ build:
     - cd build
     - cmake -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=ON ..
     - make
+  tags:
+    - linux
+
+build-WINDOWS:
+  stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 16 2019" -A x64 -DWINDOWS_INSTALLER=ON -DBUILD_STATIC=ON -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=OFF ..
+    - msbuild ur_rtde.sln /property:Configuration=Release /maxcpucount:8 
+    - msbuild PACKAGE.vcxproj /property:Configuration=Release /maxcpucount:8 
+  artifacts:
+    paths:
+      - build/ur_rtde-install.exe
+    expire_in: 2 days
+  tags:
+    - windows
+
+build-MAC:
+  stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=ON ..
+    - make -j3
+  tags:
+    - mac
 
 build_pypi:
   stage: build_pypi
@@ -23,25 +54,36 @@ build_pypi:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
     - ./ci/build-wheels.sh
+  tags:
+    - linux
 
 sphinx_html:
   stage: doc
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804-doc
   script:
-    - mkdir build
+    - "[ -d Build ] || mkdir Build"
     - cd build
+    - ls
+    - mv ./ur_rtde-install.exe ../doc/_static/ur_rtde-install.exe
     - cmake -DCODE:BOOL=OFF -DDOC:STRING=html -DWERROR:BOOL=ON ..
     - make doc
+  dependencies:
+    - build-WINDOWS
   artifacts:
     paths:
       - build/doc/html
+      - doc/_static/ur_rtde-install.exe
+    expire_in: 2 days
+  tags:
+    - linux
 
 pages:
   stage: deploy
   variables:
     GIT_STRATEGY: none
   only:
-    - master
+    refs:
+      - master
   dependencies:
     - sphinx_html
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804-doc
@@ -50,6 +92,8 @@ pages:
   artifacts:
     paths:
       - public
+  tags:
+    - linux
 
 
     

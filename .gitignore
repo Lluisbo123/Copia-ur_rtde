@@ -20,3 +20,4 @@ debian/librtde-dev.debhelper.log
 debian/files
 debian/debhelper-build-stamp
 debian/tmp
+CMakeSettings.json

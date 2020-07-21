@@ -12,6 +12,11 @@ If you are on Linux (Ubuntu), you can install ur_rtde with:
     sudo apt install librtde librtde-dev
 
 
+If you are on Windows, you can install ur_rtde from this installer:
+
+:download:`Download ur_rtde-install.exe <../_static/ur_rtde-install.exe>`
+
+
 If you only want to the use the Python interface, you can install ur_rtde through pip:
 
 .. code-block:: shell
@@ -143,13 +148,13 @@ Linux (Ubuntu) and macOS
     and next clicking the **'START'** button. You can now run the examples.
 
 
-Windows
--------
+Windows Visual Studio
+---------------------
 .. code-block:: shell
 
     git clone https://gitlab.com/sdurobotics/ur_rtde.git
 
-If you are using Microsoft Visual Studio version with CMake support (supported since 2017 version).
+If you are using Microsoft Visual Studio with CMake support (supported since 2017 version).
 You should be able to navigate to the folder you cloned the repository to and open the ur_rtde
 as a CMake project. See the image below.
 
@@ -172,4 +177,43 @@ Set the following CMake Command Arguments in order for the project to find Boost
     machine you can set the network adapter to "Bridged" in the 'Virtual Machine Settings'. If you then obtain the IP
     address of the robot using ifconfig, you can test the communication with your windows host running the ur_rtde program.
 
+Windows Commandline
+-------------------
+
+A quick way to compile the interface on Windows, is to do everything from the command line.
+The following commands can be executed from the command prompt after Boost has been installed.
+
+.. code-block:: shell
+
+    git clone https://gitlab.com/sdurobotics/ur_rtde.git
+    cd ur_rtde
+    mkdir Build
+    cd Build
+    cmake -DBOOST_ROOT="<Path:\to\boost_<version>>" -DBOOST_LIBRARYDIR="<Path:\to\boost_<VERSION>\<COMPILER>>" -DPYTHON_BINDINGS=OFF
+    msbuild ur_rtde.sln /property:Configuration=Release /maxcpucount:<NUMBER_OF_CORES>
+
+filling out the system specific variables the setup looks like this for a computer with 8 cores, using visual studio 2019 and boost 1.71.0 
+
+.. code-block:: shell
+
+    cmake -DBOOST_ROOT="C:\local\boost_1_71_0" -DBOOST_LIBRARYDIR="C:\local\boost_1_71_0\lib64-msvc-14.2" -DPYTHON_BINDINGS=OFF
+    msbuild ur_rtde.sln /property:Configuration=Release /maxcpucount:8
+
+The example above is the basic setup for compiling ur_rtde below you'll find a list of other commands and what they do.
+
+- -G "Visual Studio 15 2017 Win64"
+    - This command forces the generator to vs 2017 64 bit. On some 64 bit systems when running cmake boost will look for 32bit libraries which are not there.
+    - The equivalent for Visual studio 2019 is: -G "Visual Studio 16 2019" -A x64
+
+- -DBUILD_STATIC=[ON|OFF]
+    - The default value is "OFF", which means that a dll library is built.
+      This means, that when trying to link against this library runtime. 
+      The .dll file must either be moved to the same directory as .exe file.
+      Or the system PATH variable must be set to include Build\\<config>
+    - If it is set to ON the libraries will be build statically.
+      This will make the compile time linking libraries a little longer and the output .exe or .lib a little larger.
+
+- -DBoost_USE_STATIC_LIBS=[ON|OFF]
+    - The default is OFF. If set to on it will link statically to Boost libraries.
+      This will give the same benefits/drawbacks as -DBUILD_STATIC, just for the Boost libraries instead.
 

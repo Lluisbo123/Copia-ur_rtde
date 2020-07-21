@@ -6,6 +6,7 @@
 #include <boost/thread/thread.hpp>
 #include <iostream>
 #include <thread>
+#include <bitset>
 
 namespace ur_rtde
 {
