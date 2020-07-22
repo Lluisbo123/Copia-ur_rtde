@@ -5,6 +5,7 @@ cmake-build-release
 bin
 .idea
 .vscode
+.eggs
 include/ur_rtde/rtde_control_script.h
 include/ur_rtde/rtde_export.h
 debian/.debhelper
