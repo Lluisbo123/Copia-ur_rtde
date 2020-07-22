@@ -11,6 +11,9 @@ This section contains examples of how to use the :ref:`RTDE Control Interface <r
 .. role:: bash(code)
    :language: bash
 
+.. role:: cmake_inline(code)
+   :language: cmake
+
 CMake Example
 =============
 Once you have installed the ur_rtde library. You can use the cmake command find_package() to locate the library.
@@ -27,12 +30,13 @@ Here is an example of how to find the library and link it against your C++ execu
 
 if the library is not installed or installed to a none standard system path, use one of the following methods:
 
-- call cmake with -Dur_rtde_DIR=/path/to/ur_rtde
-- set the path in find_package
-   - find_package(ur_rtde REQUIRED PATHS "/a/possible/path/to/ur_rtde" "/another/possible/path/to/ur_rtde"
+*  Call CMake with :bash:`-Dur_rtde_DIR=/path/to/ur_rtde`
+*  Set the path in :bash:`find_package()`:
 
-The path to ur_rtde is the one where ur_rtdeTargets.cmake can be found. For a none install it should be /path/to/ur_rtde/Build/ur_rtde.
-For an install it is /path/to/lib/cmake/ur_rtde.
+   find_package(ur_rtde REQUIRED PATHS "/a/possible/path/to/ur_rtde" "/another/possible/path/to/ur_rtde")
+
+The path to ur_rtde is the one where ur_rtdeTargets.cmake can be found. For a none install it should be
+:file:`/path/to/ur_rtde/Build/ur_rtde`. For an install it is :file:`/path/to/lib/cmake/ur_rtde`.
 
 Basic use
 =========

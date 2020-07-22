@@ -3,6 +3,9 @@ Installation
 ************
 This section contains information on how to build and install the ur_rtde library.
 
+Quick Install
+=============
+
 If you are on Linux (Ubuntu), you can install ur_rtde with:
 
 .. code-block:: shell
@@ -12,11 +15,6 @@ If you are on Linux (Ubuntu), you can install ur_rtde with:
     sudo apt install librtde librtde-dev
 
 
-If you are on Windows and use vs2019, you can download and extract the ur_rtde ur_rtde here:
-
-:download:`Download ur_rtde-install.exe <../_static/ur_rtde-install.exe>`
-
-
 If you only want to the use the Python interface, you can install ur_rtde through pip:
 
 .. code-block:: shell
@@ -24,76 +22,10 @@ If you only want to the use the Python interface, you can install ur_rtde throug
    pip install --user ur_rtde
 
 
-Dependencies
-============
-.. image:: ../_static/boost-logo.svg
-  :width: 60
-  :target: https://www.boost.org/
-  :alt: Boost
+If you are on Windows and use Visual Studio 2019, you can install ur_rtde from this installer:
 
-.. image:: ../_static/pybind11-logo.png
-  :width: 100
-  :target: https://github.com/pybind/pybind11
-  :alt: pybind11
+:download:`Download ur_rtde-install.exe <../_static/ur_rtde-install.exe>`
 
-* `Boost <https://www.boost.org/>`_
-* `pybind11 <https://github.com/pybind/pybind11>`_
-
-.. note::
-   The pybind11 dependency is optional and are only required if ur_rtde are to be used with Python. The ur_rtde library
-   depends on Boost for networking and threading.
-
-Linux (Ubuntu)
---------------
-
-You can install Boost on Ubuntu using:
-
-.. code-block:: shell
-
-   sudo apt-get install libboost-all-dev
-
-*Optionally* if you want to use ur_rtde with Python make sure pybind11 is checked out from
-the submodule before attempting to build using:
-
-.. code-block:: shell
-
-   git submodule update --init --recursive
-
-
-macOS
------
-On macOS install boost with:
-
-.. code-block:: shell
-
-   brew install boost 
-
-*Optionally* if you want to use ur_rtde with Python make sure pybind11 is checked out from
-the submodule before attempting to build using:
-
-.. code-block:: shell
-
-   git submodule update --init --recursive
-
-
-Windows
--------
-Boost precompiled libraries can be found at:
-https://sourceforge.net/projects/boost/files/boost-binaries/
-
-.. note::
-    If you are using Microsoft Visual Studio make sure you download a version of
-    Boost that matches your Microsoft Visual Studio version.
-
-Depending on your setup it may be required to add the Boost library path
-to the system environment variables.
-
-*Optionally* if you want to use ur_rtde with Python make sure pybind11 is checked out from
-the submodule before attempting to build using:
-
-.. code-block:: shell
-
-   git submodule update --init --recursive
 
 Compatible Robots
 =================
@@ -115,11 +47,54 @@ Currently tested on:
     been tested without python bindings. pybind11 supports
     *Microsoft Visual Studio 2015 Update 3 or newer* on Windows.
 
+
 Build Instructions
 ==================
+This section describes how to build ur_rtde from source on different platforms. The dependencies of ur_rtde are:
+
+.. image:: ../_static/boost-logo.svg
+  :width: 60
+  :target: https://www.boost.org/
+  :alt: Boost
+
+.. image:: ../_static/pybind11-logo.png
+  :width: 100
+  :target: https://github.com/pybind/pybind11
+  :alt: pybind11
+
+* `Boost <https://www.boost.org/>`_
+* `pybind11 <https://github.com/pybind/pybind11>`_
+
+.. note::
+   The pybind11 dependency is optional and are only required if ur_rtde are to be used with Python. The ur_rtde library
+   depends on Boost for networking and threading.
 
 Linux (Ubuntu) and macOS
 ------------------------
+
+Dependencies
+~~~~~~~~~~~~
+You can install Boost on Ubuntu using:
+
+.. code-block:: shell
+
+   sudo apt-get install libboost-all-dev
+
+On macOS you can install Boost with:
+
+.. code-block:: shell
+
+   brew install boost
+
+*Optionally* if you want to use ur_rtde with Python make sure pybind11 is checked out from
+the submodule before attempting to build using:
+
+.. code-block:: shell
+
+   git submodule update --init --recursive
+
+Build
+~~~~~
 
 .. code-block:: shell
 
@@ -148,11 +123,34 @@ Linux (Ubuntu) and macOS
     and next clicking the **'START'** button. You can now run the examples.
 
 
-Windows Visual Studio
----------------------
+Windows
+-------
+
+Dependencies
+~~~~~~~~~~~~
+
+Boost precompiled libraries can be found at:
+https://sourceforge.net/projects/boost/files/boost-binaries/
+
+.. note::
+    If you are using Microsoft Visual Studio make sure you download a version of
+    Boost that matches your Microsoft Visual Studio version.
+
+Depending on your setup it may be required to add the Boost library path
+to the system environment variables.
+
+*Optionally* if you want to use ur_rtde with Python make sure pybind11 is checked out from
+the submodule before attempting to build using:
+
+.. code-block:: shell
+
+   git submodule update --init --recursive
 .. code-block:: shell
 
     git clone https://gitlab.com/sdurobotics/ur_rtde.git
+
+Visual Studio Build
+~~~~~~~~~~~~~~~~~~~
 
 If you are using Microsoft Visual Studio with CMake support (supported since 2017 version).
 You should be able to navigate to the folder you cloned the repository to and open the ur_rtde
@@ -177,8 +175,8 @@ Set the following CMake Command Arguments in order for the project to find Boost
     machine you can set the network adapter to "Bridged" in the 'Virtual Machine Settings'. If you then obtain the IP
     address of the robot using ifconfig, you can test the communication with your windows host running the ur_rtde program.
 
-Windows Commandline
--------------------
+Commandline Build
+~~~~~~~~~~~~~~~~~
 
 A quick way to compile the interface on Windows, is to do everything from the command line.
 The following commands can be executed from the command prompt after Boost has been installed.
@@ -192,7 +190,8 @@ The following commands can be executed from the command prompt after Boost has b
     cmake -DBOOST_ROOT="<Path:\to\boost_<version>>" -DBOOST_LIBRARYDIR="<Path:\to\boost_<VERSION>\<COMPILER>>" -DPYTHON_BINDINGS=OFF
     msbuild ur_rtde.sln /property:Configuration=Release /maxcpucount:<NUMBER_OF_CORES>
 
-filling out the system specific variables the setup looks like this for a computer with 8 cores, using visual studio 2019 and boost 1.71.0 
+filling out the system specific variables the setup looks like this for a computer with 8 cores,
+using visual studio 2019 and boost 1.71.0.
 
 .. code-block:: shell
 
@@ -202,12 +201,13 @@ filling out the system specific variables the setup looks like this for a comput
 The example above is the basic setup for compiling ur_rtde below you'll find a list of other commands and what they do.
 
 - -G "Visual Studio 15 2017 Win64"
-    - This command forces the generator to vs 2017 64 bit. On some 64 bit systems when running cmake boost will look for 32bit libraries which are not there.
+    - This command forces the generator to vs 2017 64 bit. On some 64 bit systems when running cmake boost will
+      look for 32bit libraries which are not there.
     - The equivalent for Visual studio 2019 is: -G "Visual Studio 16 2019" -A x64
 
 - -DBUILD_STATIC=[ON|OFF]
     - The default value is "OFF", which means that a dll library is built.
-      This means, that when trying to link against this library runtime. 
+      This means, that when trying to link against this library runtime.
       The .dll file must either be moved to the same directory as .exe file.
       Or the system PATH variable must be set to include Build\\<config>
     - If it is set to ON the libraries will be build statically.
