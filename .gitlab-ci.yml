@@ -24,9 +24,9 @@ build-WINDOWS:
   script:
     - mkdir build
     - cd build
-    - cmake -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 16 2019" -A x64 -DWINDOWS_INSTALLER=ON -DBUILD_STATIC=ON -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=OFF ..
-    - msbuild ur_rtde.sln /property:Configuration=Release /maxcpucount:8 
-    - msbuild PACKAGE.vcxproj /property:Configuration=Release /maxcpucount:8 
+    - cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -G "Visual Studio 16 2019" -A x64 -DWINDOWS_INSTALLER=ON -DBUILD_STATIC=ON -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=OFF ..
+    - msbuild ur_rtde.sln /property:Configuration=RelWithDebInfo /maxcpucount:8 
+    - msbuild PACKAGE.vcxproj /property:Configuration=RelWithDebInfo /maxcpucount:8 
   artifacts:
     paths:
       - build/ur_rtde-install.exe
