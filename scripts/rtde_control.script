@@ -509,6 +509,38 @@ $V38        protective_stop()
             watchdog_min_frequency = read_input_float_register(0)
             rtde_set_watchdog("input_int_register_23", watchdog_min_frequency, "stop")
             textmsg("set_watchdog done")
+        elif cmd == 37:
+            textmsg("is_pose_within_safety_limits")
+            pose = p[0, 0, 0, 0, 0, 0]
+            pose[0] = read_input_float_register(0)
+            pose[1] = read_input_float_register(1)
+            pose[2] = read_input_float_register(2)
+            pose[3] = read_input_float_register(3)
+            pose[4] = read_input_float_register(4)
+            pose[5] = read_input_float_register(5)
+            safe_pose = is_within_safety_limits(pose)
+            if safe_pose == True:
+               write_output_integer_register(1, 1)
+            else:
+               write_output_integer_register(1, 0)
+            end
+            textmsg("is_pose_within_safety_limits done")
+        elif cmd == 38:
+            textmsg("is_joints_within_safety_limits")
+            q = [0, 0, 0, 0, 0, 0]
+            q[0] = read_input_float_register(0)
+            q[1] = read_input_float_register(1)
+            q[2] = read_input_float_register(2)
+            q[3] = read_input_float_register(3)
+            q[4] = read_input_float_register(4)
+            q[5] = read_input_float_register(5)
+            safe_q = is_within_safety_limits(q)
+            if safe_q == True:
+               write_output_integer_register(1, 1)
+            else:
+               write_output_integer_register(1, 0)
+            end
+            textmsg("is_joints_within_safety_limits done")
         elif cmd == 255:
             textmsg("Received stop script!")
         end

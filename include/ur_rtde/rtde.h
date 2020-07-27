@@ -79,6 +79,8 @@ class RTDE
       STOPL = 34,
       STOPJ = 35,
       SET_WATCHDOG = 36,
+      IS_POSE_WITHIN_SAFETY_LIMITS = 37,
+      IS_JOINTS_WITHIN_SAFETY_LIMITS = 38,
       STOP_SCRIPT = 255
     };
 

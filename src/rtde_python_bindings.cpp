@@ -1,6 +1,7 @@
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <ur_rtde/dashboard_client.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/rtde_control_interface_doc.h>
 #include <ur_rtde/rtde_io_interface.h>
@@ -8,7 +9,6 @@
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_receive_interface_doc.h>
 #include <ur_rtde/script_client.h>
-#include <ur_rtde/dashboard_client.h>
 
 namespace py = pybind11;
 using namespace ur_rtde;
@@ -19,7 +19,7 @@ PYBIND11_MODULE(rtde_control, m)
 {
   m.doc() = "RTDE Control Interface";
   py::class_<RTDEControlInterface>(m, "RTDEControlInterface")
-      .def(py::init<std::string, int, bool>())
+      .def(py::init<std::string, int, bool>(), py::arg("hostname"), py::arg("port") = 30004, py::arg("verbose") = false)
       .def("reconnect", &RTDEControlInterface::reconnect, DOC(ur_rtde, RTDEControlInterface, reconnect),
            py::call_guard<py::gil_scoped_release>())
       .def("isConnected", &RTDEControlInterface::isConnected, DOC(ur_rtde, RTDEControlInterface, isConnected),
@@ -75,8 +75,8 @@ PYBIND11_MODULE(rtde_control, m)
            py::call_guard<py::gil_scoped_release>())
       .def("forceModeStop", &RTDEControlInterface::forceModeStop, DOC(ur_rtde, RTDEControlInterface, forceModeStop),
            py::call_guard<py::gil_scoped_release>())
-      .def("forceModeUpdate", &RTDEControlInterface::forceModeUpdate, DOC(ur_rtde, RTDEControlInterface, forceModeUpdate),
-           py::call_guard<py::gil_scoped_release>())
+      .def("forceModeUpdate", &RTDEControlInterface::forceModeUpdate,
+           DOC(ur_rtde, RTDEControlInterface, forceModeUpdate), py::call_guard<py::gil_scoped_release>())
       .def("forceModeSetDamping", &RTDEControlInterface::forceModeSetDamping,
            DOC(ur_rtde, RTDEControlInterface, forceModeSetDamping), py::call_guard<py::gil_scoped_release>())
       .def("toolContact", &RTDEControlInterface::toolContact, DOC(ur_rtde, RTDEControlInterface, toolContact),
@@ -107,8 +107,11 @@ PYBIND11_MODULE(rtde_control, m)
            DOC(ur_rtde, RTDEControlInterface, triggerProtectiveStop), py::call_guard<py::gil_scoped_release>())
       .def("stopL", &RTDEControlInterface::stopL, py::call_guard<py::gil_scoped_release>())
       .def("stopJ", &RTDEControlInterface::stopJ, py::call_guard<py::gil_scoped_release>())
-      .def("setWatchdog", &RTDEControlInterface::setWatchdog, py::arg("min_frequency") = 10.0, py::call_guard<py::gil_scoped_release>())
+      .def("setWatchdog", &RTDEControlInterface::setWatchdog, py::arg("min_frequency") = 10.0,
+           py::call_guard<py::gil_scoped_release>())
       .def("kickWatchdog", &RTDEControlInterface::kickWatchdog, py::call_guard<py::gil_scoped_release>())
+      .def("isPoseWithinSafetyLimits", &RTDEControlInterface::isPoseWithinSafetyLimits, py::call_guard<py::gil_scoped_release>())
+      .def("isJointsWithinSafetyLimits", &RTDEControlInterface::isJointsWithinSafetyLimits, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control
@@ -119,60 +122,83 @@ PYBIND11_MODULE(rtde_receive, m)
 {
   m.doc() = "RTDE Receive Interface";
   py::class_<RTDEReceiveInterface>(m, "RTDEReceiveInterface")
-      .def(py::init<std::string, std::vector<std::string>, int, bool>())
-      .def("reconnect", &RTDEReceiveInterface::reconnect, DOC(ur_rtde, RTDEReceiveInterface, reconnect), py::call_guard<py::gil_scoped_release>())
-      .def("isConnected", &RTDEReceiveInterface::isConnected, DOC(ur_rtde, RTDEReceiveInterface, isConnected), py::call_guard<py::gil_scoped_release>())
-      .def("getTimestamp", &RTDEReceiveInterface::getTimestamp, DOC(ur_rtde, RTDEReceiveInterface, getTimestamp), py::call_guard<py::gil_scoped_release>())
-      .def("getTargetQ", &RTDEReceiveInterface::getTargetQ, DOC(ur_rtde, RTDEReceiveInterface, getTargetQ), py::call_guard<py::gil_scoped_release>())
-      .def("getTargetQd", &RTDEReceiveInterface::getTargetQd, DOC(ur_rtde, RTDEReceiveInterface, getTargetQd), py::call_guard<py::gil_scoped_release>())
-      .def("getTargetQdd", &RTDEReceiveInterface::getTargetQdd, DOC(ur_rtde, RTDEReceiveInterface, getTargetQdd), py::call_guard<py::gil_scoped_release>())
-      .def("getTargetCurrent", &RTDEReceiveInterface::getTargetCurrent, DOC(ur_rtde, RTDEReceiveInterface, getTargetCurrent), py::call_guard<py::gil_scoped_release>())
-      .def("getTargetMoment", &RTDEReceiveInterface::getTargetMoment, DOC(ur_rtde, RTDEReceiveInterface, getTargetMoment), py::call_guard<py::gil_scoped_release>())
-      .def("getActualQ", &RTDEReceiveInterface::getActualQ, DOC(ur_rtde, RTDEReceiveInterface, getActualQ), py::call_guard<py::gil_scoped_release>())
-      .def("getActualQd", &RTDEReceiveInterface::getActualQd, DOC(ur_rtde, RTDEReceiveInterface, getActualQd), py::call_guard<py::gil_scoped_release>())
-      .def("getActualCurrent", &RTDEReceiveInterface::getActualCurrent, DOC(ur_rtde, RTDEReceiveInterface, getActualCurrent), py::call_guard<py::gil_scoped_release>())
-      .def("getJointControlOutput", &RTDEReceiveInterface::getJointControlOutput, DOC(ur_rtde, RTDEReceiveInterface, getJointControlOutput),
+      .def(py::init<std::string, std::vector<std::string>, int, bool>(), py::arg("hostname"),
+           py::arg("variables") = std::vector<std::string>(), py::arg("port") = 30004, py::arg("verbose") = false)
+      .def("reconnect", &RTDEReceiveInterface::reconnect, DOC(ur_rtde, RTDEReceiveInterface, reconnect),
            py::call_guard<py::gil_scoped_release>())
-      .def("getActualTCPPose", &RTDEReceiveInterface::getActualTCPPose, DOC(ur_rtde, RTDEReceiveInterface, getActualTCPPose), py::call_guard<py::gil_scoped_release>())
-      .def("getActualTCPSpeed", &RTDEReceiveInterface::getActualTCPSpeed, DOC(ur_rtde, RTDEReceiveInterface, getActualTCPSpeed), py::call_guard<py::gil_scoped_release>())
-      .def("getActualTCPForce", &RTDEReceiveInterface::getActualTCPForce, DOC(ur_rtde, RTDEReceiveInterface, getActualTCPForce), py::call_guard<py::gil_scoped_release>())
-      .def("getTargetTCPPose", &RTDEReceiveInterface::getTargetTCPPose, DOC(ur_rtde, RTDEReceiveInterface, getTargetTCPPose), py::call_guard<py::gil_scoped_release>())
-      .def("getTargetTCPSpeed", &RTDEReceiveInterface::getTargetTCPSpeed, DOC(ur_rtde, RTDEReceiveInterface, getTargetTCPSpeed), py::call_guard<py::gil_scoped_release>())
-      .def("getActualDigitalInputBits", &RTDEReceiveInterface::getActualDigitalInputBits, DOC(ur_rtde, RTDEReceiveInterface, getActualDigitalInputBits),
+      .def("isConnected", &RTDEReceiveInterface::isConnected, DOC(ur_rtde, RTDEReceiveInterface, isConnected),
            py::call_guard<py::gil_scoped_release>())
-      .def("getJointTemperatures", &RTDEReceiveInterface::getJointTemperatures, DOC(ur_rtde, RTDEReceiveInterface, getJointTemperatures),
+      .def("getTimestamp", &RTDEReceiveInterface::getTimestamp, DOC(ur_rtde, RTDEReceiveInterface, getTimestamp),
            py::call_guard<py::gil_scoped_release>())
-      .def("getActualExecutionTime", &RTDEReceiveInterface::getActualExecutionTime, DOC(ur_rtde, RTDEReceiveInterface, getActualExecutionTime),
+      .def("getTargetQ", &RTDEReceiveInterface::getTargetQ, DOC(ur_rtde, RTDEReceiveInterface, getTargetQ),
            py::call_guard<py::gil_scoped_release>())
-      .def("getRobotMode", &RTDEReceiveInterface::getRobotMode, DOC(ur_rtde, RTDEReceiveInterface, getRobotMode), py::call_guard<py::gil_scoped_release>())
-      .def("getJointMode", &RTDEReceiveInterface::getJointMode, DOC(ur_rtde, RTDEReceiveInterface, getJointMode), py::call_guard<py::gil_scoped_release>())
-      .def("getSafetyMode", &RTDEReceiveInterface::getSafetyMode, DOC(ur_rtde, RTDEReceiveInterface, getSafetyMode), py::call_guard<py::gil_scoped_release>())
-      .def("getActualToolAccelerometer", &RTDEReceiveInterface::getActualToolAccelerometer, DOC(ur_rtde, RTDEReceiveInterface, getActualToolAccelerometer),
+      .def("getTargetQd", &RTDEReceiveInterface::getTargetQd, DOC(ur_rtde, RTDEReceiveInterface, getTargetQd),
            py::call_guard<py::gil_scoped_release>())
-      .def("getSpeedScaling", &RTDEReceiveInterface::getSpeedScaling, DOC(ur_rtde, RTDEReceiveInterface, getSpeedScaling), py::call_guard<py::gil_scoped_release>())
-      .def("getTargetSpeedFraction", &RTDEReceiveInterface::getTargetSpeedFraction, DOC(ur_rtde, RTDEReceiveInterface, getTargetSpeedFraction),
+      .def("getTargetQdd", &RTDEReceiveInterface::getTargetQdd, DOC(ur_rtde, RTDEReceiveInterface, getTargetQdd),
            py::call_guard<py::gil_scoped_release>())
-      .def("getActualMomentum", &RTDEReceiveInterface::getActualMomentum, DOC(ur_rtde, RTDEReceiveInterface, getActualMomentum), py::call_guard<py::gil_scoped_release>())
-      .def("getActualMainVoltage", &RTDEReceiveInterface::getActualMainVoltage, DOC(ur_rtde, RTDEReceiveInterface, getActualMainVoltage),
+      .def("getTargetCurrent", &RTDEReceiveInterface::getTargetCurrent,
+           DOC(ur_rtde, RTDEReceiveInterface, getTargetCurrent), py::call_guard<py::gil_scoped_release>())
+      .def("getTargetMoment", &RTDEReceiveInterface::getTargetMoment,
+           DOC(ur_rtde, RTDEReceiveInterface, getTargetMoment), py::call_guard<py::gil_scoped_release>())
+      .def("getActualQ", &RTDEReceiveInterface::getActualQ, DOC(ur_rtde, RTDEReceiveInterface, getActualQ),
            py::call_guard<py::gil_scoped_release>())
-      .def("getActualRobotVoltage", &RTDEReceiveInterface::getActualRobotVoltage, DOC(ur_rtde, RTDEReceiveInterface, getActualRobotVoltage),
+      .def("getActualQd", &RTDEReceiveInterface::getActualQd, DOC(ur_rtde, RTDEReceiveInterface, getActualQd),
            py::call_guard<py::gil_scoped_release>())
-      .def("getActualRobotCurrent", &RTDEReceiveInterface::getActualRobotCurrent, DOC(ur_rtde, RTDEReceiveInterface, getActualRobotCurrent),
+      .def("getActualCurrent", &RTDEReceiveInterface::getActualCurrent,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualCurrent), py::call_guard<py::gil_scoped_release>())
+      .def("getJointControlOutput", &RTDEReceiveInterface::getJointControlOutput,
+           DOC(ur_rtde, RTDEReceiveInterface, getJointControlOutput), py::call_guard<py::gil_scoped_release>())
+      .def("getActualTCPPose", &RTDEReceiveInterface::getActualTCPPose,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualTCPPose), py::call_guard<py::gil_scoped_release>())
+      .def("getActualTCPSpeed", &RTDEReceiveInterface::getActualTCPSpeed,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualTCPSpeed), py::call_guard<py::gil_scoped_release>())
+      .def("getActualTCPForce", &RTDEReceiveInterface::getActualTCPForce,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualTCPForce), py::call_guard<py::gil_scoped_release>())
+      .def("getTargetTCPPose", &RTDEReceiveInterface::getTargetTCPPose,
+           DOC(ur_rtde, RTDEReceiveInterface, getTargetTCPPose), py::call_guard<py::gil_scoped_release>())
+      .def("getTargetTCPSpeed", &RTDEReceiveInterface::getTargetTCPSpeed,
+           DOC(ur_rtde, RTDEReceiveInterface, getTargetTCPSpeed), py::call_guard<py::gil_scoped_release>())
+      .def("getActualDigitalInputBits", &RTDEReceiveInterface::getActualDigitalInputBits,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualDigitalInputBits), py::call_guard<py::gil_scoped_release>())
+      .def("getJointTemperatures", &RTDEReceiveInterface::getJointTemperatures,
+           DOC(ur_rtde, RTDEReceiveInterface, getJointTemperatures), py::call_guard<py::gil_scoped_release>())
+      .def("getActualExecutionTime", &RTDEReceiveInterface::getActualExecutionTime,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualExecutionTime), py::call_guard<py::gil_scoped_release>())
+      .def("getRobotMode", &RTDEReceiveInterface::getRobotMode, DOC(ur_rtde, RTDEReceiveInterface, getRobotMode),
            py::call_guard<py::gil_scoped_release>())
-      .def("getActualJointVoltage", &RTDEReceiveInterface::getActualJointVoltage, DOC(ur_rtde, RTDEReceiveInterface, getActualJointVoltage),
+      .def("getJointMode", &RTDEReceiveInterface::getJointMode, DOC(ur_rtde, RTDEReceiveInterface, getJointMode),
            py::call_guard<py::gil_scoped_release>())
-      .def("getActualDigitalOutputBits", &RTDEReceiveInterface::getActualDigitalOutputBits, DOC(ur_rtde, RTDEReceiveInterface, getActualDigitalOutputBits),
+      .def("getSafetyMode", &RTDEReceiveInterface::getSafetyMode, DOC(ur_rtde, RTDEReceiveInterface, getSafetyMode),
            py::call_guard<py::gil_scoped_release>())
+      .def("getActualToolAccelerometer", &RTDEReceiveInterface::getActualToolAccelerometer,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualToolAccelerometer), py::call_guard<py::gil_scoped_release>())
+      .def("getSpeedScaling", &RTDEReceiveInterface::getSpeedScaling,
+           DOC(ur_rtde, RTDEReceiveInterface, getSpeedScaling), py::call_guard<py::gil_scoped_release>())
+      .def("getTargetSpeedFraction", &RTDEReceiveInterface::getTargetSpeedFraction,
+           DOC(ur_rtde, RTDEReceiveInterface, getTargetSpeedFraction), py::call_guard<py::gil_scoped_release>())
+      .def("getActualMomentum", &RTDEReceiveInterface::getActualMomentum,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualMomentum), py::call_guard<py::gil_scoped_release>())
+      .def("getActualMainVoltage", &RTDEReceiveInterface::getActualMainVoltage,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualMainVoltage), py::call_guard<py::gil_scoped_release>())
+      .def("getActualRobotVoltage", &RTDEReceiveInterface::getActualRobotVoltage,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualRobotVoltage), py::call_guard<py::gil_scoped_release>())
+      .def("getActualRobotCurrent", &RTDEReceiveInterface::getActualRobotCurrent,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualRobotCurrent), py::call_guard<py::gil_scoped_release>())
+      .def("getActualJointVoltage", &RTDEReceiveInterface::getActualJointVoltage,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualJointVoltage), py::call_guard<py::gil_scoped_release>())
+      .def("getActualDigitalOutputBits", &RTDEReceiveInterface::getActualDigitalOutputBits,
+           DOC(ur_rtde, RTDEReceiveInterface, getActualDigitalOutputBits), py::call_guard<py::gil_scoped_release>())
       .def("getDigitalOutState", &RTDEReceiveInterface::getDigitalOutState, py::call_guard<py::gil_scoped_release>())
-      .def("getRuntimeState", &RTDEReceiveInterface::getRuntimeState, DOC(ur_rtde, RTDEReceiveInterface, getRuntimeState), py::call_guard<py::gil_scoped_release>())
-      .def("getStandardAnalogInput0", &RTDEReceiveInterface::getStandardAnalogInput0, DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogInput0),
-           py::call_guard<py::gil_scoped_release>())
-      .def("getStandardAnalogInput1", &RTDEReceiveInterface::getStandardAnalogInput1, DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogInput1),
-           py::call_guard<py::gil_scoped_release>())
-      .def("getStandardAnalogOutput0", &RTDEReceiveInterface::getStandardAnalogOutput0, DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogOutput0),
-           py::call_guard<py::gil_scoped_release>())
-      .def("getStandardAnalogOutput1", &RTDEReceiveInterface::getStandardAnalogOutput1, DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogOutput1),
-           py::call_guard<py::gil_scoped_release>())
+      .def("getRuntimeState", &RTDEReceiveInterface::getRuntimeState,
+           DOC(ur_rtde, RTDEReceiveInterface, getRuntimeState), py::call_guard<py::gil_scoped_release>())
+      .def("getStandardAnalogInput0", &RTDEReceiveInterface::getStandardAnalogInput0,
+           DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogInput0), py::call_guard<py::gil_scoped_release>())
+      .def("getStandardAnalogInput1", &RTDEReceiveInterface::getStandardAnalogInput1,
+           DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogInput1), py::call_guard<py::gil_scoped_release>())
+      .def("getStandardAnalogOutput0", &RTDEReceiveInterface::getStandardAnalogOutput0,
+           DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogOutput0), py::call_guard<py::gil_scoped_release>())
+      .def("getStandardAnalogOutput1", &RTDEReceiveInterface::getStandardAnalogOutput1,
+           DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogOutput1), py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEReceiveInterface &a) { return "<rtde_receive.RTDEReceiveInterface>"; });
 }
 };  // namespace rtde_receive
@@ -183,13 +209,18 @@ PYBIND11_MODULE(rtde_io, m)
 {
   m.doc() = "RTDE IO Interface";
   py::class_<RTDEIOInterface>(m, "RTDEIOInterface")
-      .def(py::init<std::string, int, bool>())
+      .def(py::init<std::string, int, bool>(), py::arg("hostname"), py::arg("port") = 30004, py::arg("verbose") = false)
       .def("reconnect", &RTDEIOInterface::reconnect)
-      .def("setStandardDigitalOut", &RTDEIOInterface::setStandardDigitalOut, DOC(ur_rtde, RTDEIOInterface, setStandardDigitalOut), py::call_guard<py::gil_scoped_release>())
-      .def("setToolDigitalOut", &RTDEIOInterface::setToolDigitalOut, DOC(ur_rtde, RTDEIOInterface, setToolDigitalOut), py::call_guard<py::gil_scoped_release>())
-      .def("setSpeedSlider", &RTDEIOInterface::setSpeedSlider, DOC(ur_rtde, RTDEIOInterface, setSpeedSlider), py::call_guard<py::gil_scoped_release>())
-      .def("setAnalogOutputVoltage", &RTDEIOInterface::setAnalogOutputVoltage, DOC(ur_rtde, RTDEIOInterface, setAnalogOutputVoltage), py::call_guard<py::gil_scoped_release>())
-      .def("setAnalogOutputCurrent", &RTDEIOInterface::setAnalogOutputCurrent, DOC(ur_rtde, RTDEIOInterface, setAnalogOutputCurrent), py::call_guard<py::gil_scoped_release>())
+      .def("setStandardDigitalOut", &RTDEIOInterface::setStandardDigitalOut,
+           DOC(ur_rtde, RTDEIOInterface, setStandardDigitalOut), py::call_guard<py::gil_scoped_release>())
+      .def("setToolDigitalOut", &RTDEIOInterface::setToolDigitalOut, DOC(ur_rtde, RTDEIOInterface, setToolDigitalOut),
+           py::call_guard<py::gil_scoped_release>())
+      .def("setSpeedSlider", &RTDEIOInterface::setSpeedSlider, DOC(ur_rtde, RTDEIOInterface, setSpeedSlider),
+           py::call_guard<py::gil_scoped_release>())
+      .def("setAnalogOutputVoltage", &RTDEIOInterface::setAnalogOutputVoltage,
+           DOC(ur_rtde, RTDEIOInterface, setAnalogOutputVoltage), py::call_guard<py::gil_scoped_release>())
+      .def("setAnalogOutputCurrent", &RTDEIOInterface::setAnalogOutputCurrent,
+           DOC(ur_rtde, RTDEIOInterface, setAnalogOutputCurrent), py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEIOInterface &a) { return "<rtde_io.RTDEIOInterface>"; });
 }
 };  // namespace rtde_io
@@ -200,7 +231,9 @@ PYBIND11_MODULE(script_client, m)
 {
   m.doc() = "Script Client";
   py::class_<ScriptClient>(m, "ScriptClient")
-      .def(py::init<std::string, uint32_t, uint32_t>())
+      .def(py::init<std::string, uint32_t, uint32_t, int, bool>(), py::arg("hostname"),
+           py::arg("major_control_version"), py::arg("minor_control_version"), py::arg("port") = 30002,
+           py::arg("verbose") = false)
       .def("connect", &ScriptClient::connect, py::call_guard<py::gil_scoped_release>())
       .def("isConnected", &ScriptClient::isConnected, py::call_guard<py::gil_scoped_release>())
       .def("disconnect", &ScriptClient::disconnect, py::call_guard<py::gil_scoped_release>())
@@ -219,7 +252,7 @@ PYBIND11_MODULE(dashboard_client, m)
 {
   m.doc() = "Dashboard Client";
   py::class_<DashboardClient>(m, "DashboardClient")
-      .def(py::init<std::string>())
+      .def(py::init<std::string, int, bool>(), py::arg("hostname"), py::arg("port") = 29999, py::arg("verbose") = false)
       .def("connect", &DashboardClient::connect, py::call_guard<py::gil_scoped_release>())
       .def("isConnected", &DashboardClient::isConnected, py::call_guard<py::gil_scoped_release>())
       .def("disconnect", &DashboardClient::disconnect, py::call_guard<py::gil_scoped_release>())
@@ -248,6 +281,7 @@ PYBIND11_MODULE(dashboard_client, m)
       .def("safetystatus", &DashboardClient::safetystatus, py::call_guard<py::gil_scoped_release>())
       .def("addToLog", &DashboardClient::addToLog, py::call_guard<py::gil_scoped_release>())
       .def("isProgramSaved", &DashboardClient::isProgramSaved, py::call_guard<py::gil_scoped_release>())
+      .def("isInRemoteControl", &DashboardClient::isInRemoteControl, py::call_guard<py::gil_scoped_release>())
       .def("setUserRole", &DashboardClient::setUserRole, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const DashboardClient &a) { return "<dashboard_client.DashboardClient>"; });
 }

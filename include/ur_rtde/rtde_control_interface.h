@@ -416,6 +416,27 @@ class RTDEControlInterface
     */
   RTDE_EXPORT bool kickWatchdog();
 
+  /**
+    * @brief Checks if the given pose is reachable and within the current safety limits of the robot. It checks
+    * safety planes limits, TCP orientation deviation limits and range of the robot. If a solution is found when
+    * applying the inverse kinematics to the given target TCP pose, this pose is considered reachable.
+    *
+    * @param pose target pose
+    * @returns a bool indicating if the pose is within the safety limits.
+    */
+  RTDE_EXPORT bool isPoseWithinSafetyLimits(const std::vector<double> &pose);
+
+  /**
+    * @brief Checks if the given joint position is reachable and within the current safety limits of the robot. This check
+    * considers joint limits (if the target pose is specified as joint positions), safety planes limits, TCP
+    * orientation deviation limits and range of the robot. If a solution is found when applying the inverse kinematics
+    * to the given target TCP pose, this pose is considered reachable
+    *
+    * @param q joint positions
+    * @returns a bool indicating if the joint positions are within the safety limits.
+    */
+  RTDE_EXPORT bool isJointsWithinSafetyLimits(const std::vector<double> &q);
+
  private:
   bool setupRecipes(const double &frequency);
 

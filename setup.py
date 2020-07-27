@@ -82,7 +82,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name="ur_rtde",
-    version="1.2.4",
+    version="1.2.5",
     author="Anders Prier Lindvig",
     author_email="anpl@mmmi.sdu.dk",
     description="Python interface for sending and receiving data to/from a UR robot using the Real-Time Data Exchange (RTDE) interface of the robot",

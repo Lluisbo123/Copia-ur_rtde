@@ -14,6 +14,16 @@ namespace ur_rtde
 RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool verbose)
     : hostname_(std::move(hostname)), port_(port), verbose_(verbose)
 {
+  // Create a connection to the dashboard server
+  db_client_ = std::make_shared<DashboardClient>(hostname_);
+  db_client_->connect();
+
+  // Check if robot is in remote control
+  if (!db_client_->isInRemoteControl())
+  {
+    throw std::logic_error("ur_rtde: Please enable remote control on the robot!");
+  }
+
   rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
@@ -25,10 +35,6 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
   // If e-Series Robot set frequency to 500Hz
   if (major_version > CB3_MAJOR_VERSION)
     frequency = 500;
-
-  // Create a connection to the dashboard server
-  db_client_ = std::make_shared<DashboardClient>(hostname_);
-  db_client_->connect();
 
   // Create a connection to the script server
   script_client_ = std::make_shared<ScriptClient>(hostname_, major_version, minor_version);
@@ -1065,6 +1071,24 @@ bool RTDEControlInterface::kickWatchdog()
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::NO_CMD;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_12;
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::isPoseWithinSafetyLimits(const std::vector<double> &pose)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::IS_POSE_WITHIN_SAFETY_LIMITS;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+  robot_cmd.val_ = pose;
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::isJointsWithinSafetyLimits(const std::vector<double> &q)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::IS_JOINTS_WITHIN_SAFETY_LIMITS;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+  robot_cmd.val_ = q;
   return sendCommand(robot_cmd);
 }
 

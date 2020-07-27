@@ -1,11 +1,12 @@
 #include <ur_rtde/dashboard_client.h>
+
 #include <boost/array.hpp>
-#include <boost/asio/write.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/socket_base.hpp>
-#include <memory>
+#include <boost/asio/write.hpp>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include <regex>
 
 using boost::asio::ip::tcp;
@@ -124,8 +125,8 @@ void DashboardClient::closePopup()
 
 std::string DashboardClient::polyscopeVersion()
 {
-  std::string close_popup = "PolyscopeVersion\n";
-  send(close_popup);
+  std::string polyscope_version = "PolyscopeVersion\n";
+  send(polyscope_version);
   auto str = receive();
   const std::regex base_regex("\\d+.\\d+.\\d+.\\d+");
   std::smatch base_match;
@@ -138,8 +139,8 @@ std::string DashboardClient::polyscopeVersion()
 
 std::string DashboardClient::programState()
 {
-  std::string close_popup = "programState\n";
-  send(close_popup);
+  std::string program_state = "programState\n";
+  send(program_state);
   auto state_str = receive();
   return state_str;
 }
@@ -211,6 +212,27 @@ bool DashboardClient::isProgramSaved()
   if (strstr(str.c_str(), "True") != nullptr)
     return true;
   return false;
+}
+
+bool DashboardClient::isInRemoteControl()
+{
+  PolyScopeVersion polyscope_version(polyscopeVersion());
+  if (polyscope_version.major == 5 && polyscope_version.minor > 5)
+  {
+    std::string is_in_remote_control = "is in remote control\n";
+    send(is_in_remote_control);
+    auto str = receive();
+    if (strstr(str.c_str(), "true") != nullptr)
+      return true;
+    return false;
+  }
+  else
+  {
+    std::cerr << "Warning! isInRemoteControl() function is not supported on the dashboard server for PolyScope "
+                 "versions less than 5.6.0"
+              << std::endl;
+    return false;
+  }
 }
 
 void DashboardClient::setUserRole(const UserRole &role)

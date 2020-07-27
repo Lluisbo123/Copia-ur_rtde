@@ -54,6 +54,7 @@ class DashboardClient
   RTDE_EXPORT std::string safetystatus();
   RTDE_EXPORT void addToLog(const std::string &message);
   RTDE_EXPORT bool isProgramSaved();
+  RTDE_EXPORT bool isInRemoteControl();
   RTDE_EXPORT void setUserRole(const UserRole &role);
 
  private:
