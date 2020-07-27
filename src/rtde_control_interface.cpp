@@ -1080,7 +1080,22 @@ bool RTDEControlInterface::isPoseWithinSafetyLimits(const std::vector<double> &p
   robot_cmd.type_ = RTDE::RobotCommand::Type::IS_POSE_WITHIN_SAFETY_LIMITS;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
   robot_cmd.val_ = pose;
-  return sendCommand(robot_cmd);
+
+  if (sendCommand(robot_cmd))
+  {
+    if (robot_state_ != nullptr)
+    {
+      return robot_state_->getOutput_int_register_1() == 1;
+    }
+    else
+    {
+      throw std::logic_error("Please initialize the RobotState, before using it!");
+    }
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool RTDEControlInterface::isJointsWithinSafetyLimits(const std::vector<double> &q)
@@ -1089,7 +1104,22 @@ bool RTDEControlInterface::isJointsWithinSafetyLimits(const std::vector<double> 
   robot_cmd.type_ = RTDE::RobotCommand::Type::IS_JOINTS_WITHIN_SAFETY_LIMITS;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
   robot_cmd.val_ = q;
-  return sendCommand(robot_cmd);
+
+  if (sendCommand(robot_cmd))
+  {
+    if (robot_state_ != nullptr)
+    {
+      return robot_state_->getOutput_int_register_1() == 1;
+    }
+    else
+    {
+      throw std::logic_error("Please initialize the RobotState, before using it!");
+    }
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
