@@ -55,7 +55,7 @@ build_pypi:
   script:
     - ./ci/build-wheels.sh
   dependencies:
-    - build-LINUX
+    - []
   tags:
     - linux
 
