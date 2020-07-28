@@ -54,7 +54,8 @@ build_pypi:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
     - ./ci/build-wheels.sh
-  dependencies: []
+  dependencies:
+    - build-LINUX
   tags:
     - linux
 
