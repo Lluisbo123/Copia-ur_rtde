@@ -54,7 +54,7 @@ if(${CODE})
 	if(WINDOWS_INSTALLER)
 		set(Boost_USE_STATIC_LIBS ON)
 	endif()
-	find_package(Boost REQUIRED COMPONENTS system thread date_time)
+	find_package(Boost REQUIRED COMPONENTS system thread)
 	find_package(Threads)
 
 	if(${PYTHON_BINDINGS})
@@ -118,7 +118,6 @@ if(${CODE})
 	target_link_libraries(rtde PUBLIC
 			${Boost_SYSTEM_LIBRARY}
 			${Boost_THREAD_LIBRARY}
-			${Boost_DATE_TIME_LIBRARY}
 			${CMAKE_THREAD_LIBS_INIT})
 	set_target_properties(rtde PROPERTIES 
 			VERSION ${PROJECT_VERSION} 
