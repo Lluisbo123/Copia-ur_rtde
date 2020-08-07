@@ -14,7 +14,14 @@ with open("README.md", "r") as fh:
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
-        Extension.__init__(self, name, sources=[])
+        if platform.system() == "Windows" or platform.system() == "darwin":
+            Extension.__init__(self, name, sources=[], include_dirs=[
+                # Path to pybind11 headers
+                get_pybind_include(),
+                get_pybind_include(user=True)])
+        else:
+            Extension.__init__(self, name, sources=[])
+
         self.sourcedir = os.path.abspath(sourcedir)
 
 class CMakeBuild(build_ext):
@@ -79,10 +86,23 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
+class get_pybind_include(object):
+    """Helper class to determine the pybind11 include path
+    The purpose of this class is to postpone importing pybind11
+    until it is actually installed, so that the ``get_include()``
+    method can be invoked. """
+
+    def __init__(self, user=False):
+        self.user = user
+
+    def __str__(self):
+        import pybind11
+        return pybind11.get_include(self.user)
+
 
 setup(
     name="ur_rtde",
-    version="1.2.5",
+    version="1.2.6",
     author="Anders Prier Lindvig",
     author_email="anpl@mmmi.sdu.dk",
     description="Python interface for sending and receiving data to/from a UR robot using the Real-Time Data Exchange (RTDE) interface of the robot",
@@ -91,7 +111,8 @@ setup(
     ext_modules=[CMakeExtension('ur_rtde')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
-    setup_requires=['setuptools_scm'],
+    build_requires=["pybind11"],
+    setup_requires=['setuptools_scm', 'pybind11>=2.5.0'],
     options={'build': {'build_base': 'build-setuptools'}},
     url="https://gitlab.com/sdurobotics/ur_rtde",
     classifiers=[

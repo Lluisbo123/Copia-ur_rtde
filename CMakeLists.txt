@@ -42,7 +42,7 @@ if(${CODE})
 	endif()
 endif()
 
-project(ur_rtde VERSION 1.2.5 LANGUAGES ${PROJECT_LANGUAGES})
+project(ur_rtde VERSION 1.2.6 LANGUAGES ${PROJECT_LANGUAGES})
 set(PROJECT_VERSION_SUFFIX "") # alpha/beta/rc, e.g. "-rc0"
 set(PROJECT_VERSION "${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX}")
 set(PROJECT_AUTHOR "Anders Prier Lindvig")
@@ -65,8 +65,30 @@ if(${CODE})
 		set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4)
 		find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
 
-		# Find pybind11 from submodule
-		add_subdirectory(pybind11)
+		if(${CMAKE_VERSION} VERSION_LESS 3.11)
+			# pybind11 must be found from submodule
+			add_subdirectory(pybind11)
+		else()
+			# Get pybind11 with FetchContent
+			include(FetchContent)
+
+			FetchContent_Declare(
+					pybind11-src
+					GIT_REPOSITORY https://github.com/pybind/pybind11.git
+					GIT_TAG        v2.5.0
+			)
+			if(${CMAKE_VERSION} VERSION_LESS 3.14)
+				macro(FetchContent_MakeAvailable NAME)
+					FetchContent_GetProperties(${NAME})
+					if(NOT ${NAME}_POPULATED)
+						FetchContent_Populate(${NAME})
+						add_subdirectory(${${NAME}_SOURCE_DIR} ${${NAME}_BINARY_DIR})
+					endif()
+				endmacro()
+			endif()
+			FetchContent_MakeAvailable(pybind11-src)
+		endif()
+
 	endif()
 endif()
 
