@@ -57,7 +57,7 @@ void RTDE::connect()
     boost::asio::connect(*socket_, resolver_->resolve(query));
     conn_state_ = ConnectionState::CONNECTED;
     if (verbose_)
-      std::cout <<"Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
+      std::cout << "Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
   }
   catch (boost::system::system_error)
   {
@@ -71,7 +71,7 @@ void RTDE::disconnect()
   // We rely on the socket_ destructor to do its job.
   conn_state_ = ConnectionState::DISCONNECTED;
   if (verbose_)
-    std::cout <<"RTDE - Socket disconnected" << std::endl;
+    std::cout << "RTDE - Socket disconnected" << std::endl;
 }
 
 bool RTDE::isConnected()
@@ -218,7 +218,7 @@ void RTDE::sendAll(const std::uint8_t &command, std::string payload)
 {
   DEBUG("Payload size is: " << payload.size());
   // Pack size and command into header
-  uint16_t size = htons(HEADER_SIZE + (uint16_t) payload.size());
+  uint16_t size = htons(HEADER_SIZE + (uint16_t)payload.size());
   uint8_t type = command;
 
   char buffer[3];
@@ -308,6 +308,13 @@ void RTDE::receive()
       // DEBUG("ID:" << (int)id);
       std::string datatypes(std::begin(data) + 1, std::end(data));
       DEBUG("Datatype:" << datatypes);
+      std::string in_use_str("IN_USE");
+      if (datatypes.find(in_use_str) != std::string::npos)
+      {
+        throw std::runtime_error(
+            "One of the RTDE input registers are already in use! Currently you must disable the EtherNet/IP adapter, "
+            "PROFINET or any MODBUS unit configured on the robot. This might change in the future.");
+      }
       break;
     }
 

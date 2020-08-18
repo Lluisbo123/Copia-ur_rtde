@@ -10,7 +10,7 @@
 [![Gitter](https://badges.gitter.im/ur_rtde/community.svg)](https://gitter.im/ur_rtde/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 </div>
 
-A C++ interface for sending and receiving data to/from a UR robot using the 
+A C++ interface for controlling and receiving data from a UR robot using the 
 [Real-Time Data Exchange (RTDE)](https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/real-time-data-exchange-rtde-guide-22229/)
  interface of the robot. The interface can also by used with python, through the provided python bindings.
 
