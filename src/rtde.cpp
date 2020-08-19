@@ -61,8 +61,9 @@ void RTDE::connect()
   }
   catch (boost::system::system_error)
   {
-    std::cerr << "Error: Could not connect to: " << hostname_ << " at " << port_ << ", verify the IP" << std::endl;
-    throw;
+    std::string error_msg =
+        "Error: Could not connect to: " + hostname_ + " at " + std::to_string(port_) + ", verify the IP";
+    throw std::runtime_error(error_msg);
   }
 }
 
