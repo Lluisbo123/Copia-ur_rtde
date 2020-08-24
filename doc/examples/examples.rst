@@ -118,7 +118,6 @@ C++:
    #include <ur_rtde/rtde_control_interface.h>
    #include <thread>
    #include <chrono>
-   #include <iostream>
 
    using namespace ur_rtde;
    using namespace std::chrono;
@@ -127,19 +126,37 @@ C++:
    {
      RTDEControlInterface rtde_control("127.0.0.1");
 
+     // Parameters
      std::vector<double> task_frame = {0, 0, 0, 0, 0, 0};
      std::vector<int> selection_vector = {0, 0, 1, 0, 0, 0};
      std::vector<double> wrench_down = {0, 0, -10, 0, 0, 0};
      std::vector<double> wrench_up = {0, 0, 10, 0, 0, 0};
      int force_type = 2;
+     double dt = 1.0/500; // 2ms
      std::vector<double> limits = {2, 2, 1.5, 1, 1, 1};
+     std::vector<double> joint_q = {-1.54, -1.83, -2.28, -0.59, 1.60, 0.023};
 
-     rtde_control.forceModeStart(task_frame, selection_vector, wrench_down, force_type, limits);
-     std::cout << std::endl << "Going Down!" << std::endl;
-     std::this_thread::sleep_for(std::chrono::seconds(2));
-     std::cout << std::endl << "Going Up!" << std::endl << std::endl;
-     rtde_control.forceModeUpdate(wrench_up);
-     std::this_thread::sleep_for(std::chrono::seconds(2));
+     // Move to initial joint position with a regular moveJ
+     rtde_control.moveJ(joint_q);
+
+     // Execute 500Hz control loop for a total of 4 seconds, each cycle is ~2ms
+     for (unsigned int i=0; i<2000; i++)
+     {
+       auto t_start = high_resolution_clock::now();
+       // First we move the robot down for 2 seconds, then up for 2 seconds
+       if (i > 1000)
+         rtde_control.forceMode(task_frame, selection_vector, wrench_up, force_type, limits);
+       else
+         rtde_control.forceMode(task_frame, selection_vector, wrench_down, force_type, limits);
+       auto t_stop = high_resolution_clock::now();
+       auto t_duration = std::chrono::duration<double>(t_stop - t_start);
+
+       if (t_duration.count() < dt)
+       {
+         std::this_thread::sleep_for(std::chrono::duration<double>(dt - t_duration.count()));
+       }
+     }
+
      rtde_control.forceModeStop();
      rtde_control.stopScript();
 
@@ -161,13 +178,25 @@ Python:
    wrench_up = [0, 0, 10, 0, 0, 0]
    force_type = 2
    limits = [2, 2, 1.5, 1, 1, 1]
+   dt = 1.0/500  # 2ms
+   joint_q = [-1.54, -1.83, -2.28, -0.59, 1.60, 0.023]
 
-   rtde_c.forceModeStart(task_frame, selection_vector, wrench_down, force_type, limits)
-   print("Going Down!")
-   time.sleep(2)
-   print("Going Up!")
-   rtde_c.forceModeUpdate(wrench_up)
-   time.sleep(2)
+   # Move to initial joint position with a regular moveJ
+   rtde_c.moveJ(joint_q)
+
+   # Execute 500Hz control loop for 4 seconds, each cycle is 2ms
+   for i in range(2000):
+       start = time.time()
+       # First move the robot down for 2 seconds, then up for 2 seconds
+       if i > 1000:
+           rtde_c.forceMode(task_frame, selection_vector, wrench_up, force_type, limits)
+       else:
+           rtde_c.forceMode(task_frame, selection_vector, wrench_down, force_type, limits)
+       end = time.time()
+       duration = end - start
+       if duration < dt:
+           time.sleep(dt - duration)
+
    rtde_c.forceModeStop()
    rtde_c.stopScript()
 

@@ -71,12 +71,10 @@ PYBIND11_MODULE(rtde_control, m)
            py::call_guard<py::gil_scoped_release>())
       .def("servoStop", &RTDEControlInterface::servoStop, DOC(ur_rtde, RTDEControlInterface, servoStop),
            py::call_guard<py::gil_scoped_release>())
-      .def("forceModeStart", &RTDEControlInterface::forceModeStart, DOC(ur_rtde, RTDEControlInterface, forceModeStart),
+      .def("forceMode", &RTDEControlInterface::forceMode, DOC(ur_rtde, RTDEControlInterface, forceMode),
            py::call_guard<py::gil_scoped_release>())
       .def("forceModeStop", &RTDEControlInterface::forceModeStop, DOC(ur_rtde, RTDEControlInterface, forceModeStop),
            py::call_guard<py::gil_scoped_release>())
-      .def("forceModeUpdate", &RTDEControlInterface::forceModeUpdate,
-           DOC(ur_rtde, RTDEControlInterface, forceModeUpdate), py::call_guard<py::gil_scoped_release>())
       .def("forceModeSetDamping", &RTDEControlInterface::forceModeSetDamping,
            DOC(ur_rtde, RTDEControlInterface, forceModeSetDamping), py::call_guard<py::gil_scoped_release>())
       .def("toolContact", &RTDEControlInterface::toolContact, DOC(ur_rtde, RTDEControlInterface, toolContact),

@@ -261,16 +261,8 @@ class RTDEControlInterface
     * the axis. For non-compliant axes, these values are the maximum allowed deviation along/about an axis between the
     * actual tcp position and the one set by the program.
     */
-  RTDE_EXPORT bool forceModeStart(const std::vector<double> &task_frame, const std::vector<int> &selection_vector,
+  RTDE_EXPORT bool forceMode(const std::vector<double> &task_frame, const std::vector<int> &selection_vector,
                                   const std::vector<double> &wrench, int type, const std::vector<double> &limits);
-
-  /**
-    * @brief Update the wrench the robot will apply to its environment
-    * @param wrench The forces/torques the robot will apply to its environment. The robot adjusts its position
-    * along/about compliant axis in order to achieve the specified force/torque. Values have no effect for
-    * non-compliant axes
-    */
-  RTDE_EXPORT bool forceModeUpdate(const std::vector<double> &wrench);
 
   /**
     * @brief Resets the robot mode from force mode to normal operation.

@@ -65,7 +65,7 @@ The value is stored until this function is called again. Call this
 function before force mode is entered (otherwise default value will be
 used))doc";
 
-static const char *__doc_ur_rtde_RTDEControlInterface_forceModeStart =
+static const char *__doc_ur_rtde_RTDEControlInterface_forceMode =
 R"doc(@brief Set robot to be controlled in force mode @param task_frame A
 pose vector that defines the force frame relative to the base frame.
 @param selection_vector A 6d vector of 0s and 1s. 1 means that the
@@ -86,13 +86,6 @@ maximum allowed deviation along/about an axis between the actual tcp
 position and the one set by the program.)doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface_forceModeStop = R"doc(@brief Resets the robot mode from force mode to normal operation.)doc";
-
-static const char *__doc_ur_rtde_RTDEControlInterface_forceModeUpdate =
-R"doc(@brief Update the wrench the robot will apply to its environment
-@param wrench The forces/torques the robot will apply to its
-environment. The robot adjusts its position along/about compliant axis
-in order to achieve the specified force/torque. Values have no effect
-for non-compliant axes)doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface_getActualJointPositionsHistory =
 R"doc(@brief Detects when a contact between the tool and an object happens.

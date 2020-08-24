@@ -141,7 +141,7 @@ void RTDE::send(const RobotCommand &robot_cmd)
   std::uint8_t command = RTDE_DATA_PACKAGE;
   std::vector<char> cmd_packed = RTDEUtility::packInt32(robot_cmd.type_);
 
-  if (robot_cmd.type_ == RobotCommand::FORCE_MODE_START)
+  if (robot_cmd.type_ == RobotCommand::FORCE_MODE)
   {
     std::vector<char> force_mode_type_packed = RTDEUtility::packInt32(robot_cmd.force_mode_type_);
     cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(force_mode_type_packed.begin()),
@@ -360,7 +360,7 @@ void RTDE::receive()
       break;
     }
 
-      // TODO: Handle IN_USE and NOT_FOUND case
+      // TODO: Handle NOT_FOUND case
 
     default:
       DEBUG("Unknown Command: " << static_cast<int>(msg_cmd));

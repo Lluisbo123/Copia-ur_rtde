@@ -3,7 +3,7 @@ FAQ
 ***
 * **Is ur_rtde realtime capable?**
 
-After the 0.0.7 release, the servo and speed commands should be realtime capable. I am currently working on
+The servo, speed and force commands should be realtime capable. I am currently working on
 a guide for how to set up a realtime kernel and a ur_rtde realtime communication test, that can be used for
 determining if the communication latency is low enough for realtime communication. Once done you can find the guide
 here :ref:`Realtime Setup Guide <realtime-setup-guide>`

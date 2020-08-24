@@ -6,6 +6,7 @@ def rtde_control():
     global limits = [0, 0, 0, 0, 0, 0]
     global is_servoing = 0
     global is_speeding = 0
+    global is_in_forcemode = 0
 
     global servo_target = [0, 0, 0, 0, 0, 0]
     global servo_time = 0.002
@@ -25,6 +26,14 @@ def rtde_control():
     global servo_thrd = 0
     global servoc_thrd = 0
     global speed_thrd = 0
+    global force_thrd = 0
+
+    thread force_thread():
+        while (True):
+            force_mode(task_frame, selection_vector, wrench, force_mode_type, limits)
+            sync()
+        end
+    end
 
     thread speed_thread():
         while (True):
@@ -161,7 +170,8 @@ def rtde_control():
             movec(pose_via, pose_to, a=acceleration, v=velocity, r=blend, mode=movec_mode)
             textmsg("movec done")
         elif cmd == 6:
-            textmsg("force_mode_start")
+            # force_mode
+            enter_critical
             force_mode_type = read_input_integer_register(1)
             selection_vector[0] = read_input_integer_register(2)
             selection_vector[1] = read_input_integer_register(3)
@@ -190,28 +200,29 @@ def rtde_control():
             limits[3] = read_input_float_register(15)
             limits[4] = read_input_float_register(16)
             limits[5] = read_input_float_register(17)
+            exit_critical
 
-            force_mode(task_frame, selection_vector, wrench, force_mode_type, limits)
-            textmsg("force_mode started")
+            if is_in_forcemode == 0:
+                is_in_forcemode = 1
+                if force_thrd == 0:
+                    global force_thrd = run force_thread()
+                end
+            end
         elif cmd == 7:
-            # forceModeUpdate
-            wrench[0] = read_input_float_register(0)
-            wrench[1] = read_input_float_register(1)
-            wrench[2] = read_input_float_register(2)
-            wrench[3] = read_input_float_register(3)
-            wrench[4] = read_input_float_register(4)
-            wrench[5] = read_input_float_register(5)
-            force_mode(task_frame, selection_vector, wrench, force_mode_type, limits)
-        elif cmd == 8:
             textmsg("force_mode_stop")
+            enter_critical
+            is_in_forcemode = 0
+            kill force_thrd
+            force_thrd = 0
             end_force_mode()
             stopl(10)
+            exit_critical
             textmsg("force_mode stopped")
-        elif cmd == 9:
+        elif cmd == 8:
             textmsg("zero_ftsensor")
             zero_ftsensor()
             textmsg("ftsensor zeroed")
-        elif cmd == 10:
+        elif cmd == 9:
             # speedJ
             qd = [0, 0, 0, 0, 0, 0]
             qd[0] = read_input_float_register(0)
@@ -234,7 +245,7 @@ def rtde_control():
                     global speed_thrd = run speed_thread()
                 end
             end
-        elif cmd == 11:
+        elif cmd == 10:
             # speedL
             xd = [0, 0, 0, 0, 0, 0]
             xd[0] = read_input_float_register(0)
@@ -256,7 +267,7 @@ def rtde_control():
                     global speed_thrd = run speed_thread()
                 end
             end
-        elif cmd == 12:
+        elif cmd == 11:
             # servoJ
             q = [0, 0, 0, 0, 0, 0]
             q[0] = read_input_float_register(0)
@@ -282,7 +293,7 @@ def rtde_control():
                 end
             end
             
-        elif cmd == 13:
+        elif cmd == 12:
             # servoC
             pose = p[0, 0, 0, 0, 0, 0]
             pose[0] = read_input_float_register(0)
@@ -309,7 +320,7 @@ def rtde_control():
                 end
             end
 
-        elif cmd == 16:
+        elif cmd == 15:
             textmsg("speed_stop")
             enter_critical
             is_speeding = 0
@@ -322,7 +333,7 @@ def rtde_control():
             end
             exit_critical
             textmsg("speed_stop done")
-        elif cmd == 17:
+        elif cmd == 16:
             textmsg("servo_stop")
             enter_critical
             is_servoing = 0
@@ -333,7 +344,7 @@ def rtde_control():
             exit_critical
             stopl(20)
             textmsg("servo_stop done")
-        elif cmd == 18:
+        elif cmd == 17:
             textmsg("set_payload")
             mass = read_input_float_register(0)
             cog_x = read_input_float_register(1)
@@ -348,25 +359,25 @@ $V50        end
 $V50        textmsg("active payload:")
 $V50        textmsg(get_target_payload())
             textmsg("set_payload done")
-        elif cmd == 19:
+        elif cmd == 18:
             textmsg("teach_mode")
             teach_mode()
             textmsg("teach_mode done")
-        elif cmd == 20:
+        elif cmd == 19:
             textmsg("end_teach_mode")
             end_teach_mode()
             textmsg("end_teach_mode done")
-        elif cmd == 21:
+        elif cmd == 20:
             textmsg("force_mode_set_damping")
             damping = read_input_float_register(0)
 $V35        force_mode_set_damping(damping)
             textmsg("force_mode_set_damping done")
-        elif cmd == 22:
+        elif cmd == 21:
             textmsg("force_mode_set_gain_scaling")
             scaling = read_input_float_register(0)
 $V50        force_mode_set_gain_scaling(scaling)
             textmsg("force_mode_set_gain_scaling done")
-        elif cmd == 25:
+        elif cmd == 24:
             pose = p[0, 0, 0, 0, 0, 0]
             pose[0] = read_input_float_register(0)
             pose[1] = read_input_float_register(1)
@@ -391,7 +402,7 @@ $V50        force_mode_set_gain_scaling(scaling)
                     global servo_thrd = run servo_thread()
                 end
             end
-        elif cmd == 26:
+        elif cmd == 25:
             textmsg("tool_contact")
             direction = p[0, 0, 0, 0, 0, 0]
             direction[0] = read_input_float_register(0)
@@ -405,14 +416,14 @@ $V54        write_output_integer_register(1, time_steps)
 $V54        textmsg("tool_contact timesteps:")
 $V54        textmsg(time_steps)
             textmsg("tool_contact done")
-        elif cmd == 27:
+        elif cmd == 26:
             textmsg("get_steptime")
 $V54        step_time = get_steptime()
 $V54        write_output_float_register(0, step_time)
 $V54        textmsg("get_steptime step_time:")
 $V54        textmsg(step_time)
             textmsg("get_steptime done")
-        elif cmd == 28:
+        elif cmd == 27:
             textmsg("get_actual_joint_positions_history")
             steps = read_input_integer_register(1)
 $V54        textmsg(steps)
@@ -425,7 +436,7 @@ $V54        write_output_float_register(3, joint_positions_history[3])
 $V54        write_output_float_register(4, joint_positions_history[4])
 $V54        write_output_float_register(5, joint_positions_history[5])
             textmsg("get_actual_joint_positions_history done")
-        elif cmd == 29:
+        elif cmd == 28:
             textmsg("get_target_waypoint")
 $V53        target_waypoint = get_target_waypoint()
 $V53        write_output_float_register(0, target_waypoint[0])
@@ -435,7 +446,7 @@ $V53        write_output_float_register(3, target_waypoint[3])
 $V53        write_output_float_register(4, target_waypoint[4])
 $V53        write_output_float_register(5, target_waypoint[5])
             textmsg("get_target_waypoint done")
-        elif cmd == 30:
+        elif cmd == 29:
             textmsg("set_tcp")
             pose = p[0, 0, 0, 0, 0, 0]
             pose[0] = read_input_float_register(0)
@@ -446,7 +457,7 @@ $V53        write_output_float_register(5, target_waypoint[5])
             pose[5] = read_input_float_register(5)
             set_tcp(pose)
             textmsg("set_tcp done")
-        elif cmd == 31:
+        elif cmd == 30:
             textmsg("get_inverse_kin")
             x = p[0, 0, 0, 0, 0, 0]
             x[0] = read_input_float_register(0)
@@ -475,11 +486,11 @@ $V53        write_output_float_register(5, target_waypoint[5])
             write_output_float_register(4, q[4])
             write_output_float_register(5, q[5])
             textmsg("get_inverse_kin done")
-        elif cmd == 32:
+        elif cmd == 31:
             textmsg("protective_stop")
 $V38        protective_stop()
             textmsg("protective_stop done")
-        elif cmd == 33:
+        elif cmd == 32:
             textmsg("movep")
             pose = p[0, 0, 0, 0, 0, 0]
             pose[0] = read_input_float_register(0)
@@ -493,23 +504,23 @@ $V38        protective_stop()
             blend = read_input_float_register(8)
             movep(pose, a=acceleration, v=velocity, r=blend)
             textmsg("movep done")
-        elif cmd == 34:
+        elif cmd == 33:
             textmsg("stopl")
             deceleration_rate = read_input_float_register(0)
             stopl(deceleration_rate)
             textmsg("stopl done")
-        elif cmd == 35:
+        elif cmd == 34:
             textmsg("stopj")
             deceleration_rate = read_input_float_register(0)
             stopj(deceleration_rate)
             textmsg("stopj done")
-        elif cmd == 36:
+        elif cmd == 35:
             textmsg("set_watchdog")
             # Setup watchdog for the RTDE communication
             watchdog_min_frequency = read_input_float_register(0)
             rtde_set_watchdog("input_int_register_23", watchdog_min_frequency, "stop")
             textmsg("set_watchdog done")
-        elif cmd == 37:
+        elif cmd == 36:
             textmsg("is_pose_within_safety_limits")
             pose = p[0, 0, 0, 0, 0, 0]
             pose[0] = read_input_float_register(0)
@@ -525,7 +536,7 @@ $V38        protective_stop()
                write_output_integer_register(1, 0)
             end
             textmsg("is_pose_within_safety_limits done")
-        elif cmd == 38:
+        elif cmd == 37:
             textmsg("is_joints_within_safety_limits")
             q = [0, 0, 0, 0, 0, 0]
             q[0] = read_input_float_register(0)
@@ -568,8 +579,8 @@ $V35force_mode_set_damping(0.025)
 
     while keep_running:
         cmd = rtde_cmd()
-        if cmd == 25 or cmd == 12 or cmd == 10 or cmd == 11:
-            # servo or speed mode, simply process and signal ready.
+        if cmd == 24 or cmd == 11 or cmd == 9 or cmd == 10 or cmd == 6:
+            # servo or speed or force mode, simply process and signal ready.
             keep_running = process_cmd()
             signal_ready()
         else:
