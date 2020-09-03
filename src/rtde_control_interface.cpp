@@ -18,10 +18,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
   db_client_ = std::make_shared<DashboardClient>(hostname_);
   db_client_->connect();
 
-  /* The following code will only work once the CI for PyPi is updated to a newer version of manylinux.
-   * The compiler version GCC 4.8 is simply too old for regular expressions.
-   *
-   * PolyScopeVersion polyscope_version(db_client_->polyscopeVersion());
+  PolyScopeVersion polyscope_version(db_client_->polyscopeVersion());
   if (polyscope_version.major == 5 && polyscope_version.minor > 5)
   {
     // Check if robot is in remote control
@@ -29,7 +26,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
     {
       throw std::logic_error("ur_rtde: Please enable remote control on the robot!");
     }
-  }*/
+  }
 
   rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
