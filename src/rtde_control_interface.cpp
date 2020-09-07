@@ -19,10 +19,10 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
   db_client_->connect();
 
   // Check if robot is in remote control
-  if (!db_client_->isInRemoteControl())
+  /*if (!db_client_->isInRemoteControl())
   {
-    throw std::logic_error("ur_rtde: Please enable remote control on the robot!");
-  }
+    throw std::logic_error("[ur_rtde] Please enable remote control on the robot!");
+  }*/
 
   rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
@@ -100,6 +100,16 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
 
 RTDEControlInterface::~RTDEControlInterface()
 {
+  disconnect();
+}
+
+void RTDEControlInterface::disconnect()
+{
+  // Stop the receive callback function
+  stop_thread_ = true;
+  th_->interrupt();
+  th_->join();
+
   if (rtde_ != nullptr)
   {
     if (rtde_->isConnected())
@@ -118,10 +128,8 @@ RTDEControlInterface::~RTDEControlInterface()
       db_client_->disconnect();
   }
 
-  // Stop the receive callback function
-  stop_thread_ = true;
-  th_->interrupt();
-  th_->join();
+  // Wait until everything has disconnected
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 bool RTDEControlInterface::isConnected()
@@ -131,6 +139,8 @@ bool RTDEControlInterface::isConnected()
 
 bool RTDEControlInterface::reconnect()
 {
+  db_client_->connect();
+  script_client_->connect();
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
   auto controller_version = rtde_->getControllerVersion();
@@ -170,6 +180,7 @@ bool RTDEControlInterface::reconnect()
     throw std::logic_error("Failed to start RTDE data synchronization, before timeout");
 
   // Start executing receiveCallback
+  stop_thread_ = false;
   th_ = std::make_shared<boost::thread>(boost::bind(&RTDEControlInterface::receiveCallback, this));
 
   // Wait until the first robot state has been received

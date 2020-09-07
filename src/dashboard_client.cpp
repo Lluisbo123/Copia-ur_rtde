@@ -23,7 +23,7 @@ DashboardClient::~DashboardClient() = default;
 void DashboardClient::connect()
 {
   io_service_ = std::make_shared<boost::asio::io_service>();
-  socket_ = std::make_shared<tcp::socket>(*io_service_);
+  socket_.reset(new boost::asio::ip::tcp::socket(*io_service_));
   socket_->open(boost::asio::ip::tcp::v4());
   boost::asio::ip::tcp::no_delay no_delay_option(true);
   boost::asio::socket_base::reuse_address sol_reuse_option(true);
@@ -45,8 +45,10 @@ bool DashboardClient::isConnected()
 
 void DashboardClient::disconnect()
 {
-  // Close socket
-  socket_->close();
+  /* We use reset() to safely close the socket,
+   * see: https://stackoverflow.com/questions/3062803/how-do-i-cleanly-reconnect-a-boostsocket-following-a-disconnect
+   */
+  socket_.reset();
   conn_state_ = ConnectionState::DISCONNECTED;
   if (verbose_)
     std::cout << "Dashboard Client - Socket disconnected" << std::endl;

@@ -29,6 +29,11 @@ class RTDEReceiveInterface
   RTDE_EXPORT virtual ~RTDEReceiveInterface();
 
   /**
+    * @returns Can be used to disconnect from the robot. To reconnect you have to call the reconnect() function.
+    */
+  RTDE_EXPORT void disconnect();
+
+  /**
     * @returns Can be used to reconnect to the robot after a lost connection.
     */
   RTDE_EXPORT bool reconnect();

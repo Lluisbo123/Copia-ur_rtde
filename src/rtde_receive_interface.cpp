@@ -43,16 +43,24 @@ RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std
 
 RTDEReceiveInterface::~RTDEReceiveInterface()
 {
+  disconnect();
+}
+
+void RTDEReceiveInterface::disconnect()
+{
+  // Stop the receive callback function
+  stop_thread = true;
+  th_->interrupt();
+  th_->join();
+
   if (rtde_ != nullptr)
   {
     if (rtde_->isConnected())
       rtde_->disconnect();
   }
 
-  // Stop the receive callback function
-  stop_thread = true;
-  th_->interrupt();
-  th_->join();
+  // Wait until everything has disconnected
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 bool RTDEReceiveInterface::setupRecipes(const double& frequency)
@@ -158,6 +166,7 @@ bool RTDEReceiveInterface::reconnect()
     // Start RTDE data synchronization
     rtde_->sendStart();
 
+    stop_thread = false;
     // Start executing receiveCallback
     th_ = std::make_shared<boost::thread>(boost::bind(&RTDEReceiveInterface::receiveCallback, this));
 
