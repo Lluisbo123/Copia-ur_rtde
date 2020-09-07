@@ -7,11 +7,12 @@
 
 Universal Robots RTDE C++ Interface
 ===================================
-A C++ interface for sending and receiving data to/from an UR robot using the `Real-Time Data Exchange (RTDE)
+A C++ interface for controlling and receiving data from an UR robot using the `Real-Time Data Exchange (RTDE)
 <https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/real-time-data-exchange-rtde-guide-22229/>`_.
 The interface can also by used with python, through the provided python bindings.
 
 .. toctree::
+   :maxdepth: 3
    :caption: Table of Contents
    :glob:
 

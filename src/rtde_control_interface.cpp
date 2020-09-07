@@ -18,11 +18,15 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
   db_client_ = std::make_shared<DashboardClient>(hostname_);
   db_client_->connect();
 
-  // Check if robot is in remote control
-  /*if (!db_client_->isInRemoteControl())
+  PolyScopeVersion polyscope_version(db_client_->polyscopeVersion());
+  if (polyscope_version.major == 5 && polyscope_version.minor > 5)
   {
-    throw std::logic_error("[ur_rtde] Please enable remote control on the robot!");
-  }*/
+    // Check if robot is in remote control
+    if (!db_client_->isInRemoteControl())
+    {
+      throw std::logic_error("ur_rtde: Please enable remote control on the robot!");
+    }
+  }
 
   rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
@@ -649,12 +653,12 @@ bool RTDEControlInterface::moveP(const std::vector<double> &pose, double speed, 
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::forceModeStart(const std::vector<double> &task_frame,
+bool RTDEControlInterface::forceMode(const std::vector<double> &task_frame,
                                           const std::vector<int> &selection_vector, const std::vector<double> &wrench,
                                           int type, const std::vector<double> &limits)
 {
   RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_START;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   robot_cmd.val_ = task_frame;
   for (const auto &val : wrench)
@@ -665,15 +669,6 @@ bool RTDEControlInterface::forceModeStart(const std::vector<double> &task_frame,
 
   robot_cmd.selection_vector_ = selection_vector;
   robot_cmd.force_mode_type_ = type;
-  return sendCommand(robot_cmd);
-}
-
-bool RTDEControlInterface::forceModeUpdate(const std::vector<double> &wrench)
-{
-  RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_UPDATE;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
-  robot_cmd.val_ = wrench;
   return sendCommand(robot_cmd);
 }
 
@@ -1160,7 +1155,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 
     if (cmd.type_ == RTDE::RobotCommand::Type::SERVOJ || cmd.type_ == RTDE::RobotCommand::Type::SERVOL ||
         cmd.type_ == RTDE::RobotCommand::Type::SERVOC || cmd.type_ == RTDE::RobotCommand::Type::SPEEDJ ||
-        cmd.type_ == RTDE::RobotCommand::Type::SPEEDL)
+        cmd.type_ == RTDE::RobotCommand::Type::SPEEDL || cmd.type_ == RTDE::RobotCommand::Type::FORCE_MODE)
     {
       // Send command to the controller
       rtde_->send(cmd);

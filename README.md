@@ -10,7 +10,7 @@
 [![Gitter](https://badges.gitter.im/ur_rtde/community.svg)](https://gitter.im/ur_rtde/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 </div>
 
-A C++ interface for sending and receiving data to/from a UR robot using the 
+A C++ interface for controlling and receiving data from a UR robot using the 
 [Real-Time Data Exchange (RTDE)](https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/real-time-data-exchange-rtde-guide-22229/)
  interface of the robot. The interface can also by used with python, through the provided python bindings.
 
@@ -35,6 +35,8 @@ If you are on Ubuntu, you can install ur_rtde with:
 If you only want to the use the Python interface, you can install ur_rtde through pip:
 
     pip install --user ur_rtde
+
+Notice! Make sure your pip version >=**19.3**, otherwise the install might fail. 
 
 If you are on Windows you can install ur_rtde from the installer found here:
                      

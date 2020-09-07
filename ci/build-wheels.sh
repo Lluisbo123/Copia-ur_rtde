@@ -5,7 +5,6 @@ export WORKDIR=$(pwd)
 export PYHOME=/home
 cd ${PYHOME}
 
-/opt/python/cp27-cp27m/bin/pip2.7 install pip --upgrade
 /opt/python/cp35-cp35m/bin/pip3.5 install pip --upgrade
 /opt/python/cp36-cp36m/bin/pip3.6 install pip --upgrade
 /opt/python/cp37-cp37m/bin/pip3.7 install pip --upgrade
@@ -14,7 +13,6 @@ cd ${PYHOME}
 /opt/python/cp37-cp37m/bin/pip install twine
 /opt/python/cp37-cp37m/bin/pip install --prefer-binary cmake
 ln -s /opt/python/cp37-cp37m/bin/cmake /usr/bin/cmake
-
 cd ${WORKDIR}
 
 # Collect the pythons
