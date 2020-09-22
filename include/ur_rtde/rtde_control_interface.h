@@ -434,6 +434,16 @@ class RTDEControlInterface
     */
   RTDE_EXPORT bool isJointsWithinSafetyLimits(const std::vector<double> &q);
 
+  /**
+    * @brief Returns the torques of all joints
+    *
+    * The torque on the joints, corrected by the torque needed to move the
+    * robot itself (gravity, friction, etc.), returned as a vector of length 6.
+    *
+    * @returns The joint torque vector in Nm: [Base, Shoulder, Elbow, Wrist1, Wrist2, Wrist3]
+    */
+  RTDE_EXPORT std::vector<double> getJointTorques();
+
  private:
   bool setupRecipes(const double &frequency);
 

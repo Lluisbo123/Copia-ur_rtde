@@ -653,9 +653,8 @@ bool RTDEControlInterface::moveP(const std::vector<double> &pose, double speed, 
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::forceMode(const std::vector<double> &task_frame,
-                                          const std::vector<int> &selection_vector, const std::vector<double> &wrench,
-                                          int type, const std::vector<double> &limits)
+bool RTDEControlInterface::forceMode(const std::vector<double> &task_frame, const std::vector<int> &selection_vector,
+                                     const std::vector<double> &wrench, int type, const std::vector<double> &limits)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE;
@@ -1125,6 +1124,33 @@ bool RTDEControlInterface::isJointsWithinSafetyLimits(const std::vector<double> 
   else
   {
     return false;
+  }
+}
+
+std::vector<double> RTDEControlInterface::getJointTorques()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::GET_JOINT_TORQUES;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+
+  if (sendCommand(robot_cmd))
+  {
+    if (robot_state_ != nullptr)
+    {
+      std::vector<double> torques = {
+          robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
+          robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
+          robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
+      return torques;
+    }
+    else
+    {
+      throw std::logic_error("Please initialize the RobotState, before using it!");
+    }
+  }
+  else
+  {
+    return std::vector<double>();
   }
 }
 

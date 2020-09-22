@@ -111,6 +111,7 @@ PYBIND11_MODULE(rtde_control, m)
       .def("kickWatchdog", &RTDEControlInterface::kickWatchdog, py::call_guard<py::gil_scoped_release>())
       .def("isPoseWithinSafetyLimits", &RTDEControlInterface::isPoseWithinSafetyLimits, py::call_guard<py::gil_scoped_release>())
       .def("isJointsWithinSafetyLimits", &RTDEControlInterface::isJointsWithinSafetyLimits, py::call_guard<py::gil_scoped_release>())
+      .def("getJointTorques", &RTDEControlInterface::getJointTorques, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control
