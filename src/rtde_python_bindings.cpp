@@ -102,6 +102,9 @@ PYBIND11_MODULE(rtde_control, m)
            DOC(ur_rtde, RTDEControlInterface, getInverseKinematics), py::arg("x"), py::arg("qnear"),
            py::arg("max_position_error") = 1e-10, py::arg("max_orientation_error") = 1e-10,
            py::call_guard<py::gil_scoped_release>())
+      .def("poseTrans", &RTDEControlInterface::poseTrans,
+           DOC(ur_rtde, RTDEControlInterface, poseTrans), py::arg("p_from"), py::arg("p_from_to"),
+           py::call_guard<py::gil_scoped_release>())
       .def("triggerProtectiveStop", &RTDEControlInterface::triggerProtectiveStop,
            DOC(ur_rtde, RTDEControlInterface, triggerProtectiveStop), py::call_guard<py::gil_scoped_release>())
       .def("stopL", &RTDEControlInterface::stopL, py::call_guard<py::gil_scoped_release>())

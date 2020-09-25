@@ -111,6 +111,21 @@ of joint positions (Optional) @param maxPositionError the maximum
 allowed positionerror (Optional) @param maxOrientationError the
 maximum allowed orientationerror (Optional) @returns joint positions)doc";
 
+static const char *__doc_ur_rtde_RTDEControlInterface_poseTrans =
+R"doc(@brief Pose transformation to move with respect to a tool or w.r.t. 
+a custom feature/frame). The first argument, p_from, is used to transform the 
+second argument, p_from_to, and the result is then returned. This means that the 
+result is the resulting pose, when starting at  the coordinate system of p_from, 
+and then in that coordinate system moving p_from_to. This function can be seen 
+in two different views. Either the function transforms, that is translates and 
+rotates, p_from_to by the parameters of p_from. Or the function is used to get 
+the resulting pose, when first making a move of p_from and then from there, a 
+move of p_from_to. If the poses were regarded as transformation matrices, it 
+would look like: T_world->to = T_world->from * T_from->to, 
+T_x->to = T_x->from * T_from->to @param p_from starting pose (spatial vector)
+@param p_from_to pose change relative to starting pose (spatial vector)
+@returns resulting pose (spatial vector))doc";
+
 static const char *__doc_ur_rtde_RTDEControlInterface_getInverseKinematicsValue = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface_getStepTime =
