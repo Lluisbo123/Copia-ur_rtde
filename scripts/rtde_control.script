@@ -562,6 +562,33 @@ $V38        protective_stop()
             write_output_float_register(4, torques[4])
             write_output_float_register(5, torques[5])
             textmsg("get_joint_torques done")
+        elif cmd == 39:
+            textmsg("pose_trans")
+            p_from = p[0, 0, 0, 0, 0, 0]
+            p_from[0] = read_input_float_register(0)
+            p_from[1] = read_input_float_register(1)
+            p_from[2] = read_input_float_register(2)
+            p_from[3] = read_input_float_register(3)
+            p_from[4] = read_input_float_register(4)
+            p_from[5] = read_input_float_register(5)
+
+            p_from_to = p[0, 0, 0, 0, 0, 0]
+            p_from_to[0] = read_input_float_register(6)
+            p_from_to[1] = read_input_float_register(7)
+            p_from_to[2] = read_input_float_register(8)
+            p_from_to[3] = read_input_float_register(9)
+            p_from_to[4] = read_input_float_register(10)
+            p_from_to[5] = read_input_float_register(11)
+
+            p = pose_trans(p_from, p_from_to)
+
+            write_output_float_register(0, p[0])
+            write_output_float_register(1, p[1])
+            write_output_float_register(2, p[2])
+            write_output_float_register(3, p[3])
+            write_output_float_register(4, p[4])
+            write_output_float_register(5, p[5])
+            textmsg("pose_trans done")   
         elif cmd == 255:
             textmsg("Received stop script!")
         end

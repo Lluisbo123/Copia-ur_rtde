@@ -2,6 +2,7 @@ stages:
   - build
   - build_pypi
   - doc
+  - test
   - deploy
 
 build-LINUX:
@@ -16,6 +17,29 @@ build-LINUX:
     - make
   tags:
     - linux
+  artifacts:
+    paths:
+      - ./build
+      - ./include
+    expire_in: 2 day
+    when: on_success
+
+build-LINUX-examples:
+  stage: test
+  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - cd examples/cpp
+    - mkdir build 
+    - cd build
+    - cmake ..
+    - make   
+  tags:
+    - linux
+  dependencies:
+    - build-LINUX
+  needs: ["build-LINUX"]
 
 build-WINDOWS:
   stage: build

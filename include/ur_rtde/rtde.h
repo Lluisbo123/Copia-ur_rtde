@@ -81,6 +81,7 @@ class RTDE
       IS_POSE_WITHIN_SAFETY_LIMITS = 36,
       IS_JOINTS_WITHIN_SAFETY_LIMITS = 37,
       GET_JOINT_TORQUES = 38,
+      POSE_TRANS = 39,
       STOP_SCRIPT = 255
     };
 
@@ -97,7 +98,8 @@ class RTDE
       RECIPE_9 = 9,
       RECIPE_10 = 10,
       RECIPE_11 = 11,
-      RECIPE_12 = 12
+      RECIPE_12 = 12,
+      RECIPE_13 = 13,
     };
 
     RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)

@@ -387,6 +387,25 @@ class RTDEControlInterface
       double max_position_error=1e-10, double max_orientation_error=1e-10);
 
   /**
+   * @brief Pose transformation to move with respect to a tool or w.r.t. a custom feature/frame
+   * The first argument, p_from, is used to transform the second argument,
+   * p_from_to, and the result is then returned. This means that the result is the resulting pose, when starting at 
+   * the coordinate system of p_from, and then in that coordinate system moving p_from_to.
+   * This function can be seen in two different views. Either the function transforms, that is translates and rotates, 
+   * p_from_to by the parameters of p_from. Or the function is used to get the resulting pose, when first 
+   * making a move of p_from and then from there, a move of p_from_to.
+   * If the poses were regarded as transformation matrices, it would look like:
+   * @verbatim
+   * T_world->to = T_world->from * T_from->to
+   * T_x->to = T_x->from * T_from->to
+   * @endverbatim
+   * @param p_from starting pose (spatial vector)
+   * @param p_from_to pose change relative to starting pose (spatial vector)
+   * @returns resulting pose (spatial vector)
+   */
+  RTDE_EXPORT std::vector<double> poseTrans(const std::vector<double> &p_from, const std::vector<double> &p_from_to);
+
+  /**
     * @brief Triggers a protective stop on the robot. Can be used for testing and debugging.
     */
   RTDE_EXPORT bool triggerProtectiveStop();
@@ -466,6 +485,8 @@ class RTDEControlInterface
   std::vector<double> getActualJointPositionsHistoryValue();
 
   std::vector<double> getInverseKinematicsValue();
+
+  std::vector<double> poseTransValue();
 
   void verifyValueIsWithin(const double &value, const double &min, const double &max);
 
