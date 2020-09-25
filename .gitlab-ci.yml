@@ -5,9 +5,12 @@ stages:
   - test
   - deploy
 
-build-LINUX:
+############################################
+#                  Build                   #
+############################################ 
+
+.bash_build:
   stage: build
-  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
@@ -15,8 +18,6 @@ build-LINUX:
     - cd build
     - cmake -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=ON ..
     - make
-  tags:
-    - linux
   artifacts:
     paths:
       - ./build
@@ -24,22 +25,22 @@ build-LINUX:
     expire_in: 2 day
     when: on_success
 
-build-LINUX-examples:
-  stage: test
+build-ubuntu-1804:
+  extends: .bash_build
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
-  script:
-    - cd examples/cpp
-    - mkdir build 
-    - cd build
-    - cmake ..
-    - make   
   tags:
     - linux
-  dependencies:
-    - build-LINUX
-  needs: ["build-LINUX"]
+
+build-ubuntu-2004:
+  extends: .bash_build
+  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-2004
+  tags:
+    - linux
+
+build-MAC:
+  extends: .bash_build
+  tags:
+    - mac
 
 build-WINDOWS:
   stage: build
@@ -49,8 +50,8 @@ build-WINDOWS:
     - mkdir build
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -G "Visual Studio 16 2019" -A x64 -DWINDOWS_INSTALLER=ON -DBUILD_STATIC=ON -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=OFF ..
-    - msbuild ur_rtde.sln /property:Configuration=RelWithDebInfo /maxcpucount:8 
-    - msbuild PACKAGE.vcxproj /property:Configuration=RelWithDebInfo /maxcpucount:8 
+    - msbuild ur_rtde.sln /property:Configuration=RelWithDebInfo
+    - msbuild PACKAGE.vcxproj /property:Configuration=RelWithDebInfo
   artifacts:
     paths:
       - build/ur_rtde-install.exe
@@ -58,17 +59,60 @@ build-WINDOWS:
   tags:
     - windows
 
-build-MAC:
-  stage: build
+############################################
+#                  Test                    #
+############################################ 
+
+.bash-examples:
+  stage: test
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
-    - mkdir build
+    - cd examples/cpp
+    - mkdir build 
     - cd build
-    - cmake -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=ON ..
-    - make -j3
+    - cmake ..
+    - make
+  tags:
+    - linux   
+
+examples-ubuntu-1804:
+  extends: .bash-examples
+  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804
+  dependencies:
+    - build-ubuntu-1804
+  needs: ["build-ubuntu-1804"]
+
+examples-ubuntu-2004:
+  extends: .bash-examples
+  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-2004
+  dependencies:
+    - build-ubuntu-2004
+  needs: ["build-ubuntu-2004"]
+
+.examples-MAC:
+  extends: .bash-examples
   tags:
     - mac
+  dependencies:
+    - build-MAC
+  needs: ["build-MAC"]
+
+.examples-WINDOWS:
+  stage: test
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - cd examples/cpp
+    - mkdir build 
+    - cd build
+    - cmake .. -G "Visual Studio 16 2019" -A x64
+    - msbuild ur_rtde_examples.sln /property:Configuration=RelWithDebInfo 
+  tags:
+    - windows
+  dependencies:
+    - build-WINDOWS
+  needs: ["build-WINDOWS"]   
 
 build_pypi:
   stage: build_pypi
@@ -79,7 +123,7 @@ build_pypi:
   script:
     - ./ci/build-wheels.sh
   dependencies:
-    - build-LINUX
+    - build-ubuntu-1804
   tags:
     - linux
 

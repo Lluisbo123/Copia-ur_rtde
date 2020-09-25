@@ -71,4 +71,6 @@ if(IS_WINDOWS_INSTALLER)
     
     unset(Boost_USE_STATIC_LIBS)
   endif()
+elseif ( "${RTDE_BOOST_LIBRARY_DIR}" STREQUAL "" )
+  find_package(Boost REQUIRED COMPONENTS system thread)
 endif()

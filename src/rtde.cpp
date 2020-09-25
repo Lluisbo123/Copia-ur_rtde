@@ -59,7 +59,7 @@ void RTDE::connect()
     if (verbose_)
       std::cout << "Connected successfully to: " << hostname_ << " at " << port_ << std::endl;
   }
-  catch (boost::system::system_error)
+  catch (const boost::system::system_error &)
   {
     std::string error_msg =
         "Error: Could not connect to: " + hostname_ + " at " + std::to_string(port_) + ", verify the IP";
