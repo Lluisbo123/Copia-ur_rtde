@@ -200,6 +200,9 @@ PYBIND11_MODULE(rtde_receive, m)
            DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogOutput0), py::call_guard<py::gil_scoped_release>())
       .def("getStandardAnalogOutput1", &RTDEReceiveInterface::getStandardAnalogOutput1,
            DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogOutput1), py::call_guard<py::gil_scoped_release>())
+      .def("isProtectiveStopped", &RTDEReceiveInterface::isProtectiveStopped, py::call_guard<py::gil_scoped_release>())
+      .def("isEmergencyStopped", &RTDEReceiveInterface::isEmergencyStopped, py::call_guard<py::gil_scoped_release>())
+
       .def("__repr__", [](const RTDEReceiveInterface &a) { return "<rtde_receive.RTDEReceiveInterface>"; });
 }
 };  // namespace rtde_receive

@@ -104,6 +104,7 @@ bool RTDEReceiveInterface::setupRecipes(const double& frequency)
                   "standard_analog_output0",
                   "standard_analog_output1",
                   "robot_status_bits",
+                  "safety_status_bits",
                   "output_int_register_0",
                   "output_int_register_1",
                   "output_int_register_2",
@@ -292,6 +293,11 @@ int32_t RTDEReceiveInterface::getSafetyMode()
   return robot_state_->getSafety_mode();
 }
 
+uint32_t RTDEReceiveInterface::getSafetyStatusBits()
+{
+  return robot_state_->getSafety_status_bits();
+}
+
 std::vector<double> RTDEReceiveInterface::getActualToolAccelerometer()
 {
   return robot_state_->getActual_tool_accelerometer();
@@ -367,6 +373,32 @@ double RTDEReceiveInterface::getStandardAnalogOutput0()
 double RTDEReceiveInterface::getStandardAnalogOutput1()
 {
   return robot_state_->getStandard_analog_output_1();
+}
+
+bool RTDEReceiveInterface::isProtectiveStopped()
+{
+  if (robot_state_ != nullptr)
+  {
+    std::bitset<32> safety_status_bits(robot_state_->getSafety_status_bits());
+    return safety_status_bits.test(SafetyStatus::IS_PROTECTIVE_STOPPED);
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
+bool RTDEReceiveInterface::isEmergencyStopped()
+{
+  if (robot_state_ != nullptr)
+  {
+    std::bitset<32> safety_status_bits(robot_state_->getSafety_status_bits());
+    return safety_status_bits.test(SafetyStatus::IS_EMERGENCY_STOPPED);
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
 }
 
 }  // namespace ur_rtde
