@@ -1051,12 +1051,10 @@ std::vector<double> RTDEControlInterface::poseTrans(const std::vector<double> &p
   robot_cmd.val_.insert(robot_cmd.val_.end(), p_from_to.begin(), p_from_to.end());
   if (sendCommand(robot_cmd))
   {
-    std::cout << "return poseTransValue()" << std::endl;
     return poseTransValue();
   }
   else
   {
-    std::cout << "return std::vector<double>()" << std::endl;
     return std::vector<double>();
   }
 }
