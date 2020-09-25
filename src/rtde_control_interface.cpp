@@ -303,6 +303,15 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   std::vector<std::string> watchdog_input = {"input_int_register_23"};
   rtde_->sendInputSetup(watchdog_input);
 
+  // Recipe 13
+  std::vector<std::string> pose_trans_input = {
+      "input_int_register_0",
+      "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3", "input_double_register_4", "input_double_register_5", 
+      "input_double_register_6", "input_double_register_7", "input_double_register_8",  
+      "input_double_register_9", "input_double_register_10", "input_double_register_11"};
+  rtde_->sendInputSetup(pose_trans_input);
+
   return true;
 }
 
@@ -987,6 +996,22 @@ std::vector<double> RTDEControlInterface::getInverseKinematicsValue()
   }
 }
 
+std::vector<double> RTDEControlInterface::poseTransValue()
+{
+  if (robot_state_ != nullptr)
+  {
+    std::vector<double> pose = {
+        robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
+        robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
+        robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
+    return pose;
+  }
+  else
+  {
+    throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
 bool RTDEControlInterface::setTcp(const std::vector<double> &tcp_offset)
 {
   RTDE::RobotCommand robot_cmd;
@@ -1010,6 +1035,23 @@ std::vector<double> RTDEControlInterface::getInverseKinematics(const std::vector
   if (sendCommand(robot_cmd))
   {
     return getInverseKinematicsValue();
+  }
+  else
+  {
+    return std::vector<double>();
+  }
+}
+
+std::vector<double> RTDEControlInterface::poseTrans(const std::vector<double> &p_from, const std::vector<double> &p_from_to)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::POSE_TRANS;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_13;
+  robot_cmd.val_ = p_from;
+  robot_cmd.val_.insert(robot_cmd.val_.end(), p_from_to.begin(), p_from_to.end());
+  if (sendCommand(robot_cmd))
+  {
+    return poseTransValue();
   }
   else
   {
