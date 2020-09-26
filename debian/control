@@ -29,5 +29,15 @@ Multi-Arch: same
 Depends: 
  librtde (=${binary:Version}), 
  ${misc:Depends}
+Conflicts:
+  libsdurwhw-universalrobots-rtde1.1,
+  libsdurwhw-universalrobots-rtde1.0,
+  sdurwhw-cmake1.1,
+  sdurwhw-cmake1.0
+Replaces:
+  libsdurwhw-universalrobots-rtde1.1,
+  libsdurwhw-universalrobots-rtde1.0,
+  sdurwhw-cmake1.1,
+  sdurwhw-cmake1.0
 Description: Development library for ur-rtde.
  The Development library for ur-rtde.
