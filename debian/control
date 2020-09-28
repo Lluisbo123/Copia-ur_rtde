@@ -15,6 +15,12 @@ Vcs-Browser: https://gitlab.com/sdurobotics/ur_rtde
 Package: librtde
 Architecture: amd64
 Multi-Arch: same
+Conflicts:
+  libsdurwhw-universalrobots-rtde1.1,
+  libsdurwhw-universalrobots-rtde1.0
+Replaces:
+  libsdurwhw-universalrobots-rtde1.1,
+  libsdurwhw-universalrobots-rtde1.0
 Depends: 
  ${shlibs:Depends}, 
  ${misc:Depends}
@@ -30,13 +36,9 @@ Depends:
  librtde (=${binary:Version}), 
  ${misc:Depends}
 Conflicts:
-  libsdurwhw-universalrobots-rtde1.1,
-  libsdurwhw-universalrobots-rtde1.0,
   sdurwhw-cmake1.1,
   sdurwhw-cmake1.0
 Replaces:
-  libsdurwhw-universalrobots-rtde1.1,
-  libsdurwhw-universalrobots-rtde1.0,
   sdurwhw-cmake1.1,
   sdurwhw-cmake1.0
 Description: Development library for ur-rtde.
