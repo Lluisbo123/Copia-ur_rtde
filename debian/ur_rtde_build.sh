@@ -53,7 +53,7 @@ getVersion () {
             break
         fi
     done < "$ur_rtde_DIR/CMakeLists.txt"
-    
+
     exit 1
 }
 
@@ -130,6 +130,7 @@ for input in $@ $extra ; do
             git clean -fdX
             tar --exclude="./debian" --exclude="./.git" -zcvf "../ur-rtde_$ur_rtde_VERSION.orig.tar.gz" . > /dev/null
         fi
+        gbp dch -R -N "$(getDebRev)" --debian-branch=master --upstream-branch=master
         debuild --no-sign -S || exit 1
         debsign -k $gpgkey ../ur-rtde_$(getDebRev)_source.changes || exit 1
         dput ur-rtde ../ur-rtde_$(getDebRev)_source.changes || exit 1

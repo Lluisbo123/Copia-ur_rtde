@@ -1,3 +1,80 @@
+ur-rtde (1.3.2-2) bionic; urgency=medium
+
+  [ Kasper Høj Lorenzen ]
+  * bionic release
+
+ -- Kasper Høj Lorenzen <kalor@mmmi.sdu.dk>  Mon, 28 Sep 2020 10:51:53 +0200
+
+ur-rtde (1.3.2-1) focal; urgency=medium
+
+  [ Kasper Høj Lorenzen ]
+  * added doc on installesion of PPA devel packages
+
+  [ Anders Prier Lindvig ]
+  * Small doc. update + fixed wrong conversion
+  * Updated README.md
+
+  [ Kasper Høj Lorenzen ]
+  * implemented windows installer and extra CI
+
+  [ Kasper Høj Lorenzen ]
+  * zipping windows installer
+
+  [ Anders Prier Lindvig ]
+  * Added link to windows installer in README.md
+
+  [ Kasper Høj Lorenzen ]
+  * Fixed windows installer from CI
+
+  [ Anders Prier Lindvig ]
+  * Updated documentation
+  * Updated example animations
+
+  [ Kasper Høj Lorenzen ]
+  * compile on windows as RelWithDebInfo
+
+  [ Anders Prier Lindvig ]
+  * Release [1.2.5] Added the following:
+  * Return state of isWithinSafetyLimits functions
+  * Updated build_pypi dependencies in CI
+  * Update .gitlab-ci.yml
+  * Removed date_time from CMakeLists.txt
+  * Remote control status only checked on Polyscope version > 5.6, fixes #40
+  * Release [1.2.6] Attempt to fix pip install on Windows and MacOS
+  * Release [1.2.7] Temp. fix for regex_error with python
+  * RTDEControlInterface throws if register is already in use.
+  * Throw a std::runtime_error, when connection attempt fails
+  * Release [1.3.0] forceMode function is now RT capable.
+  * Fix for pip install on Windows, closes #22 and fixes #33
+  * Release [1.3.1] Added the following:
+  * Python 2.7 is no longer supported for future wheels
+  * README and Doc updated about the pip version requirement
+  * Implemented explicit disconnect() function for all interfaces.
+  * Added getJointTorques() function closes #45
+
+  [ Kasper Høj Lorenzen ]
+  * Added test for cmakeconfig and linking on linux
+  * added exported include to pipline artifacts
+
+  [ Uwe Kindler ]
+  * Added support for pose_trans function to enable moves w.r.t. to tool or feature
+  * Removed debug output
+
+  [ Anders Prier Lindvig ]
+  * Added isProtectiveStopped, isEmergencyStopped and getSafetyStatusBits functions to RTDEReceiveInterface, closes #47
+
+  [ Kasper Høj Lorenzen ]
+  * Ubuntu2004 test and support
+
+  [ Anders Prier Lindvig ]
+  * Release [1.3.2] Added the following:
+
+  [ Kasper Høj Lorenzen ]
+  * Added debian conflict between ur_rtde and rwhw_ur_rtde
+  * Updated package conflicts for debian
+
+ -- Kasper Høj Lorenzen <kalor@mmmi.sdu.dk>  Mon, 28 Sep 2020 10:48:18 +0200
+
 ur-rtde (1.2.4-4) focal; urgency=medium
 
   [ Anders Prier Lindvig ]
