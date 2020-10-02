@@ -54,10 +54,16 @@ def rtde_control():
     end
 
     thread servo_thread():
-        while (True):
-            servoj(servo_target, t=servo_time, lookahead_time=servo_lookahead_time, gain=servo_gain)
-        end
-    end
+      while (True):
+          enter_critical
+          q = servo_target
+          dt = servo_time
+          lh_time = servo_lookahead_time
+          g = servo_gain
+          exit_critical
+          servoj(q, t=dt, lookahead_time=lh_time, gain=g)
+      end
+  end
 
     thread servoc_thread():
         while (True):
