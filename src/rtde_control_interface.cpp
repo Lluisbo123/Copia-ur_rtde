@@ -1266,13 +1266,14 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
           }
 
           // Wait until the controller has finished executing or timeout
-          std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+          auto current_time = std::chrono::high_resolution_clock::now();
           auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
           if (duration > UR_EXECUTION_TIMEOUT)
           {
             sendClearCommand();
             return false;
           }
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
       }
       else
@@ -1287,13 +1288,14 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
           }
 
           // Wait for program to stop running or timeout
-          std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+          auto current_time = std::chrono::high_resolution_clock::now();
           auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
           if (duration > UR_EXECUTION_TIMEOUT)
           {
             sendClearCommand();
             return false;
           }
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
       }
 
