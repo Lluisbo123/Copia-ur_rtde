@@ -90,6 +90,8 @@ PYBIND11_MODULE(rtde_control, m)
            py::call_guard<py::gil_scoped_release>())
       .def("endTeachMode", &RTDEControlInterface::endTeachMode, DOC(ur_rtde, RTDEControlInterface, endTeachMode),
            py::call_guard<py::gil_scoped_release>())
+      .def("isProgramRunning", &RTDEControlInterface::isProgramRunning, DOC(ur_rtde, RTDEControlInterface, isProgramRunning),
+           py::call_guard<py::gil_scoped_release>())
       .def("forceModeSetGainScaling", &RTDEControlInterface::forceModeSetGainScaling,
            DOC(ur_rtde, RTDEControlInterface, forceModeSetGainScaling), py::call_guard<py::gil_scoped_release>())
       .def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor, DOC(ur_rtde, RTDEControlInterface, zeroFtSensor),
@@ -195,6 +197,8 @@ PYBIND11_MODULE(rtde_receive, m)
       .def("getDigitalOutState", &RTDEReceiveInterface::getDigitalOutState, py::call_guard<py::gil_scoped_release>())
       .def("getRuntimeState", &RTDEReceiveInterface::getRuntimeState,
            DOC(ur_rtde, RTDEReceiveInterface, getRuntimeState), py::call_guard<py::gil_scoped_release>())
+      .def("getRobotStatus", &RTDEReceiveInterface::getRobotStatus,
+           DOC(ur_rtde, RTDEReceiveInterface, getRobotStatus), py::call_guard<py::gil_scoped_release>())
       .def("getStandardAnalogInput0", &RTDEReceiveInterface::getStandardAnalogInput0,
            DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogInput0), py::call_guard<py::gil_scoped_release>())
       .def("getStandardAnalogInput1", &RTDEReceiveInterface::getStandardAnalogInput1,
