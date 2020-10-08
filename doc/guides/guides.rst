@@ -68,13 +68,13 @@ sendCustomScriptFunction() of the rtde_control interface. Unfortunately you have
 the gripper api functions everytime, which does give a bit of delay. You can download the preamble for
 use with Python here: `robotiq_preamble.py <https://sdurobotics.gitlab.io/ur_rtde/_static/robotiq_preamble.py>`_,
 and a python interface for using the robotiq gripper this way here:
-`robotiq_gripper.py <https://sdurobotics.gitlab.io/ur_rtde/_static/robotiq_preamble.py>`_.
+`robotiq_gripper_control.py <https://sdurobotics.gitlab.io/ur_rtde/_static/robotiq_gripper_control.py>`_.
 
 Example of the using this method:
 
 .. code-block:: python
 
-    from robotiq_gripper import RobotiqGripper
+    from robotiq_gripper_control import RobotiqGripper
     from rtde_control import RTDEControlInterface
     import time
 
@@ -140,25 +140,33 @@ port provides direct communication to the gripper. So you simply connect to the 
 can command it using the Robotiq string commands, see the 'Control' section of this
 `manual <https://assets.robotiq.com/website-assets/support_documents/document/Hand-E_Manual_UniversalRobots_PDF_20191219.pdf>`_.
 
-You can download an example Python class for controlling the gripper using this method here: `gripper_2f85.py <https://sdurobotics.gitlab.io/ur_rtde/_static/gripper_2f85.py>`_.
+You can download an example Python class for controlling the gripper using this method here: `robotiq_gripper.py <https://sdurobotics.gitlab.io/ur_rtde/_static/robotiq_gripper.py>`_.
 This class was implemented by Sam (Rasp) thanks! The class can be used like this:
 
 .. code-block:: python
+
+    import robotiq_gripper
+    import time
+
+    ip = "127.0.0.1"
 
     def log_info(gripper):
         print(f"Pos: {str(gripper.get_current_position()): >3}  "
               f"Open: {gripper.is_open(): <2}  "
               f"Closed: {gripper.is_closed(): <2}  ")
 
-    def run():
-        gripper = Gripper2f85()
-        gripper.connect('<robot_ip>', 63352)
-        gripper.activate()
+    print("Creating gripper...")
+    gripper = robotiq_gripper.RobotiqGripper()
+    print("Connecting to gripper...")
+    gripper.connect(ip, 63352)
+    print("Activating gripper...")
+    gripper.activate()
 
-        gripper.move_and_wait_for_pos(255, 255, 255)
-        log_info(gripper)
-        gripper.move_and_wait_for_pos(0, 255, 255)
-        log_info(gripper)
+    print("Testing gripper...")
+    gripper.move_and_wait_for_pos(255, 255, 255)
+    log_info(gripper)
+    gripper.move_and_wait_for_pos(0, 255, 255)
+    log_info(gripper)
 
 
 .. admonition:: Pros
