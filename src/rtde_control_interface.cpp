@@ -35,17 +35,20 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
   uint32_t major_version = std::get<MAJOR_VERSION>(controller_version);
   uint32_t minor_version = std::get<MINOR_VERSION>(controller_version);
 
-  double frequency = 125;
+  frequency_ = 125;
   // If e-Series Robot set frequency to 500Hz
   if (major_version > CB3_MAJOR_VERSION)
-    frequency = 500;
+    frequency_ = 500;
+
+  // Set delta time to be used by receiveCallback
+  delta_time_ = 1 / frequency_;
 
   // Create a connection to the script server
   script_client_ = std::make_shared<ScriptClient>(hostname_, major_version, minor_version);
   script_client_->connect();
 
   // Setup default recipes
-  setupRecipes(frequency);
+  setupRecipes(frequency_);
 
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
@@ -150,13 +153,16 @@ bool RTDEControlInterface::reconnect()
   auto controller_version = rtde_->getControllerVersion();
   uint32_t major_version = std::get<MAJOR_VERSION>(controller_version);
 
-  double frequency = 125;
+  frequency_ = 125;
   // If e-Series Robot set frequency to 500Hz
   if (major_version > CB3_MAJOR_VERSION)
-    frequency = 500;
+    frequency_ = 500;
+
+  // Set delta time to be used by receiveCallback
+  delta_time_ = 1 / frequency_;
 
   // Setup default recipes
-  setupRecipes(frequency);
+  setupRecipes(frequency_);
 
   // Init Robot state
   robot_state_ = std::make_shared<RobotState>();
@@ -322,7 +328,14 @@ void RTDEControlInterface::receiveCallback()
     // Receive and update the robot state
     try
     {
+      auto t_start = std::chrono::steady_clock::now();
       rtde_->receiveData(robot_state_);
+      auto t_stop = std::chrono::steady_clock::now();
+      auto t_duration = std::chrono::duration<double>(t_stop - t_start);
+      if (t_duration.count() < delta_time_)
+      {
+        std::this_thread::sleep_for(std::chrono::duration<double>(delta_time_ - t_duration.count()));
+      }
     }
     catch (std::exception &e)
     {

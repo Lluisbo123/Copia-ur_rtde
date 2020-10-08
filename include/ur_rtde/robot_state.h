@@ -16,6 +16,10 @@ class RobotState
 
   RTDE_EXPORT virtual ~RobotState();
 
+  RTDE_EXPORT bool lockUpdateStateMutex();
+
+  RTDE_EXPORT bool unlockUpdateStateMutex();
+
  public:
   RTDE_EXPORT double getTimestamp();
   RTDE_EXPORT void setTimestamp(double timestamp);
@@ -433,7 +437,7 @@ class RobotState
   double output_double_register_46_;
   double output_double_register_47_;
 
-  std::mutex mutex_;
+  std::mutex update_state_mutex_;
 };
 
 }  // namespace ur_rtde

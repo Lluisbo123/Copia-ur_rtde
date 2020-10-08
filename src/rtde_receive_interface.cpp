@@ -7,6 +7,7 @@
 #include <iostream>
 #include <thread>
 #include <bitset>
+#include <chrono>
 
 namespace ur_rtde
 {
@@ -20,13 +21,16 @@ RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std
   auto controller_version = rtde_->getControllerVersion();
   uint32_t major_version = std::get<MAJOR_VERSION>(controller_version);
 
-  double frequency = 125;
+  frequency_ = 125;
   // If e-Series Robot set frequency to 500Hz
   if (major_version > CB3_MAJOR_VERSION)
-    frequency = 500;
+    frequency_ = 500;
+
+  // Set delta time to be used by receiveCallback
+  delta_time_ = 1 / frequency_;
 
   // Setup recipes
-  setupRecipes(frequency);
+  setupRecipes(frequency_);
 
   // Start RTDE data synchronization
   rtde_->sendStart();
@@ -135,7 +139,14 @@ void RTDEReceiveInterface::receiveCallback()
     // Receive and update the robot state
     try
     {
+      auto t_start = std::chrono::steady_clock::now();
       rtde_->receiveData(robot_state_);
+      auto t_stop = std::chrono::steady_clock::now();
+      auto t_duration = std::chrono::duration<double>(t_stop - t_start);
+      if (t_duration.count() < delta_time_)
+      {
+        std::this_thread::sleep_for(std::chrono::duration<double>(delta_time_ - t_duration.count()));
+      }
     }
     catch (std::exception& e)
     {
@@ -156,18 +167,22 @@ bool RTDEReceiveInterface::reconnect()
     auto controller_version = rtde_->getControllerVersion();
     uint32_t major_version = std::get<MAJOR_VERSION>(controller_version);
 
-    double frequency = 125;
+    frequency_ = 125;
     // If e-Series Robot set frequency to 500Hz
     if (major_version > CB3_MAJOR_VERSION)
-      frequency = 500;
+      frequency_ = 500;
+
+    // Set delta time to be used by receiveCallback
+    delta_time_ = 1 / frequency_;
 
     // Setup recipes
-    setupRecipes(frequency);
+    setupRecipes(frequency_);
 
     // Start RTDE data synchronization
     rtde_->sendStart();
 
     stop_thread = false;
+
     // Start executing receiveCallback
     th_ = std::make_shared<boost::thread>(boost::bind(&RTDEReceiveInterface::receiveCallback, this));
 

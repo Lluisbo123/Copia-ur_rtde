@@ -498,6 +498,8 @@ class RTDEControlInterface
   std::string hostname_;
   int port_;
   bool verbose_;
+  double frequency_;
+  double delta_time_;
   std::shared_ptr<RTDE> rtde_;
   std::atomic<bool> stop_thread_{false};
   std::shared_ptr<boost::thread> th_;

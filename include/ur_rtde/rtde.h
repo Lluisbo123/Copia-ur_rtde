@@ -155,6 +155,7 @@ class RTDE
   RTDE_EXPORT std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> getControllerVersion();
   RTDE_EXPORT void receive();
   RTDE_EXPORT void receiveData(std::shared_ptr<RobotState> &robot_state);
+
   RTDE_EXPORT void send(const RobotCommand &robot_cmd);
   RTDE_EXPORT void sendAll(const std::uint8_t &command, std::string payload = "");
   RTDE_EXPORT void sendStart();

@@ -11,6 +11,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <chrono>
 #include <tuple>
 #include <type_traits>
 
@@ -30,6 +31,7 @@ const unsigned HEADER_SIZE = 3;
 #endif
 
 using boost::asio::ip::tcp;
+using namespace std::chrono;
 
 namespace ur_rtde
 {
@@ -52,6 +54,10 @@ void RTDE::connect()
     boost::asio::socket_base::reuse_address sol_reuse_option(true);
     socket_->set_option(no_delay_option);
     socket_->set_option(sol_reuse_option);
+#if defined(__linux) || defined(linux) || defined(__linux__)
+    boost::asio::detail::socket_option::boolean<IPPROTO_TCP, TCP_QUICKACK> quickack(true);
+    socket_->set_option(quickack);
+#endif
     resolver_ = std::make_shared<boost::asio::ip::tcp::resolver>(*io_service_);
     boost::asio::ip::tcp::resolver::query query(hostname_, std::to_string(port_));
     boost::asio::connect(*socket_, resolver_->resolve(query));
@@ -386,14 +392,15 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
   DEBUG("size is: " << msg_size);
   DEBUG("command is: " << static_cast<int>(msg_cmd));
 
-  // Read Body
-  data.resize(msg_size - HEADER_SIZE);
-  boost::asio::read(*socket_, boost::asio::buffer(data));
-
   switch (msg_cmd)
   {
     case RTDE_TEXT_MESSAGE:
     {
+      // Read Body
+      data.resize(msg_size - HEADER_SIZE);
+      boost::asio::read(*socket_, boost::asio::buffer(data));
+
+      message_offset = 0;
       uint8_t msg_length = data.at(0);
       for (int i = 1; i < msg_length; i++)
       {
@@ -404,10 +411,15 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
 
     case RTDE_DATA_PACKAGE:
     {
+      // Read Body
+      data.resize(msg_size - HEADER_SIZE);
+      boost::asio::read(*socket_, boost::asio::buffer(data));
+
       // Read ID
       message_offset = 0;
-
       RTDEUtility::getUChar(data, message_offset);
+
+      robot_state->lockUpdateStateMutex();
 
       // Read all the variables specified by the user.
       for (const auto &output_name : output_names_)
@@ -423,6 +435,8 @@ void RTDE::receiveData(std::shared_ptr<RobotState> &robot_state)
           DEBUG("Unknown variable name: " << output_name << " please verify the output setup!");
         }
       }
+
+      robot_state->unlockUpdateStateMutex();
 
       // TODO: Handle IN_USE and NOT_FOUND case
 
