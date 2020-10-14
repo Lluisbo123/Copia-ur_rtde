@@ -406,6 +406,8 @@ bool RTDEControlInterface::reuploadScript()
   if (script_client_->sendScript())
   {
     db_client_->popup("The RTDE Control script has been re-uploaded due to an error.");
+	if (verbose_)
+      std::cout << "The RTDE Control script has been re-uploaded." << std::endl;
     return true;
   }
   else
@@ -480,6 +482,13 @@ bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
   return true;
+}
+
+
+RTDE_EXPORT void RTDEControlInterface::setCustomScriptFile(const std::string &file_path)
+{
+	script_client_->setScriptFile(file_path);
+	reuploadScript();
 }
 
 void RTDEControlInterface::verifyValueIsWithin(const double &value, const double &min, const double &max)

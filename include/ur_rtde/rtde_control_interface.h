@@ -106,6 +106,15 @@ class RTDEControlInterface
   RTDE_EXPORT bool sendCustomScriptFile(const std::string &file_path);
 
   /**
+   * Assign a custom script file that will be sent to device as the main
+   * control script.
+   * Setting an empty file_name will disable the custom script loading
+   * This eases debugging when modifying the control
+   * script because it does not require to recompile the whole library
+   */
+  RTDE_EXPORT void setCustomScriptFile(const std::string &file_path);
+
+  /**
     * @brief This function will terminate the script on controller.
     */
   RTDE_EXPORT void stopScript();

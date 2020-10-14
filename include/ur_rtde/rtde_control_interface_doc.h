@@ -244,6 +244,12 @@ static const char *__doc_ur_rtde_RTDEControlInterface_sendCustomScriptFile =
 R"doc(@brief Send a custom ur script file to the controller @param file_path
 the file path to the custom ur script file)doc";
 
+static const char *__doc_ur_rtde_RTDEControlInterface_setCustomScriptFile =
+R"doc(Assign a custom script file that will be sent to device as the main
+control script. Setting an empty file_name will disable the custom script loading
+This eases debugging when modifying the control script because it does not 
+require to recompile the whole library)doc";
+
 static const char *__doc_ur_rtde_RTDEControlInterface_sendCustomScriptFunction =
 R"doc(@brief Send a custom ur script to the controller @param function_name
 specify a name for the custom script function @param script the custom

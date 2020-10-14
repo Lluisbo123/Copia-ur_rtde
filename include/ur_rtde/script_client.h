@@ -28,7 +28,25 @@ class ScriptClient
   RTDE_EXPORT void connect();
   RTDE_EXPORT void disconnect();
   RTDE_EXPORT bool isConnected();
+
+  /**
+   * Assign a custom script file that will be sent to device if the
+   * sendScript() function is called.
+   * Setting an empty file_name will disable the custom script loading
+   * This eases debugging when modifying the control
+   * script because it does not require to recompile the whole library
+   */
+  RTDE_EXPORT void setScriptFile(const std::string &file_name);
+
+  /**
+   * Send the internal control script that is compiled into the library
+   * or the assigned control script file
+   */
   RTDE_EXPORT bool sendScript();
+
+  /**
+   * Send the script file with the given file_name
+   */
   RTDE_EXPORT bool sendScript(const std::string &file_name);
   RTDE_EXPORT bool sendScriptCommand(const std::string &cmd_str);
 
@@ -39,6 +57,7 @@ class ScriptClient
   int port_;
   bool verbose_;
   ConnectionState conn_state_;
+  std::string script_file_name_;
   std::shared_ptr<boost::asio::io_service> io_service_;
   std::shared_ptr<boost::asio::ip::tcp::socket> socket_;
   std::shared_ptr<boost::asio::ip::tcp::resolver> resolver_;
