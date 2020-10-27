@@ -19,3 +19,6 @@ target_link_libraries(servoj PUBLIC ur_rtde::rtde)
 
 add_executable(speedj speedj_example.cpp)
 target_link_libraries(speedj PUBLIC ur_rtde::rtde)
+
+add_executable(move_async move_async_example.cpp)
+target_link_libraries(move_async PUBLIC ur_rtde::rtde)

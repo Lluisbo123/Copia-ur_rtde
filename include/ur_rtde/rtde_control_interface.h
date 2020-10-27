@@ -127,8 +127,11 @@ class RTDEControlInterface
     * @param q joint positions
     * @param speed joint speed of leading axis [rad/s]
     * @param acceleration joint acceleration of leading axis [rad/s^2]
+    * @param async a bool specifying if the move command should be asynchronous. If async is true it is possible to
+    * stop a move command using either the stopJ or stopL function. Default is false, this means the function will
+    * block until the movement has completed.
     */
-  RTDE_EXPORT bool moveJ(const std::vector<double> &q, double speed=1.05, double acceleration=1.4);
+  RTDE_EXPORT bool moveJ(const std::vector<double> &q, double speed=1.05, double acceleration=1.4, bool async=false);
 
   /**
     * @brief Move to each joint position specified in a path
@@ -141,16 +144,22 @@ class RTDEControlInterface
     * @param pose target pose
     * @param speed joint speed of leading axis [rad/s]
     * @param acceleration joint acceleration of leading axis [rad/s^2]
+    * @param async a bool specifying if the move command should be asynchronous. If async is true it is possible to
+    * stop a move command using either the stopJ or stopL function. Default is false, this means the function will
+    * block until the movement has completed.
     */
-  RTDE_EXPORT bool moveJ_IK(const std::vector<double> &pose, double speed=1.05, double acceleration=1.4);
+  RTDE_EXPORT bool moveJ_IK(const std::vector<double> &pose, double speed=1.05, double acceleration=1.4, bool async=false);
 
   /**
     * @brief Move to position (linear in tool-space)
     * @param pose target pose
     * @param speed tool speed [m/s]
     * @param acceleration tool acceleration [m/s^2]
+    * @param async a bool specifying if the move command should be asynchronous. If async is true it is possible to
+    * stop a move command using either the stopJ or stopL function. Default is false, this means the function will
+    * block until the movement has completed.
     */
-  RTDE_EXPORT bool moveL(const std::vector<double> &pose, double speed=0.25, double acceleration=1.2);
+  RTDE_EXPORT bool moveL(const std::vector<double> &pose, double speed=0.25, double acceleration=1.2, bool async=false);
 
   /**
     * @brief Move to each pose specified in a path
@@ -163,8 +172,11 @@ class RTDEControlInterface
     * @param q joint positions
     * @param speed tool speed [m/s]
     * @param acceleration tool acceleration [m/s^2]
+    * @param async a bool specifying if the move command should be asynchronous. If async is true it is possible to
+    * stop a move command using either the stopJ or stopL function. Default is false, this means the function will
+    * block until the movement has completed.
     */
-  RTDE_EXPORT bool moveL_FK(const std::vector<double> &q, double speed=0.25, double acceleration=1.2);
+  RTDE_EXPORT bool moveL_FK(const std::vector<double> &q, double speed=0.25, double acceleration=1.2, bool async=false);
 
   /**
     * @brief Move Circular: Move to position (circular in tool-space)

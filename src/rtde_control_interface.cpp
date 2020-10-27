@@ -236,7 +236,8 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   std::vector<std::string> setp_input = {
       "input_int_register_0",    "input_double_register_0", "input_double_register_1",
       "input_double_register_2", "input_double_register_3", "input_double_register_4",
-      "input_double_register_5", "input_double_register_6", "input_double_register_7"};
+      "input_double_register_5", "input_double_register_6", "input_double_register_7",
+      "input_int_register_1"};
   rtde_->sendInputSetup(setp_input);
 
   // Recipe 2
@@ -558,7 +559,7 @@ bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path)
   return true;
 }
 
-bool RTDEControlInterface::moveJ(const std::vector<double> &q, double speed, double acceleration)
+bool RTDEControlInterface::moveJ(const std::vector<double> &q, double speed, double acceleration, bool async)
 {
   verifyValueIsWithin(speed, UR_JOINT_VELOCITY_MIN, UR_JOINT_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_JOINT_ACCELERATION_MIN, UR_JOINT_ACCELERATION_MAX);
@@ -566,13 +567,17 @@ bool RTDEControlInterface::moveJ(const std::vector<double> &q, double speed, dou
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEJ;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_1;
+  if (async)
+    robot_cmd.async_ = 1;
+  else
+    robot_cmd.async_ = 0;
   robot_cmd.val_ = q;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::moveJ_IK(const std::vector<double> &transform, double speed, double acceleration)
+bool RTDEControlInterface::moveJ_IK(const std::vector<double> &transform, double speed, double acceleration, bool async)
 {
   verifyValueIsWithin(speed, UR_JOINT_VELOCITY_MIN, UR_JOINT_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_JOINT_ACCELERATION_MIN, UR_JOINT_ACCELERATION_MAX);
@@ -580,6 +585,10 @@ bool RTDEControlInterface::moveJ_IK(const std::vector<double> &transform, double
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEJ_IK;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_1;
+  if (async)
+    robot_cmd.async_ = 1;
+  else
+    robot_cmd.async_ = 0;
   robot_cmd.val_ = transform;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
@@ -611,7 +620,7 @@ bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path)
   return true;
 }
 
-bool RTDEControlInterface::moveL(const std::vector<double> &transform, double speed, double acceleration)
+bool RTDEControlInterface::moveL(const std::vector<double> &transform, double speed, double acceleration, bool async)
 {
   verifyValueIsWithin(speed, UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
@@ -619,13 +628,17 @@ bool RTDEControlInterface::moveL(const std::vector<double> &transform, double sp
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEL;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_1;
+  if (async)
+    robot_cmd.async_ = 1;
+  else
+    robot_cmd.async_ = 0;
   robot_cmd.val_ = transform;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::moveL_FK(const std::vector<double> &q, double speed, double acceleration)
+bool RTDEControlInterface::moveL_FK(const std::vector<double> &q, double speed, double acceleration, bool async)
 {
   verifyValueIsWithin(speed, UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX);
   verifyValueIsWithin(acceleration, UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
@@ -633,6 +646,10 @@ bool RTDEControlInterface::moveL_FK(const std::vector<double> &q, double speed, 
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEL_FK;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_1;
+  if (async)
+    robot_cmd.async_ = 1;
+  else
+    robot_cmd.async_ = 0;
   robot_cmd.val_ = q;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);

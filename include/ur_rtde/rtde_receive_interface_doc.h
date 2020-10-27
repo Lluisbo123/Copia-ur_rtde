@@ -22,9 +22,12 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_RTDEReceiveInterface = R"doc()doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_disconnect =
+R"doc(@returns Can be used to disconnect from the robot. To reconnect you
+have to call the reconnect() function.)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualCurrent = R"doc(@returns Actual joint currents)doc";
 
@@ -63,6 +66,12 @@ static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPSpeed = R"doc(
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualToolAccelerometer = R"doc(@returns Tool x, y and z accelerometer values)doc";
 
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getDigitalOutState =
+R"doc(@brief Test if a digital output is set 'high' or 'low' the range is
+0-7: Standard, 8-15: Configurable, 16-17: Tool @param output_id the id
+of the digital output to test @returns a bool indicating the state of
+the digital output)doc";
+
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointControlOutput = R"doc(@returns Joint control currents)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointMode = R"doc(@returns Joint control modes)doc";
@@ -83,6 +92,12 @@ teach button pressed | Is power button pressed)doc";
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getRuntimeState = R"doc(@returns Program state)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getSafetyMode = R"doc(@returns Safety mode)doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getSafetyStatusBits =
+R"doc(@returns Safety status bits Bits 0-10: Is normal mode | Is reduced
+mode | Is protective stopped | Is recovery mode | Is safeguard stopped
+| Is system emergency stopped | Is robot emergency stopped | Is
+emergency stopped | Is violation | Is fault | Is stopped due to safety)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getSpeedScaling = R"doc(@returns Speed scaling of the trajectory limiter)doc";
 
@@ -115,13 +130,13 @@ static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetTCPSpeed = R"doc(
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getTimestamp = R"doc(@returns Time elapsed since the controller was started [s])doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_hostname = R"doc()doc";
-
 static const char *__doc_ur_rtde_RTDEReceiveInterface_isConnected =
 R"doc(@returns Connection status for RTDE, useful for checking for lost
 connection.)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_port = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_isEmergencyStopped = R"doc(@returns a bool indicating if the robot is in 'Emergency stop')doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_isProtectiveStopped = R"doc(@returns a bool indicating if the robot is in 'Protective stop')doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_receiveCallback = R"doc()doc";
 
@@ -129,17 +144,7 @@ static const char *__doc_ur_rtde_RTDEReceiveInterface_reconnect =
 R"doc(@returns Can be used to reconnect to the robot after a lost
 connection.)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_robot_state = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEReceiveInterface_rtde = R"doc()doc";
-
 static const char *__doc_ur_rtde_RTDEReceiveInterface_setupRecipes = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEReceiveInterface_stop_thread = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEReceiveInterface_th = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEReceiveInterface_variables = R"doc()doc";
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop

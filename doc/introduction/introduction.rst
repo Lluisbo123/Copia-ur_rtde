@@ -25,5 +25,5 @@ IO's and speed slider that will not interfere with the rtde_control script.
     because they need to be called continuously with a new target. However other movements and commands performed
     through the interface is **blocking** by default and will only return once the movement is finished, or a timeout
     has occurred. This has the benefit that the user won't have to manually check if the robot is finished with the
-    movement. If the user want to perform movements with multiple robots simultaneously, threading the application
-    would be the way to go.
+    movement. The move commands eg. **moveJ** or **moveL** can also be used in a non-blocking way, if their async flag
+    is set to 'true' when calling the commands, see :ref:`Move Asynchronous Example <move-asynchronous-example>`

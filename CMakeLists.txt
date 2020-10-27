@@ -246,7 +246,11 @@ if(${CODE})
 		target_include_directories(io_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 		target_link_libraries(io_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
 
-		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example
+		add_executable(move_async_example examples/cpp/move_async_example.cpp)
+		target_include_directories(move_async_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+		target_link_libraries(move_async_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+
+		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example move_async_example
 				PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 				)
@@ -262,6 +266,7 @@ if(${CODE})
 		add_executable(ur_rtde::speedj_example ALIAS speedj_example)
 		add_executable(ur_rtde::movej_path_with_blend_example ALIAS movej_path_with_blend_example)
 		add_executable(ur_rtde::io_example ALIAS io_example)
+		add_executable(ur_rtde::move_async_example ALIAS move_async_example)
 	endif()
 
 	if (CMAKE_COMPILER_IS_GNUCXX)

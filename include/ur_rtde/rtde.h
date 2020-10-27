@@ -108,6 +108,7 @@ class RTDE
 
     Type type_ = NO_CMD;
     std::uint8_t recipe_id_;
+    std::int32_t async_;
     std::vector<double> val_;
     std::vector<int> selection_vector_;
     std::int32_t movec_mode_;

@@ -23,10 +23,45 @@ def rtde_control():
     global speed_acceleration = 0.5
     global speed_time = 0.5
 
+    global move_thrd = 0
+    global move_type = 0
+    global move_p = p[0, 0, 0, 0, 0, 0]
+    global move_q = [0, 0, 0, 0, 0, 0]
+    global move_vel = 1.2
+    global move_acc = 0.25
+
     global servo_thrd = 0
     global servoc_thrd = 0
     global speed_thrd = 0
     global force_thrd = 0
+
+    thread move_thread():
+        textmsg("move_thread started")
+        while (True):
+            if move_type == 0 or move_type == 1:
+                movej(move_q, a=move_acc, v=move_vel)
+            elif move_type == 2:
+                movel(move_p, a=move_acc, v=move_vel)
+            elif move_type == 3:
+                movel(move_q, a=move_acc, v=move_vel)
+            end
+            enter_critical
+            move_thrd = 0
+            textmsg("move_thread finished")
+            exit_critical
+            break
+        end
+    end
+
+    def stop_async_move():
+        enter_critical
+        if move_thrd != 0:
+            textmsg("stopping async movement - killing move_thrd")
+            kill move_thrd
+            move_thrd = 0
+        end
+        exit_critical
+    end
 
     thread force_thread():
         while (True):
@@ -54,22 +89,45 @@ def rtde_control():
     end
 
     thread servo_thread():
-      while (True):
-          enter_critical
-          q = servo_target
-          dt = servo_time
-          lh_time = servo_lookahead_time
-          g = servo_gain
-          exit_critical
-          servoj(q, t=dt, lookahead_time=lh_time, gain=g)
-      end
-  end
+        while (True):
+            enter_critical
+            q = servo_target
+            dt = servo_time
+            lh_time = servo_lookahead_time
+            g = servo_gain
+            exit_critical
+            servoj(q, t=dt, lookahead_time=lh_time, gain=g)
+        end
+    end
 
     thread servoc_thread():
         while (True):
             servoc(servoc_target, a=servoc_acceleration, v=servoc_velocity, r=servoc_blend)
         end
     end
+
+    def q_from_input_float_registers(register_index):
+      q = [0, 0, 0, 0, 0, 0]
+      q[0] = read_input_float_register(register_index + 0)
+      q[1] = read_input_float_register(register_index + 1)
+      q[2] = read_input_float_register(register_index + 2)
+      q[3] = read_input_float_register(register_index + 3)
+      q[4] = read_input_float_register(register_index + 4)
+      q[5] = read_input_float_register(register_index + 5)
+      return q
+    end
+
+    def pose_from_input_float_registers(register_index):
+      pose = p[0, 0, 0, 0, 0, 0]
+      pose[0] = read_input_float_register(register_index + 0)
+      pose[1] = read_input_float_register(register_index + 1)
+      pose[2] = read_input_float_register(register_index + 2)
+      pose[3] = read_input_float_register(register_index + 3)
+      pose[4] = read_input_float_register(register_index + 4)
+      pose[5] = read_input_float_register(register_index + 5)
+      return pose
+    end
+
 
     def signal_ready():
         write_output_integer_register(0, 1)
@@ -88,67 +146,91 @@ def rtde_control():
 
         if cmd == 1:
             textmsg("movej")
-            q = [0, 0, 0, 0, 0, 0]
-            q[0] = read_input_float_register(0)
-            q[1] = read_input_float_register(1)
-            q[2] = read_input_float_register(2)
-            q[3] = read_input_float_register(3)
-            q[4] = read_input_float_register(4)
-            q[5] = read_input_float_register(5)
+            q = q_from_input_float_registers(0)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
+            async = read_input_integer_register(1)
             textmsg("Target q:")
             textmsg(q)
-            movej(q, a=acceleration, v=velocity)
-            textmsg("movej done")
+            stop_async_move()
+            if async == 1:
+                enter_critical
+                move_type = 0
+                move_q = q
+                move_acc = acceleration
+                move_vel = velocity
+                exit_critical
+                move_thrd = run move_thread()
+            else:
+                movej(q, a=acceleration, v=velocity)
+                textmsg("movej done")
+            end
         elif cmd == 2:
             textmsg("movej_ik")
-            pose = p[0, 0, 0, 0, 0, 0]
-            pose[0] = read_input_float_register(0)
-            pose[1] = read_input_float_register(1)
-            pose[2] = read_input_float_register(2)
-            pose[3] = read_input_float_register(3)
-            pose[4] = read_input_float_register(4)
-            pose[5] = read_input_float_register(5)
+            pose = pose_from_input_float_registers(0)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
+            async = read_input_integer_register(1)
             textmsg("Target pose:")
             textmsg(pose)
             q = get_inverse_kin(pose)
             textmsg("Target q:")
             textmsg(q)
-            movej(q, a=acceleration, v=velocity)
-            textmsg("movej_ik done")
+            stop_async_move()
+            if async == 1:
+                enter_critical
+                move_type = 1
+                move_q = q
+                move_acc = acceleration
+                move_vel = velocity
+                exit_critical
+                move_thrd = run move_thread()
+            else:
+                movej(q, a=acceleration, v=velocity)
+                textmsg("movej_ik done")
+            end
         elif cmd == 3:
             textmsg("movel")
-            pose = p[0, 0, 0, 0, 0, 0]
-            pose[0] = read_input_float_register(0)
-            pose[1] = read_input_float_register(1)
-            pose[2] = read_input_float_register(2)
-            pose[3] = read_input_float_register(3)
-            pose[4] = read_input_float_register(4)
-            pose[5] = read_input_float_register(5)
+            pose = pose_from_input_float_registers(0)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
+            async = read_input_integer_register(1)
             textmsg("Target pose:")
             textmsg(pose)
-            movel(pose, a=acceleration, v=velocity)
-            textmsg("movel done")
+            stop_async_move()
+            if async == 1:
+                enter_critical
+                move_type = 2
+                move_p = pose
+                move_acc = acceleration
+                move_vel = velocity
+                exit_critical
+                move_thrd = run move_thread()
+            else:
+                movel(pose, a=acceleration, v=velocity)
+                textmsg("movel done")
+            end
         elif cmd == 4:
             textmsg("movel_fk")
-            q = [0, 0, 0, 0, 0, 0]
-            q[0] = read_input_float_register(0)
-            q[1] = read_input_float_register(1)
-            q[2] = read_input_float_register(2)
-            q[3] = read_input_float_register(3)
-            q[4] = read_input_float_register(4)
-            q[5] = read_input_float_register(5)
+            q = q_from_input_float_registers(0)
             velocity = read_input_float_register(6)
             acceleration = read_input_float_register(7)
+            async = read_input_integer_register(1)
             textmsg("Target q:")
             textmsg(q)
-            movel(q, a=acceleration, v=velocity)
-            textmsg("movel_fk done")
+            stop_async_move()
+            if async == 1:
+                enter_critical
+                move_type = 3
+                move_q = q
+                move_acc = acceleration
+                move_vel = velocity
+                exit_critical
+                move_thrd = run move_thread()
+            else:
+                movel(q, a=acceleration, v=velocity)
+                textmsg("movel_fk done")
+            end
         elif cmd == 5:
             textmsg("movec")
             pose_via = p[0, 0, 0, 0, 0, 0]
@@ -513,11 +595,13 @@ $V38        protective_stop()
         elif cmd == 33:
             textmsg("stopl")
             deceleration_rate = read_input_float_register(0)
+            stop_async_move()
             stopl(deceleration_rate)
             textmsg("stopl done")
         elif cmd == 34:
             textmsg("stopj")
             deceleration_rate = read_input_float_register(0)
+            stop_async_move()
             stopj(deceleration_rate)
             textmsg("stopj done")
         elif cmd == 35:

@@ -37,22 +37,22 @@ PYBIND11_MODULE(rtde_control, m)
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveJ,
            DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::call_guard<py::gil_scoped_release>())
       .def("moveJ",
-           (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration)) &
+           (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration, bool async)) &
                RTDEControlInterface::moveJ,
            DOC(ur_rtde, RTDEControlInterface, moveJ), py::arg("q"), py::arg("speed") = 1.05,
-           py::arg("acceleration") = 1.4, py::call_guard<py::gil_scoped_release>())
+           py::arg("acceleration") = 1.4, py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
       .def("moveJ_IK", &RTDEControlInterface::moveJ_IK, DOC(ur_rtde, RTDEControlInterface, moveJ_IK), py::arg("pose"),
-           py::arg("speed") = 1.05, py::arg("acceleration") = 1.4, py::call_guard<py::gil_scoped_release>())
+           py::arg("speed") = 1.05, py::arg("acceleration") = 1.4, py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
       .def("moveL",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveL,
            DOC(ur_rtde, RTDEControlInterface, moveL_2), py::call_guard<py::gil_scoped_release>())
       .def("moveL",
-           (bool (RTDEControlInterface::*)(const std::vector<double> &pose, double speed, double acceleration)) &
+           (bool (RTDEControlInterface::*)(const std::vector<double> &pose, double speed, double acceleration, bool async)) &
                RTDEControlInterface::moveL,
            DOC(ur_rtde, RTDEControlInterface, moveL), py::arg("pose"), py::arg("speed") = 0.25,
-           py::arg("acceleration") = 1.2, py::call_guard<py::gil_scoped_release>())
+           py::arg("acceleration") = 1.2, py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
       .def("moveL_FK", &RTDEControlInterface::moveL_FK, DOC(ur_rtde, RTDEControlInterface, moveL_FK), py::arg("q"),
-           py::arg("speed") = 0.25, py::arg("acceleration") = 1.2, py::call_guard<py::gil_scoped_release>())
+           py::arg("speed") = 0.25, py::arg("acceleration") = 1.2, py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
       .def("moveC", &RTDEControlInterface::moveC, DOC(ur_rtde, RTDEControlInterface, moveC),
            py::call_guard<py::gil_scoped_release>())
       .def("moveP", &RTDEControlInterface::moveP, DOC(ur_rtde, RTDEControlInterface, moveC),
@@ -109,14 +109,21 @@ PYBIND11_MODULE(rtde_control, m)
            py::call_guard<py::gil_scoped_release>())
       .def("triggerProtectiveStop", &RTDEControlInterface::triggerProtectiveStop,
            DOC(ur_rtde, RTDEControlInterface, triggerProtectiveStop), py::call_guard<py::gil_scoped_release>())
-      .def("stopL", &RTDEControlInterface::stopL, py::call_guard<py::gil_scoped_release>())
-      .def("stopJ", &RTDEControlInterface::stopJ, py::call_guard<py::gil_scoped_release>())
-      .def("setWatchdog", &RTDEControlInterface::setWatchdog, py::arg("min_frequency") = 10.0,
+      .def("stopL", &RTDEControlInterface::stopL,
+           DOC(ur_rtde, RTDEControlInterface, stopL), py::call_guard<py::gil_scoped_release>())
+      .def("stopJ", &RTDEControlInterface::stopJ,
+           DOC(ur_rtde, RTDEControlInterface, stopJ), py::call_guard<py::gil_scoped_release>())
+      .def("setWatchdog", &RTDEControlInterface::setWatchdog,
+           DOC(ur_rtde, RTDEControlInterface, setWatchdog), py::arg("min_frequency") = 10.0,
            py::call_guard<py::gil_scoped_release>())
-      .def("kickWatchdog", &RTDEControlInterface::kickWatchdog, py::call_guard<py::gil_scoped_release>())
-      .def("isPoseWithinSafetyLimits", &RTDEControlInterface::isPoseWithinSafetyLimits, py::call_guard<py::gil_scoped_release>())
-      .def("isJointsWithinSafetyLimits", &RTDEControlInterface::isJointsWithinSafetyLimits, py::call_guard<py::gil_scoped_release>())
-      .def("getJointTorques", &RTDEControlInterface::getJointTorques, py::call_guard<py::gil_scoped_release>())
+      .def("kickWatchdog", &RTDEControlInterface::kickWatchdog,
+           DOC(ur_rtde, RTDEControlInterface, kickWatchdog), py::call_guard<py::gil_scoped_release>())
+      .def("isPoseWithinSafetyLimits", &RTDEControlInterface::isPoseWithinSafetyLimits,
+           DOC(ur_rtde, RTDEControlInterface, isPoseWithinSafetyLimits), py::call_guard<py::gil_scoped_release>())
+      .def("isJointsWithinSafetyLimits", &RTDEControlInterface::isJointsWithinSafetyLimits,
+           DOC(ur_rtde, RTDEControlInterface, isJointsWithinSafetyLimits), py::call_guard<py::gil_scoped_release>())
+      .def("getJointTorques", &RTDEControlInterface::getJointTorques,
+           DOC(ur_rtde, RTDEControlInterface, getJointTorques), py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control
@@ -207,8 +214,10 @@ PYBIND11_MODULE(rtde_receive, m)
            DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogOutput0), py::call_guard<py::gil_scoped_release>())
       .def("getStandardAnalogOutput1", &RTDEReceiveInterface::getStandardAnalogOutput1,
            DOC(ur_rtde, RTDEReceiveInterface, getStandardAnalogOutput1), py::call_guard<py::gil_scoped_release>())
-      .def("isProtectiveStopped", &RTDEReceiveInterface::isProtectiveStopped, py::call_guard<py::gil_scoped_release>())
-      .def("isEmergencyStopped", &RTDEReceiveInterface::isEmergencyStopped, py::call_guard<py::gil_scoped_release>())
+      .def("isProtectiveStopped", &RTDEReceiveInterface::isProtectiveStopped,
+           DOC(ur_rtde, RTDEReceiveInterface, isProtectiveStopped), py::call_guard<py::gil_scoped_release>())
+      .def("isEmergencyStopped", &RTDEReceiveInterface::isEmergencyStopped,
+           DOC(ur_rtde, RTDEReceiveInterface, isEmergencyStopped), py::call_guard<py::gil_scoped_release>())
 
       .def("__repr__", [](const RTDEReceiveInterface &a) { return "<rtde_receive.RTDEReceiveInterface>"; });
 }

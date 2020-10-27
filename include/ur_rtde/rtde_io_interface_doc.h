@@ -23,29 +23,11 @@
 #endif
 
 
-static const char *__doc_ur_rtde_RTDEIOInterface = R"doc()doc";
-
 static const char *__doc_ur_rtde_RTDEIOInterface_RTDEIOInterface = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEIOInterface_RobotStatus = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEIOInterface_RobotStatus_ROBOT_STATUS_POWER_BUTTON_PRESSED = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEIOInterface_RobotStatus_ROBOT_STATUS_POWER_ON = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEIOInterface_RobotStatus_ROBOT_STATUS_PROGRAM_RUNNING = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEIOInterface_RobotStatus_ROBOT_STATUS_TEACH_BUTTON_PRESSED = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEIOInterface_hostname = R"doc()doc";
-
-static const char *__doc_ur_rtde_RTDEIOInterface_port = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_reconnect =
 R"doc(@returns Can be used to reconnect to the robot after a lost
 connection.)doc";
-
-static const char *__doc_ur_rtde_RTDEIOInterface_rtde = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_sendCommand = R"doc()doc";
 
