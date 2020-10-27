@@ -608,7 +608,7 @@ $V38        protective_stop()
             textmsg("set_watchdog")
             # Setup watchdog for the RTDE communication
             watchdog_min_frequency = read_input_float_register(0)
-            rtde_set_watchdog("input_int_register_23", watchdog_min_frequency, "stop")
+            rtde_set_watchdog("input_int_register_0", watchdog_min_frequency, "stop")
             textmsg("set_watchdog done")
         elif cmd == 36:
             textmsg("is_pose_within_safety_limits")
@@ -678,7 +678,18 @@ $V38        protective_stop()
             write_output_float_register(3, p[3])
             write_output_float_register(4, p[4])
             write_output_float_register(5, p[5])
-            textmsg("pose_trans done")   
+            textmsg("pose_trans done")
+        elif cmd == 40:
+            textmsg("get_tcp_offset")
+            tcp_offset = get_tcp_offset()
+            textmsg(tcp_offset)
+            write_output_float_register(0, tcp_offset[0])
+            write_output_float_register(1, tcp_offset[1])
+            write_output_float_register(2, tcp_offset[2])
+            write_output_float_register(3, tcp_offset[3])
+            write_output_float_register(4, tcp_offset[4])
+            write_output_float_register(5, tcp_offset[5])
+            textmsg("get_tcp_offset done")
         elif cmd == 255:
             textmsg("Received stop script!")
         end

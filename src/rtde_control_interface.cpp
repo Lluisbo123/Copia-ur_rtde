@@ -307,7 +307,7 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   rtde_->sendInputSetup(get_inverse_kin_input);
 
   // Recipe 12
-  std::vector<std::string> watchdog_input = {"input_int_register_23"};
+  std::vector<std::string> watchdog_input = {"input_int_register_0"};
   rtde_->sendInputSetup(watchdog_input);
 
   // Recipe 13
@@ -1208,6 +1208,33 @@ std::vector<double> RTDEControlInterface::getJointTorques()
           robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
           robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
       return torques;
+    }
+    else
+    {
+      throw std::logic_error("Please initialize the RobotState, before using it!");
+    }
+  }
+  else
+  {
+    return std::vector<double>();
+  }
+}
+
+std::vector<double> RTDEControlInterface::getTCPOffset()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::GET_TCP_OFFSET;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+
+  if (sendCommand(robot_cmd))
+  {
+    if (robot_state_ != nullptr)
+    {
+      std::vector<double> tcp_offset = {
+          robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
+          robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
+          robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
+      return tcp_offset;
     }
     else
     {

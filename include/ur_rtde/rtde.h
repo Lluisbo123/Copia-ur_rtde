@@ -82,6 +82,7 @@ class RTDE
       IS_JOINTS_WITHIN_SAFETY_LIMITS = 37,
       GET_JOINT_TORQUES = 38,
       POSE_TRANS = 39,
+      GET_TCP_OFFSET = 40,
       STOP_SCRIPT = 255
     };
 

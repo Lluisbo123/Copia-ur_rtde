@@ -475,6 +475,14 @@ class RTDEControlInterface
     */
   RTDE_EXPORT std::vector<double> getJointTorques();
 
+  /**
+    * @brief Gets the active tcp offset, i.e. the transformation from the output flange coordinate system to the TCP
+    * as a pose.
+    *
+    * @returns the TCP offset as a pose
+    */
+  RTDE_EXPORT std::vector<double> getTCPOffset();
+
  private:
   bool setupRecipes(const double &frequency);
 
