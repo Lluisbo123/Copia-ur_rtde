@@ -32,7 +32,7 @@ void RobotState::setTimestamp(double timestamp)
 {
   RobotState::timestamp_ = timestamp;
 }
-const std::vector<double> &RobotState::getTarget_q()
+const std::vector<double> RobotState::getTarget_q()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return target_q_;
@@ -41,7 +41,7 @@ void RobotState::setTarget_q(const std::vector<double> &target_q)
 {
   RobotState::target_q_ = target_q;
 }
-const std::vector<double> &RobotState::getTarget_qd()
+const std::vector<double> RobotState::getTarget_qd()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return target_qd_;
@@ -50,7 +50,7 @@ void RobotState::setTarget_qd(const std::vector<double> &target_qd)
 {
   RobotState::target_qd_ = target_qd;
 }
-const std::vector<double> &RobotState::getTarget_qdd()
+const std::vector<double> RobotState::getTarget_qdd()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return target_qdd_;
@@ -59,7 +59,7 @@ void RobotState::setTarget_qdd(const std::vector<double> &target_qdd)
 {
   RobotState::target_qdd_ = target_qdd;
 }
-const std::vector<double> &RobotState::getTarget_current()
+const std::vector<double> RobotState::getTarget_current()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return target_current_;
@@ -68,7 +68,7 @@ void RobotState::setTarget_current(const std::vector<double> &target_current)
 {
   RobotState::target_current_ = target_current;
 }
-const std::vector<double> &RobotState::getTarget_moment()
+const std::vector<double> RobotState::getTarget_moment()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return target_moment_;
@@ -77,7 +77,7 @@ void RobotState::setTarget_moment(const std::vector<double> &target_moment)
 {
   RobotState::target_moment_ = target_moment;
 }
-const std::vector<double> &RobotState::getActual_q()
+const std::vector<double> RobotState::getActual_q()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return actual_q_;
@@ -86,7 +86,7 @@ void RobotState::setActual_q(const std::vector<double> &actual_q)
 {
   RobotState::actual_q_ = actual_q;
 }
-const std::vector<double> &RobotState::getActual_qd()
+const std::vector<double> RobotState::getActual_qd()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return actual_qd_;
@@ -95,7 +95,7 @@ void RobotState::setActual_qd(const std::vector<double> &actual_qd)
 {
   RobotState::actual_qd_ = actual_qd;
 }
-const std::vector<double> &RobotState::getActual_current()
+const std::vector<double> RobotState::getActual_current()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return actual_current_;
@@ -104,7 +104,7 @@ void RobotState::setActual_current(const std::vector<double> &actual_current)
 {
   RobotState::actual_current_ = actual_current;
 }
-const std::vector<double> &RobotState::getJoint_control_output()
+const std::vector<double> RobotState::getJoint_control_output()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return joint_control_output_;
@@ -113,7 +113,7 @@ void RobotState::setJoint_control_output(const std::vector<double> &joint_contro
 {
   RobotState::joint_control_output_ = joint_control_output;
 }
-const std::vector<double> &RobotState::getActual_TCP_pose()
+const std::vector<double> RobotState::getActual_TCP_pose()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return actual_TCP_pose_;
@@ -122,7 +122,7 @@ void RobotState::setActual_TCP_pose(const std::vector<double> &actual_TCP_pose)
 {
   RobotState::actual_TCP_pose_ = actual_TCP_pose;
 }
-const std::vector<double> &RobotState::getActual_TCP_speed()
+const std::vector<double> RobotState::getActual_TCP_speed()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return actual_TCP_speed_;
@@ -131,7 +131,7 @@ void RobotState::setActual_TCP_speed(const std::vector<double> &actual_TCP_speed
 {
   RobotState::actual_TCP_speed_ = actual_TCP_speed;
 }
-const std::vector<double> &RobotState::getActual_TCP_force()
+const std::vector<double> RobotState::getActual_TCP_force()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return actual_TCP_force_;
@@ -140,7 +140,7 @@ void RobotState::setActual_TCP_force(const std::vector<double> &actual_TCP_force
 {
   RobotState::actual_TCP_force_ = actual_TCP_force;
 }
-const std::vector<double> &RobotState::getTarget_TCP_pose()
+const std::vector<double> RobotState::getTarget_TCP_pose()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return target_TCP_pose_;
@@ -149,7 +149,7 @@ void RobotState::setTarget_TCP_pose(const std::vector<double> &target_TCP_pose)
 {
   RobotState::target_TCP_pose_ = target_TCP_pose;
 }
-const std::vector<double> &RobotState::getTarget_TCP_speed()
+const std::vector<double> RobotState::getTarget_TCP_speed()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return target_TCP_speed_;
@@ -167,7 +167,7 @@ void RobotState::setActual_digital_input_bits(uint64_t actual_digital_input_bits
 {
   RobotState::actual_digital_input_bits_ = actual_digital_input_bits;
 }
-const std::vector<double> &RobotState::getJoint_temperatures()
+const std::vector<double> RobotState::getJoint_temperatures()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return joint_temperatures_;
@@ -212,7 +212,7 @@ void RobotState::setSafety_status_bits(uint32_t safety_status_bits)
 {
   RobotState::safety_status_bits_ = safety_status_bits;
 }
-const std::vector<int32_t> &RobotState::getJoint_mode()
+const std::vector<int32_t> RobotState::getJoint_mode()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return joint_mode_;
@@ -230,7 +230,7 @@ void RobotState::setSafety_mode(int32_t safety_mode)
 {
   RobotState::safety_mode_ = safety_mode;
 }
-const std::vector<double> &RobotState::getActual_tool_accelerometer()
+const std::vector<double> RobotState::getActual_tool_accelerometer()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return actual_tool_accelerometer_;
@@ -293,7 +293,7 @@ void RobotState::setActual_robot_current(double actual_robot_current)
 {
   RobotState::actual_robot_current_ = actual_robot_current;
 }
-const std::vector<double> &RobotState::getActual_joint_voltage()
+const std::vector<double> RobotState::getActual_joint_voltage()
 {
   std::lock_guard<std::mutex> lock(update_state_mutex_);
   return actual_joint_voltage_;

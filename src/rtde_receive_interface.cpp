@@ -139,14 +139,8 @@ void RTDEReceiveInterface::receiveCallback()
     // Receive and update the robot state
     try
     {
-      auto t_start = std::chrono::steady_clock::now();
       rtde_->receiveData(robot_state_);
-      auto t_stop = std::chrono::steady_clock::now();
-      auto t_duration = std::chrono::duration<double>(t_stop - t_start);
-      if (t_duration.count() < delta_time_)
-      {
-        std::this_thread::sleep_for(std::chrono::duration<double>(delta_time_ - t_duration.count()));
-      }
+      std::this_thread::sleep_for(std::chrono::microseconds(100));
     }
     catch (std::exception& e)
     {
