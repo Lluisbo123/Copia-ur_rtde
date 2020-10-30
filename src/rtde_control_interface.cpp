@@ -543,7 +543,16 @@ bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path)
     std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
     if (duration > UR_PATH_EXECUTION_TIMEOUT)
+    {
+      sendClearCommand();
       return false;
+    }
+
+    if (isProtectiveStopped() || isEmergencyStopped())
+    {
+      sendClearCommand();
+      return false;
+    }
   }
 
   sendClearCommand();
@@ -604,7 +613,16 @@ bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path)
     std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
     if (duration > UR_PATH_EXECUTION_TIMEOUT)
+    {
+      sendClearCommand();
       return false;
+    }
+
+    if (isProtectiveStopped() || isEmergencyStopped())
+    {
+      sendClearCommand();
+      return false;
+    }
   }
 
   sendClearCommand();
