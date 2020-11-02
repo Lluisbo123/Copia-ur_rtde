@@ -426,21 +426,29 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
   cmd_str += "\twrite_output_integer_register(0, 2)\n";
   cmd_str += "end\n";
 
+  return sendCustomScript(cmd_str);
+}
+
+
+bool RTDEControlInterface::sendCustomScript(const std::string &script)
+{
   // First stop the running RTDE control script
   stopScript();
 
-  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+  auto start_time = std::chrono::high_resolution_clock::now();
 
   // Send custom script function
-  script_client_->sendScriptCommand(cmd_str);
+  script_client_->sendScriptCommand(script);
 
   while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
   {
     // Wait until the controller is done with command
-    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+    auto current_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
     if (duration > UR_PATH_EXECUTION_TIMEOUT)
       return false;
+    // Sleep to avoid high CPU load
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
 
   sendClearCommand();
@@ -451,12 +459,13 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
   return true;
 }
 
+
 bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
 {
   // First stop the running RTDE control script
   stopScript();
 
-  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+  auto start_time = std::chrono::high_resolution_clock::now();
 
   // Send custom script file
   script_client_->sendScript(file_path);
@@ -464,10 +473,12 @@ bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
   while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
   {
     // Wait until the controller is done with command
-    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+    auto current_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
     if (duration > UR_PATH_EXECUTION_TIMEOUT)
       return false;
+    // Sleep to avoid high CPU load
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
 
   sendClearCommand();

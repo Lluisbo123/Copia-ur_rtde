@@ -100,6 +100,30 @@ class RTDEControlInterface
   RTDE_EXPORT bool sendCustomScriptFunction(const std::string &function_name, const std::string &script);
 
   /**
+   * Send a custom ur script to the controller
+   * The function enables sending of short scripts which was defined inline
+   * within source code. So you can write code like this:
+   * \code
+   * const std::string inline_script =
+		"def script_test():\n"
+			"\tdef test():\n"
+				"textmsg(\"test1\")\n"
+				"textmsg(\"test2\")\n"
+			"\tend\n"
+			"\twrite_output_integer_register(0, 1)\n"
+			"\ttest()\n"
+			"\ttest()\n"
+			"\twrite_output_integer_register(0, 2)\n"
+		"end\n"
+		"run program\n";
+	  bool result = rtde_c.sendCustomScript(inline_script);
+   * \endcode
+   * @return Returns true if the script has been executed successfully and false
+   * on timeout
+   */
+  RTDE_EXPORT bool sendCustomScript(const std::string &script);
+
+  /**
     * @brief Send a custom ur script file to the controller
     * @param file_path the file path to the custom ur script file
     */
