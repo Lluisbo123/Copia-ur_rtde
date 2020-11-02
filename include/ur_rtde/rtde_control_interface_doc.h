@@ -291,6 +291,11 @@ ur script to be sent to the controller specified as a string, each
 line must be terminated with a newline. The code will automatically be
 indented with one tab to fit with the function body.)doc";
 
+static const char *__doc_ur_rtde_RTDEControlInterface_sendCustomScript =
+R"doc(@brief Send a custom ur script to the controller
+@return Returns true if the script has been executed successfully and false
+on timeout)doc";
+
 static const char *__doc_ur_rtde_RTDEControlInterface_servoC =
 R"doc(@brief Servo to position (circular in tool-space). Accelerates to and
 moves with constant tool speed v. @param pose target pose @param speed
