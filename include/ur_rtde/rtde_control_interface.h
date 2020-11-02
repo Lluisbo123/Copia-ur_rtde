@@ -100,6 +100,13 @@ class RTDEControlInterface
   RTDE_EXPORT bool sendCustomScriptFunction(const std::string &function_name, const std::string &script);
 
   /**
+   * Send a custom ur script to the controller
+   * @return Returns true if the script has been executed successfully and false
+   * on timeout
+   */
+  RTDE_EXPORT bool sendCustomScript(const std::string &script);
+
+  /**
     * @brief Send a custom ur script file to the controller
     * @param file_path the file path to the custom ur script file
     */

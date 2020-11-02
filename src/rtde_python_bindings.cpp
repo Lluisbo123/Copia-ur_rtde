@@ -27,6 +27,8 @@ PYBIND11_MODULE(rtde_control, m)
            py::call_guard<py::gil_scoped_release>())
       .def("sendCustomScriptFunction", &RTDEControlInterface::sendCustomScriptFunction,
            DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFunction), py::call_guard<py::gil_scoped_release>())
+      .def("sendCustomScript", &RTDEControlInterface::sendCustomScript,
+           DOC(ur_rtde, RTDEControlInterface, sendCustomScript), py::call_guard<py::gil_scoped_release>())
       .def("sendCustomScriptFile", &RTDEControlInterface::sendCustomScriptFile,
            DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFile), py::call_guard<py::gil_scoped_release>())
       .def("stopScript", &RTDEControlInterface::stopScript, DOC(ur_rtde, RTDEControlInterface, stopScript),
