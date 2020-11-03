@@ -149,19 +149,28 @@ void RobotiqGripper::autoCalibrate()
 
 	// try to close as far as possible, and record the number
 	status = move(getClosedPosition(), 64, 1, WAIT_FINISHED);
-	if (status != AT_DEST)
+	if (status != AT_DEST && status != STOPPED_INNER_OBJECT)
 	{
-		throw std::runtime_error("Gripper calibration failed because of an object");
+		throw std::runtime_error("Gripper calibration failed");
 	}
 	max_position_ = std::min(getCurrentDevicePosition(), max_position_);
+	if (STOPPED_INNER_OBJECT == status)
+	{
+		max_position_ -= 5;
+	}
+	max_position_ = std::min(max_position_, 255);
 
 	// try to open as far as possible, and record the number
 	status = move(getOpenPosition(), 64, 1, WAIT_FINISHED);
-	if (status != AT_DEST)
+	if (status != AT_DEST && status != STOPPED_OUTER_OBJECT)
 	{
-		throw std::runtime_error("Gripper calibration failed because of an object");
+		throw std::runtime_error("Gripper calibration failed");
 	}
-	min_position_ = std::max(getCurrentDevicePosition(), min_position_);
+	if (STOPPED_OUTER_OBJECT == status)
+	{
+		min_position_ -= 5;
+	}
+	min_position_ = std::max(getCurrentDevicePosition() , min_position_);
 	if (verbose_)
 	{
 		std::cout << "Gripper auto-calibrated to " << min_position_ << ", "
