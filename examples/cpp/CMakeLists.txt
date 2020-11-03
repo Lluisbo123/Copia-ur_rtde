@@ -22,3 +22,6 @@ target_link_libraries(speedj PUBLIC ur_rtde::rtde)
 
 add_executable(move_async move_async_example.cpp)
 target_link_libraries(move_async PUBLIC ur_rtde::rtde)
+
+add_executable(robotiq_gripper_example robotiq_gripper_example.cpp)
+target_link_libraries(robotiq_gripper_example PUBLIC ur_rtde::rtde)

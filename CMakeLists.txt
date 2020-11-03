@@ -100,7 +100,8 @@ set(LIB_SOURCE_FILES
         src/script_client.cpp
         src/rtde_control_interface.cpp
 		src/rtde_receive_interface.cpp
-		src/rtde_io_interface.cpp)
+		src/rtde_io_interface.cpp
+		src/robotiq_gripper.cpp)
 
 set(LIB_HEADER_FILES
         include/ur_rtde/rtde.h
@@ -114,7 +115,8 @@ set(LIB_HEADER_FILES
 		include/ur_rtde/rtde_receive_interface.h
 		include/ur_rtde/rtde_receive_interface_doc.h
 		include/ur_rtde/rtde_io_interface.h
-		include/ur_rtde/rtde_io_interface_doc.h)
+		include/ur_rtde/rtde_io_interface_doc.h
+		include/ur_rtde/robotiq_gripper.h)
 
 if(NOT DOC STREQUAL "OFF")
 	add_subdirectory(doc)
@@ -250,7 +252,11 @@ if(${CODE})
 		target_include_directories(move_async_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 		target_link_libraries(move_async_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
 
-		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example move_async_example
+		add_executable(robotiq_gripper_example examples/cpp/robotiq_gripper_example.cpp)
+		target_include_directories(robotiq_gripper_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+		target_link_libraries(robotiq_gripper_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+
+		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example move_async_example robotiq_gripper_example
 				PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 				)
@@ -267,6 +273,7 @@ if(${CODE})
 		add_executable(ur_rtde::movej_path_with_blend_example ALIAS movej_path_with_blend_example)
 		add_executable(ur_rtde::io_example ALIAS io_example)
 		add_executable(ur_rtde::move_async_example ALIAS move_async_example)
+		add_executable(ur_rtde::robotiq_gripper_example.cpp ALIAS robotiq_gripper_example)
 	endif()
 
 	if (CMAKE_COMPILER_IS_GNUCXX)
