@@ -31,6 +31,8 @@ PYBIND11_MODULE(rtde_control, m)
            DOC(ur_rtde, RTDEControlInterface, sendCustomScript), py::call_guard<py::gil_scoped_release>())
       .def("sendCustomScriptFile", &RTDEControlInterface::sendCustomScriptFile,
            DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFile), py::call_guard<py::gil_scoped_release>())
+      .def("setCustomScriptFile", &RTDEControlInterface::setCustomScriptFile,
+           DOC(ur_rtde, RTDEControlInterface, setCustomScriptFile), py::call_guard<py::gil_scoped_release>())
       .def("stopScript", &RTDEControlInterface::stopScript, DOC(ur_rtde, RTDEControlInterface, stopScript),
            py::call_guard<py::gil_scoped_release>())
       .def("reuploadScript", &RTDEControlInterface::reuploadScript, DOC(ur_rtde, RTDEControlInterface, reuploadScript),
@@ -261,6 +263,8 @@ PYBIND11_MODULE(script_client, m)
       .def("connect", &ScriptClient::connect, py::call_guard<py::gil_scoped_release>())
       .def("isConnected", &ScriptClient::isConnected, py::call_guard<py::gil_scoped_release>())
       .def("disconnect", &ScriptClient::disconnect, py::call_guard<py::gil_scoped_release>())
+      .def("setScriptFile", (bool (ScriptClient::*)()) & ScriptClient::setScriptFile,
+           py::call_guard<py::gil_scoped_release>())
       .def("sendScript", (bool (ScriptClient::*)()) & ScriptClient::sendScript,
            py::call_guard<py::gil_scoped_release>())
       .def("sendScript", (bool (ScriptClient::*)(const std::string &file_name)) & ScriptClient::sendScript,

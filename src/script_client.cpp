@@ -76,9 +76,58 @@ bool ScriptClient::sendScriptCommand(const std::string &cmd_str)
   return true;
 }
 
+
+void ScriptClient::setScriptFile(const std::string &file_name)
+{
+	script_file_name_ = file_name;
+}
+
+
+/**
+ * Internal private helper function to load a script to avoid duplicated code
+ */
+static bool loadScript(const std::string &file_name, std::string& str)
+{
+  // Read in the UR script file
+  // Notice! We use this method as it allocates the memory up front, strictly for performance.
+  std::ifstream file(file_name.c_str());
+  if (file)
+  {
+    file.seekg(0, std::ios::end);
+    str.reserve(file.tellg());
+    file.seekg(0, std::ios::beg);
+    // Do not remove the redundant parentheses, this is to avoid the most vexing parse!
+    str.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    return true;
+  }
+  else
+  {
+    std::cerr << "There was an error reading the provided script file: " << file_name << std::endl;
+    return false;
+  }
+}
+
+
 bool ScriptClient::sendScript()
 {
-  std::string ur_script = UR_SCRIPT;
+  std::string ur_script;
+  // If the user assigned a custom control script, then we use this one instead
+  // of the internal compiled one.
+  if (!script_file_name_.empty())
+  {
+	// If loading fails, we fall back to the default script file
+    if (!loadScript(script_file_name_, ur_script))
+    {
+    	std::cerr << "Error loading custom script file. Falling back to internal script file." << std::endl;
+    	ur_script = std::string();
+    }
+  }
+
+  if (ur_script.empty())
+  {
+    ur_script = UR_SCRIPT;
+  }
+
 
   // Remove lines not fitting for the specific version of the controller
   std::size_t n = ur_script.find("$");
@@ -128,24 +177,13 @@ bool ScriptClient::sendScript()
   return true;
 }
 
+
 bool ScriptClient::sendScript(const std::string &file_name)
 {
-  // Read in the UR script file
-  // Notice! We use this method as it allocates the memory up front, strictly for performance.
   std::string str;
-  std::ifstream file(file_name.c_str());
-  if (file)
+  if (!loadScript(file_name, str))
   {
-    file.seekg(0, std::ios::end);
-    str.reserve(file.tellg());
-    file.seekg(0, std::ios::beg);
-    // Do not remove the redundant parentheses, this is to avoid the most vexing parse!
-    str.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-  }
-  else
-  {
-    std::cerr << "There was an error reading the provided script file: " << file_name << std::endl;
-    return false;
+	  return false;
   }
 
   if (isConnected() && !str.empty())
