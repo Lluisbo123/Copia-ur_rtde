@@ -1,24 +1,18 @@
-//============================================================================
-/// \file   robotiq_gripper.cpp
-/// \author Uwe Kindler
-/// \date   31.10.2020
-/// \brief  Implementation of RobotiqGripper
-//============================================================================
-
-//============================================================================
-//                                   INCLUDES
-//============================================================================
 #include "robotiq_gripper.h"
 
 #include <thread>
 #include <iostream>
 
 #include <boost/array.hpp>
+#include <boost/asio/write.hpp>
+#include <boost/asio/connect.hpp>
 
 using boost::asio::ip::tcp;
 
 namespace ur_rtde
 {
+using VariableDict = std::vector<std::pair<std::string, int>>;
+
 /**
  * Split string into a vector of strings using the given delimiter
  */
@@ -105,6 +99,7 @@ void RobotiqGripper::dumpVars()
 {
 	std::vector<std::string> vars = {"ACT", "GTO", "FOR", "SPE", "POS", "STA",
 		"PRE", "OBJ", "FLT"};
+	std::cout << "\nVariable dump: ---------------\n";
 	for (auto const& var : vars)
 	{
 		std::cout << var << ": " << getVar(var) << std::endl;
@@ -116,7 +111,8 @@ void RobotiqGripper::activate(bool auto_calibrate)
 {
 	if (!isActive())
 	{
-		std::cout << "!Active" << std::endl;
+		if (verbose_)
+			std::cout << "!Active" << std::endl;
 		reset();
 		while (getVar("ACT") != 0 || getVar("STA") != 0)
 		{
@@ -131,7 +127,8 @@ void RobotiqGripper::activate(bool auto_calibrate)
 		}
 	}
 
-	std::cout << "Active" << std::endl;
+	if (verbose_)
+		std::cout << "Active" << std::endl;
 	if (auto_calibrate)
 	{
 		autoCalibrate();
@@ -144,7 +141,7 @@ void RobotiqGripper::autoCalibrate()
 {
 
 	// first try to open in case we are holding an object
-auto 	status = move(getOpenPosition(), 64, 1, WAIT_FINISHED);
+	auto status = move(getOpenPosition(), 64, 1, WAIT_FINISHED);
 	if (status != AT_DEST)
 	{
 		throw std::runtime_error("Gripper calibration failed to start");
@@ -156,7 +153,7 @@ auto 	status = move(getOpenPosition(), 64, 1, WAIT_FINISHED);
 	{
 		throw std::runtime_error("Gripper calibration failed because of an object");
 	}
-	max_position_ = std::min(getCurrentPosition(), max_position_);
+	max_position_ = std::min(getCurrentDevicePosition(), max_position_);
 
 	// try to open as far as possible, and record the number
 	status = move(getOpenPosition(), 64, 1, WAIT_FINISHED);
@@ -164,7 +161,7 @@ auto 	status = move(getOpenPosition(), 64, 1, WAIT_FINISHED);
 	{
 		throw std::runtime_error("Gripper calibration failed because of an object");
 	}
-	min_position_ = std::max(getCurrentPosition(), min_position_);
+	min_position_ = std::max(getCurrentDevicePosition(), min_position_);
 	if (verbose_)
 	{
 		std::cout << "Gripper auto-calibrated to " << min_position_ << ", "
@@ -176,8 +173,13 @@ auto 	status = move(getOpenPosition(), 64, 1, WAIT_FINISHED);
 int RobotiqGripper::getVar(const std::string& var)
 {
 	std::string cmd = "GET " + var + "\n";
-	send(cmd);
-	auto rx_string = receive();
+	// atomic commands send/rcv
+	std::string rx_string;
+	{
+		const std::lock_guard<std::mutex> lock(mutex_);
+		send(cmd);
+		rx_string = receive();
+	}
 	auto data = split(rx_string);
 	if (data[0] != var)
 	{
@@ -196,6 +198,8 @@ bool RobotiqGripper::setVars(const std::vector<std::pair<std::string, int>> Vars
 		cmd += " " + Var.first + " " + std::to_string(Var.second);
 	}
 	cmd += "\n";
+	// atomic commands send/rcv
+	const std::lock_guard<std::mutex> lock(mutex_);
 	send(cmd);
 	auto data = receive();
 	return isAck(data);
@@ -215,45 +219,51 @@ bool RobotiqGripper::isActive()
 }
 
 
-int RobotiqGripper::getMinPosition() const
+float RobotiqGripper::getMinPosition() const
 {
-	return min_position_;
+	return convertValueUnit(min_position_, POSITION, FROM_DEVICE_UNIT);
 }
 
 
-int RobotiqGripper::getMaxPosition() const
+float RobotiqGripper::getMaxPosition() const
 {
-	return max_position_;
+	return convertValueUnit(max_position_, POSITION, FROM_DEVICE_UNIT);
 }
 
 
-int RobotiqGripper::getOpenPosition() const
+float RobotiqGripper::getOpenPosition() const
 {
 	return getMinPosition();
 }
 
 
-int RobotiqGripper::getClosedPosition() const
+float RobotiqGripper::getClosedPosition() const
 {
 	return getMaxPosition();
 }
 
-
-int RobotiqGripper::getCurrentPosition()
+int RobotiqGripper::getCurrentDevicePosition()
 {
 	return getVar("POS");
 }
 
 
+float RobotiqGripper::getCurrentPosition()
+{
+	return convertValueUnit(getCurrentDevicePosition(), POSITION, FROM_DEVICE_UNIT);
+}
+
+
 bool RobotiqGripper::isOpen()
 {
-	return getCurrentPosition() == getOpenPosition();
+
+	return getCurrentDevicePosition() == min_position_;
 }
 
 
 bool RobotiqGripper::isClosed()
 {
-	return getCurrentPosition() == getClosedPosition();
+	return getCurrentDevicePosition() == max_position_;
 }
 
 
@@ -271,8 +281,59 @@ void RobotiqGripper::reset()
 }
 
 
-int RobotiqGripper::move(int Position,int Speed, int Force, eMoveMode MoveMode)
+void RobotiqGripper::emergencyRelease(ePostionId Direction, eMoveMode MoveMode)
 {
+	setVar("ADR", (CLOSE == Direction) ? 0 : 1);
+	setVar("ATR", 1);
+
+	// wait until the gripper acknowledges that it started auto release
+	while (faultStatus() != FAULT_EMCY_RELEASE_ACTIVE)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
+	if (START_MOVE == MoveMode)
+	{
+		return;
+	}
+
+	// wait until the gripper finishes emergency release
+	while (faultStatus() != FAULT_EMCY_RELEASE_FINISHED)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+}
+
+
+int RobotiqGripper::faultStatus()
+{
+	return getVar("FLT");
+}
+
+
+float RobotiqGripper::setSpeed(float Speed)
+{
+	int dev_speed = convertValueUnit(Speed, SPEED, TO_DEVICE_UNIT);
+	speed_ = clamp(dev_speed, min_speed_, max_speed_);
+	return convertValueUnit(speed_, SPEED, FROM_DEVICE_UNIT);
+}
+
+
+float RobotiqGripper::setForce(float Force)
+{
+	int dev_force = convertValueUnit(Force, FORCE, TO_DEVICE_UNIT);
+	force_ = clamp(dev_force, min_force_, max_force_);
+	return convertValueUnit(force_, FORCE, FROM_DEVICE_UNIT);
+}
+
+
+int RobotiqGripper::move(float fPosition, float fSpeed, float fForce, eMoveMode MoveMode)
+{
+	int Position = convertValueUnit(fPosition, POSITION, TO_DEVICE_UNIT);
+	int Speed = convertValueUnit(fSpeed, SPEED, TO_DEVICE_UNIT);
+	int Force = convertValueUnit(fForce, FORCE, TO_DEVICE_UNIT);
+	Speed = (fSpeed < 0) ? speed_ : Speed;
+	Force = (fForce < 0) ? force_ : Force;
 	Position = clamp(Position, min_position_, max_position_);
 	Speed = clamp(Speed, min_speed_, max_speed_);
 	Force = clamp(Force, min_force_, max_force_);
@@ -295,31 +356,19 @@ int RobotiqGripper::move(int Position,int Speed, int Force, eMoveMode MoveMode)
 	}
 	else
 	{
-		return Position;
+		return objectDetectionStatus();
 	}
-}
-
-static int normToDeviceValue(float Value)
-{
-	return roundf(Value * 255);
-}
-
-
-int RobotiqGripper::moveNorm(float Position_mm, float NormSpeed, float NormForce, eMoveMode MoveMode)
-{
-	return move(normToDeviceValue(Position_mm), normToDeviceValue(NormSpeed),
-		normToDeviceValue(NormForce), MoveMode);
 }
 
 
 int RobotiqGripper::open(float NormSpeed, float NormForce, eMoveMode MoveMode)
 {
-	return moveNorm(0.0, NormSpeed, NormForce, MoveMode);
+	return move(getOpenPosition(), NormSpeed, NormForce, MoveMode);
 }
 
 int RobotiqGripper::close(float NormSpeed, float NormForce, eMoveMode MoveMode)
 {
-	return moveNorm(1.0, NormSpeed, NormForce, MoveMode);
+	return move(getClosedPosition(), NormSpeed, NormForce, MoveMode);
 }
 
 
@@ -342,6 +391,60 @@ RobotiqGripper::eObjectStatus RobotiqGripper::waitForMotionComplete()
 
 	return (RobotiqGripper::eObjectStatus)ObjectStatus;
 }
+
+
+float RobotiqGripper::convertValueUnit(float Value, eMoveParameter Param, eUnitConversion ConversionDirection) const
+{
+	auto Unit = units_[Param];
+	if (UNIT_DEVICE == Unit)
+	{
+		return Value;
+	}
+
+	float factor = 1.0;
+	float offset = 0.0;
+	switch (Unit)
+	{
+	case UNIT_NORMALIZED: factor = 255.0; break;
+	case UNIT_PERCENT: factor = (1.0 / 100.0 * 255);
+	case UNIT_MM:
+		 factor = (1.0 / (max_position_mm_ - min_position_mm_) * 255);
+		 offset = min_position_mm_;
+		 break;
+	default:
+		break;
+	}
+
+	if (ConversionDirection == TO_DEVICE_UNIT)
+	{
+		int Result = roundf((Value - offset) * factor);
+		return (POSITION == Param) ? (255 - Result) : Result;
+	}
+	else
+	{
+		Value = (POSITION == Param) ? (255 - Value) : Value;
+		return (Value / factor) + offset;
+	}
+}
+
+
+void RobotiqGripper::setUnit(eMoveParameter Param, eUnit Unit)
+{
+	units_[Param] = Unit;
+}
+
+
+void RobotiqGripper::setPositionRange_mm(int MinPosition, int MaxPosition)
+{
+	if (MinPosition > MaxPosition)
+	{
+		throw std::invalid_argument("MinPosition parameter is greater than MaxPosition parameter");
+	}
+
+	min_position_mm_ = MinPosition;
+	max_position_mm_ = MaxPosition;
+}
+
 } // namespace ur_rtde
 
 //---------------------------------------------------------------------------
