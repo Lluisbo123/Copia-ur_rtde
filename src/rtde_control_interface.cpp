@@ -233,12 +233,12 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
 
   // Setup input recipes
   // Recipe 1
-  std::vector<std::string> setp_input = {
+  std::vector<std::string> async_setp_input = {
       "input_int_register_0",    "input_double_register_0", "input_double_register_1",
       "input_double_register_2", "input_double_register_3", "input_double_register_4",
       "input_double_register_5", "input_double_register_6", "input_double_register_7",
       "input_int_register_1"};
-  rtde_->sendInputSetup(setp_input);
+  rtde_->sendInputSetup(async_setp_input);
 
   // Recipe 2
   std::vector<std::string> movec_input = {
@@ -318,6 +318,13 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
       "input_double_register_6", "input_double_register_7", "input_double_register_8",  
       "input_double_register_9", "input_double_register_10", "input_double_register_11"};
   rtde_->sendInputSetup(pose_trans_input);
+
+  // Recipe 14
+  std::vector<std::string> setp_input = {
+      "input_int_register_0",    "input_double_register_0", "input_double_register_1",
+      "input_double_register_2", "input_double_register_3", "input_double_register_4",
+      "input_double_register_5", "input_double_register_6", "input_double_register_7"};
+  rtde_->sendInputSetup(setp_input);
 
   return true;
 }
@@ -755,7 +762,7 @@ bool RTDEControlInterface::speedJ(const std::vector<double> &qd, double accelera
 
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SPEEDJ;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_1;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_14;
   robot_cmd.val_ = qd;
   robot_cmd.val_.push_back(acceleration);
   robot_cmd.val_.push_back(time);
@@ -768,7 +775,7 @@ bool RTDEControlInterface::speedL(const std::vector<double> &xd, double accelera
 
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SPEEDL;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_1;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_14;
   robot_cmd.val_ = xd;
   robot_cmd.val_.push_back(acceleration);
   robot_cmd.val_.push_back(time);

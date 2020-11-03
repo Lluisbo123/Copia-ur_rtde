@@ -56,6 +56,62 @@ class RTDEReceiveInterface
     IS_STOPPED_DUE_TO_SAFETY = 10
   };
 
+  enum OutputIntRegisters
+  {
+    OUTPUT_INT_REGISTER_0 = 0,
+    OUTPUT_INT_REGISTER_1,
+    OUTPUT_INT_REGISTER_2,
+    OUTPUT_INT_REGISTER_3,
+    OUTPUT_INT_REGISTER_4,
+    OUTPUT_INT_REGISTER_5,
+    OUTPUT_INT_REGISTER_6,
+    OUTPUT_INT_REGISTER_7,
+    OUTPUT_INT_REGISTER_8,
+    OUTPUT_INT_REGISTER_9,
+    OUTPUT_INT_REGISTER_10,
+    OUTPUT_INT_REGISTER_11,
+    OUTPUT_INT_REGISTER_12,
+    OUTPUT_INT_REGISTER_13,
+    OUTPUT_INT_REGISTER_14,
+    OUTPUT_INT_REGISTER_15,
+    OUTPUT_INT_REGISTER_16,
+    OUTPUT_INT_REGISTER_17,
+    OUTPUT_INT_REGISTER_18,
+    OUTPUT_INT_REGISTER_19,
+    OUTPUT_INT_REGISTER_20,
+    OUTPUT_INT_REGISTER_21,
+    OUTPUT_INT_REGISTER_22,
+    OUTPUT_INT_REGISTER_23
+  };
+
+  enum OutputDoubleRegisters
+  {
+    OUTPUT_DOUBLE_REGISTER_0 = 0,
+    OUTPUT_DOUBLE_REGISTER_1,
+    OUTPUT_DOUBLE_REGISTER_2,
+    OUTPUT_DOUBLE_REGISTER_3,
+    OUTPUT_DOUBLE_REGISTER_4,
+    OUTPUT_DOUBLE_REGISTER_5,
+    OUTPUT_DOUBLE_REGISTER_6,
+    OUTPUT_DOUBLE_REGISTER_7,
+    OUTPUT_DOUBLE_REGISTER_8,
+    OUTPUT_DOUBLE_REGISTER_9,
+    OUTPUT_DOUBLE_REGISTER_10,
+    OUTPUT_DOUBLE_REGISTER_11,
+    OUTPUT_DOUBLE_REGISTER_12,
+    OUTPUT_DOUBLE_REGISTER_13,
+    OUTPUT_DOUBLE_REGISTER_14,
+    OUTPUT_DOUBLE_REGISTER_15,
+    OUTPUT_DOUBLE_REGISTER_16,
+    OUTPUT_DOUBLE_REGISTER_17,
+    OUTPUT_DOUBLE_REGISTER_18,
+    OUTPUT_DOUBLE_REGISTER_19,
+    OUTPUT_DOUBLE_REGISTER_20,
+    OUTPUT_DOUBLE_REGISTER_21,
+    OUTPUT_DOUBLE_REGISTER_22,
+    OUTPUT_DOUBLE_REGISTER_23
+  };
+
   /**
    * @returns Can be used to disconnect from the robot. To reconnect you have to call the reconnect() function.
    */
@@ -288,6 +344,22 @@ class RTDEReceiveInterface
    * @returns a bool indicating if the robot is in 'Emergency stop'
    */
   RTDE_EXPORT bool isEmergencyStopped();
+
+  /**
+   * @brief Get the specified output integer register [12-19].
+   * @param output_id the id of the register to read, current supported range is: [12-19], this can
+   * be adjusted by changing the RTDEReceiveInterface output recipes.
+   * @returns an integer from the specified output register
+   */
+  RTDE_EXPORT int getOutputIntRegister(int output_id);
+
+  /**
+   * @brief Get the specified output double register [12-19].
+   * @param output_id the id of the register to read, current supported range is: [12-19], this can
+   * be adjusted by changing the RTDEReceiveInterface output recipes.
+   * @returns a double from the specified output register
+   */
+  RTDE_EXPORT double getOutputDoubleRegister(int output_id);
 
   RTDE_EXPORT void receiveCallback();
 

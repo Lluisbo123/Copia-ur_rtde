@@ -3,11 +3,11 @@
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/rtde_receive_interface.h>
 
+#include <bitset>
 #include <boost/thread/thread.hpp>
+#include <chrono>
 #include <iostream>
 #include <thread>
-#include <bitset>
-#include <chrono>
 
 namespace ur_rtde
 {
@@ -109,22 +109,22 @@ bool RTDEReceiveInterface::setupRecipes(const double& frequency)
                   "standard_analog_output1",
                   "robot_status_bits",
                   "safety_status_bits",
-                  "output_int_register_0",
-                  "output_int_register_1",
-                  "output_int_register_2",
-                  "output_int_register_3",
-                  "output_int_register_4",
-                  "output_int_register_5",
-                  "output_int_register_6",
-                  "output_int_register_7",
-                  "output_double_register_0",
-                  "output_double_register_1",
-                  "output_double_register_2",
-                  "output_double_register_3",
-                  "output_double_register_4",
-                  "output_double_register_5",
-                  "output_double_register_6",
-                  "output_double_register_7"};
+                  "output_int_register_12",
+                  "output_int_register_13",
+                  "output_int_register_14",
+                  "output_int_register_15",
+                  "output_int_register_16",
+                  "output_int_register_17",
+                  "output_int_register_18",
+                  "output_int_register_19",
+                  "output_double_register_12",
+                  "output_double_register_13",
+                  "output_double_register_14",
+                  "output_double_register_15",
+                  "output_double_register_16",
+                  "output_double_register_17",
+                  "output_double_register_18",
+                  "output_double_register_19"};
   }
 
   // Setup output
@@ -407,6 +407,58 @@ bool RTDEReceiveInterface::isEmergencyStopped()
   else
   {
     throw std::logic_error("Please initialize the RobotState, before using it!");
+  }
+}
+
+int RTDEReceiveInterface::getOutputIntRegister(int output_id)
+{
+  switch (output_id)
+  {
+    case OUTPUT_INT_REGISTER_12:
+      return robot_state_->getOutput_int_register_12();
+    case OUTPUT_INT_REGISTER_13:
+      return robot_state_->getOutput_int_register_13();
+    case OUTPUT_INT_REGISTER_14:
+      return robot_state_->getOutput_int_register_14();
+    case OUTPUT_INT_REGISTER_15:
+      return robot_state_->getOutput_int_register_15();
+    case OUTPUT_INT_REGISTER_16:
+      return robot_state_->getOutput_int_register_16();
+    case OUTPUT_INT_REGISTER_17:
+      return robot_state_->getOutput_int_register_17();
+    case OUTPUT_INT_REGISTER_18:
+      return robot_state_->getOutput_int_register_18();
+    case OUTPUT_INT_REGISTER_19:
+      return robot_state_->getOutput_int_register_19();
+    default:
+      throw std::range_error("The supported range of getOutputIntRegister() is [12-19], you specified: " +
+                             std::to_string(output_id));
+  }
+}
+
+double RTDEReceiveInterface::getOutputDoubleRegister(int output_id)
+{
+  switch (output_id)
+  {
+    case OUTPUT_DOUBLE_REGISTER_12:
+      return robot_state_->getOutput_double_register_12();
+    case OUTPUT_DOUBLE_REGISTER_13:
+      return robot_state_->getOutput_double_register_13();
+    case OUTPUT_DOUBLE_REGISTER_14:
+      return robot_state_->getOutput_double_register_14();
+    case OUTPUT_DOUBLE_REGISTER_15:
+      return robot_state_->getOutput_double_register_15();
+    case OUTPUT_DOUBLE_REGISTER_16:
+      return robot_state_->getOutput_double_register_16();
+    case OUTPUT_DOUBLE_REGISTER_17:
+      return robot_state_->getOutput_double_register_17();
+    case OUTPUT_DOUBLE_REGISTER_18:
+      return robot_state_->getOutput_double_register_18();
+    case OUTPUT_DOUBLE_REGISTER_19:
+      return robot_state_->getOutput_double_register_19();
+    default:
+      throw std::range_error("The supported range of getOutputDoubleRegister() is [12-19], you specified: " +
+                             std::to_string(output_id));
   }
 }
 

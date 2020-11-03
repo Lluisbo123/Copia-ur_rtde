@@ -72,17 +72,23 @@ def rtde_control():
 
     thread speed_thread():
         while (True):
-            if speed_type == 0:
-                if speed_time > 0:
-                    speedl(speed_target, a=speed_acceleration, t=speed_time)
+            enter_critical
+            type = speed_type
+            target = speed_target
+            acceleration = speed_acceleration
+            time = speed_time
+            exit_critical
+            if type == 0:
+                if time > 0:
+                    speedl(target, a=acceleration, t=time)
                 else:
-                    speedl(speed_target, a=speed_acceleration)
+                    speedl(target, a=acceleration)
                 end
             else:
-                if speed_time > 0:
-                    speedj(speed_target, a=speed_acceleration, t=speed_time)
+                if time > 0:
+                    speedj(target, a=acceleration, t=time)
                 else:
-                    speedj(speed_target, a=speed_acceleration)
+                    speedj(target, a=acceleration)
                 end
             end
         end
@@ -328,7 +334,9 @@ def rtde_control():
             exit_critical
 
             if is_speeding == 0:
+                enter_critical
                 is_speeding = 1
+                exit_critical
                 if speed_thrd == 0:
                     global speed_thrd = run speed_thread()
                 end

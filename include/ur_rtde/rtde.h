@@ -101,6 +101,7 @@ class RTDE
       RECIPE_11 = 11,
       RECIPE_12 = 12,
       RECIPE_13 = 13,
+      RECIPE_14 = 14,
     };
 
     RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)
