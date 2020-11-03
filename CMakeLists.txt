@@ -100,7 +100,8 @@ set(LIB_SOURCE_FILES
         src/script_client.cpp
         src/rtde_control_interface.cpp
 		src/rtde_receive_interface.cpp
-		src/rtde_io_interface.cpp)
+		src/rtde_io_interface.cpp
+		src/robotiq_gripper.cpp)
 
 set(LIB_HEADER_FILES
         include/ur_rtde/rtde.h
@@ -114,7 +115,8 @@ set(LIB_HEADER_FILES
 		include/ur_rtde/rtde_receive_interface.h
 		include/ur_rtde/rtde_receive_interface_doc.h
 		include/ur_rtde/rtde_io_interface.h
-		include/ur_rtde/rtde_io_interface_doc.h)
+		include/ur_rtde/rtde_io_interface_doc.h
+		include/ur_rtde/robotiq_gripper.h)
 
 if(NOT DOC STREQUAL "OFF")
 	add_subdirectory(doc)
@@ -267,6 +269,7 @@ if(${CODE})
 		add_executable(ur_rtde::movej_path_with_blend_example ALIAS movej_path_with_blend_example)
 		add_executable(ur_rtde::io_example ALIAS io_example)
 		add_executable(ur_rtde::move_async_example ALIAS move_async_example)
+		add_executable(ur_rtde::robotiq_gripper_example.cpp ALIAS robotiq_gripper_example)
 	endif()
 
 	if (CMAKE_COMPILER_IS_GNUCXX)

@@ -31,7 +31,7 @@ namespace ur_rtde
  * OBJ = 'OBJ'  # object detection (0 = moving, 1 = outer grip, 2 = inner grip, 3 = no object at rest)
  * FLT = 'FLT'  # fault (0=ok, see manual for errors if not zero)
  */
-class RTDE_EXPORT RobotiqGripper
+class RobotiqGripper
 {
 public:
 	/**
@@ -138,22 +138,22 @@ public:
 	 * @param Port The port to use for connection
 	 * @param verbose Prints additional debug information if true
 	 */
-	RobotiqGripper(const std::string& Hostname, int Port = 63352, bool verbose = false);
+	RTDE_EXPORT RobotiqGripper(const std::string& Hostname, int Port = 63352, bool verbose = false);
 
 	/**
 	 * Connects to the gripper server
 	 */
-	void connect();
+	RTDE_EXPORT void connect();
 
 	/**
 	 * Disconnects from the gripper server
 	 */
-	void disconnect();
+	RTDE_EXPORT void disconnect();
 
 	/**
 	 * Returns true if connected
 	 */
-	bool isConnected() const;
+	RTDE_EXPORT bool isConnected() const;
 
 	/**
 	 * Resets the activation flag in the gripper, and sets it back to one,
@@ -163,13 +163,13 @@ public:
 	 * \param auto_calibrate: Whether to calibrate the minimum and maximum
 	 * positions based on actual motion.
 	 */
-	void activate(bool auto_calibrate = false);
+	RTDE_EXPORT void activate(bool auto_calibrate = false);
 
 	/**
 	 * Attempts to calibrate the open and closed positions, by slowly closing
 	 * and opening the gripper.
 	 */
-	void autoCalibrate();
+	RTDE_EXPORT void autoCalibrate();
 
 	/**
 	 * Returns whether the gripper is active.
@@ -177,34 +177,34 @@ public:
 	 * activate() function.
 	 * \see activate()
 	 */
-	bool isActive();
+	RTDE_EXPORT bool isActive();
 
     /**
      * Returns the fully open position in the configured position unit.
      */
-    float getOpenPosition() const;
+    RTDE_EXPORT float getOpenPosition() const;
 
     /**
      * Returns what is considered the closed position for gripper in the
      * configured position unit.
      */
-    float getClosedPosition() const;
+    RTDE_EXPORT float getClosedPosition() const;
 
     /**
      * Returns the current position as returned by the physical hardware
      * in the configured position unit.
      */
-    float getCurrentPosition();
+    RTDE_EXPORT float getCurrentPosition();
 
     /**
      * Returns whether the current position is considered as being fully open.
      */
-    bool isOpen();
+    RTDE_EXPORT bool isOpen();
 
     /**
      * Returns whether the current position is considered as being fully closed.
      */
-    bool isClosed();
+    RTDE_EXPORT bool isClosed();
 
     /**
      * \brief Sends command to start moving towards the given position,
@@ -221,19 +221,19 @@ public:
      *        WAIT_FINISHED - waits until the move has finished
      * \return: Returns the object detection status.
      */
-	int move(float Position, float Speed = -1.0, float Force = -1.0, eMoveMode MoveMode = START_MOVE);
+	RTDE_EXPORT int move(float Position, float Speed = -1.0, float Force = -1.0, eMoveMode MoveMode = START_MOVE);
 
 	/**
 	 * Moves the gripper to its fully open position.
 	 * \see See move() function for a detailed description of all other parameters
 	 */
-	int open(float Speed = -1.0, float Force = -1.0, eMoveMode MoveMode = START_MOVE);
+	RTDE_EXPORT int open(float Speed = -1.0, float Force = -1.0, eMoveMode MoveMode = START_MOVE);
 
 	/**
 	 * Moves the gripper to its fully closed position.
 	 * \see See move() function for a detailed description of all other parameters
 	 */
-	int close(float Speed = -1.0, float Force = -1.0, eMoveMode MoveMode = START_MOVE);
+	RTDE_EXPORT int close(float Speed = -1.0, float Force = -1.0, eMoveMode MoveMode = START_MOVE);
 
 	/**
 	 * The emergency release is meant to disengage the gripper after an emergency
@@ -247,13 +247,13 @@ public:
 	 *        finished. (faultStatus() == FAULT_EMCY_RELEASE_FINISHED)
 	 * 	fully close position
 	 */
-	void emergencyRelease(ePostionId Direction, eMoveMode MoveMode = WAIT_FINISHED);
+	RTDE_EXPORT void emergencyRelease(ePostionId Direction, eMoveMode MoveMode = WAIT_FINISHED);
 
 	/**
 	 * Returns the current fault status code.
 	 * \see eFaultCode
 	 */
-	int faultStatus();
+	RTDE_EXPORT int faultStatus();
 
 	/**
 	 * Set the units to use for passing position, speed and force values to the
@@ -265,7 +265,7 @@ public:
 	 * speed and half force.
 	 * \see eUnit
 	 */
-	void setUnit(eMoveParameter Param, eUnit Unit);
+	RTDE_EXPORT void setUnit(eMoveParameter Param, eUnit Unit);
 
 	/**
 	 * Configure the position range of your gripper.
@@ -275,7 +275,7 @@ public:
 	 * \param[in] MinPosition The distance of the closed gripper in mm
 	 * \param[in] MaxPosition The distance of the opened gripper in mm
 	 */
-	void setPositionRange_mm(int MinPosition, int MaxPosition);
+	RTDE_EXPORT void setPositionRange_mm(int MinPosition, int MaxPosition);
 
 	/**
 	 * Sets the speed to use for future move commands in the configured
@@ -283,7 +283,7 @@ public:
 	 * \return Returns the adjusted speed value.
 	 * \see move()
 	 */
-	float setSpeed(float Speed);
+	RTDE_EXPORT float setSpeed(float Speed);
 
 	/**
 	 * Sets the force for future move commands in the configured
@@ -291,19 +291,19 @@ public:
 	 * \return Returns the adjusted force value
 	 * \see move()
 	 */
-	float setForce(float Force);
+	RTDE_EXPORT float setForce(float Force);
 
 	/**
 	 * Returns the current object detection status if a move is active.
 	 * Use this function for polling the state.
 	 */
-	eObjectStatus objectDetectionStatus();
+	RTDE_EXPORT eObjectStatus objectDetectionStatus();
 
 	/**
 	 * Call this function after a move command to wait for completion of the
 	 * commanded move.
 	 */
-	eObjectStatus waitForMotionComplete();
+	RTDE_EXPORT eObjectStatus waitForMotionComplete();
 
 private:
 	/**

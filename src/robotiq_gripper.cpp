@@ -1,4 +1,4 @@
-#include "robotiq_gripper.h"
+#include <ur_rtde/robotiq_gripper.h>
 
 #include <thread>
 #include <iostream>
@@ -221,13 +221,13 @@ bool RobotiqGripper::isActive()
 
 float RobotiqGripper::getMinPosition() const
 {
-	return convertValueUnit(min_position_, POSITION, FROM_DEVICE_UNIT);
+	return convertValueUnit((float)min_position_, POSITION, FROM_DEVICE_UNIT);
 }
 
 
 float RobotiqGripper::getMaxPosition() const
 {
-	return convertValueUnit(max_position_, POSITION, FROM_DEVICE_UNIT);
+	return convertValueUnit((float)max_position_, POSITION, FROM_DEVICE_UNIT);
 }
 
 
@@ -250,7 +250,7 @@ int RobotiqGripper::getCurrentDevicePosition()
 
 float RobotiqGripper::getCurrentPosition()
 {
-	return convertValueUnit(getCurrentDevicePosition(), POSITION, FROM_DEVICE_UNIT);
+	return convertValueUnit((float)getCurrentDevicePosition(), POSITION, FROM_DEVICE_UNIT);
 }
 
 
@@ -313,25 +313,25 @@ int RobotiqGripper::faultStatus()
 
 float RobotiqGripper::setSpeed(float Speed)
 {
-	int dev_speed = convertValueUnit(Speed, SPEED, TO_DEVICE_UNIT);
+	int dev_speed = (int)convertValueUnit(Speed, SPEED, TO_DEVICE_UNIT);
 	speed_ = clamp(dev_speed, min_speed_, max_speed_);
-	return convertValueUnit(speed_, SPEED, FROM_DEVICE_UNIT);
+	return convertValueUnit((float)speed_, SPEED, FROM_DEVICE_UNIT);
 }
 
 
 float RobotiqGripper::setForce(float Force)
 {
-	int dev_force = convertValueUnit(Force, FORCE, TO_DEVICE_UNIT);
+	int dev_force = (int)convertValueUnit(Force, FORCE, TO_DEVICE_UNIT);
 	force_ = clamp(dev_force, min_force_, max_force_);
-	return convertValueUnit(force_, FORCE, FROM_DEVICE_UNIT);
+	return convertValueUnit((float)force_, FORCE, FROM_DEVICE_UNIT);
 }
 
 
 int RobotiqGripper::move(float fPosition, float fSpeed, float fForce, eMoveMode MoveMode)
 {
-	int Position = convertValueUnit(fPosition, POSITION, TO_DEVICE_UNIT);
-	int Speed = convertValueUnit(fSpeed, SPEED, TO_DEVICE_UNIT);
-	int Force = convertValueUnit(fForce, FORCE, TO_DEVICE_UNIT);
+	int Position = (int)convertValueUnit(fPosition, POSITION, TO_DEVICE_UNIT);
+	int Speed = (int)convertValueUnit(fSpeed, SPEED, TO_DEVICE_UNIT);
+	int Force = (int)convertValueUnit(fForce, FORCE, TO_DEVICE_UNIT);
 	Speed = (fSpeed < 0) ? speed_ : Speed;
 	Force = (fForce < 0) ? force_ : Force;
 	Position = clamp(Position, min_position_, max_position_);
@@ -406,10 +406,10 @@ float RobotiqGripper::convertValueUnit(float Value, eMoveParameter Param, eUnitC
 	switch (Unit)
 	{
 	case UNIT_NORMALIZED: factor = 255.0; break;
-	case UNIT_PERCENT: factor = (1.0 / 100.0 * 255);
+	case UNIT_PERCENT: factor = float(1.0 / 100.0 * 255);
 	case UNIT_MM:
-		 factor = (1.0 / (max_position_mm_ - min_position_mm_) * 255);
-		 offset = min_position_mm_;
+		 factor = float(1.0 / (max_position_mm_ - min_position_mm_) * 255);
+		 offset = float(min_position_mm_);
 		 break;
 	default:
 		break;
@@ -417,8 +417,9 @@ float RobotiqGripper::convertValueUnit(float Value, eMoveParameter Param, eUnitC
 
 	if (ConversionDirection == TO_DEVICE_UNIT)
 	{
-		int Result = roundf((Value - offset) * factor);
-		return (POSITION == Param) ? (255 - Result) : Result;
+		int Result = int(roundf((Value - offset) * factor));
+		Result = (POSITION == Param) ? (255 - Result) : Result;
+		return float(Result);
 	}
 	else
 	{
