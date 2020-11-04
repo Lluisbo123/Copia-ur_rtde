@@ -213,7 +213,6 @@ def rtde_control():
         pose_wrt_base = pose_trans(start_pose, target_pose)
         q = get_inverse_kin(pose_wrt_base)
       end
-      textmsg("servoing")
       servoj(q, jog_dt, lookahead_time=0.03, gain=1000)
     end
     textmsg("jog_thread finished")
