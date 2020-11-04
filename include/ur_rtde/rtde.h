@@ -83,6 +83,8 @@ class RTDE
       GET_JOINT_TORQUES = 38,
       POSE_TRANS = 39,
       GET_TCP_OFFSET = 40,
+      JOG_START = 41,
+      JOG_STOP = 42,
       STOP_SCRIPT = 255
     };
 
@@ -102,6 +104,7 @@ class RTDE
       RECIPE_12 = 12,
       RECIPE_13 = 13,
       RECIPE_14 = 14,
+      RECIPE_15 = 15,
     };
 
     RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)

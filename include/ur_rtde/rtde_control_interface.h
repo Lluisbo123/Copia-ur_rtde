@@ -69,6 +69,13 @@ class RTDEControlInterface
     IS_STOPPED_DUE_TO_SAFETY = 10
   };
 
+  enum Feature
+  {
+	  FEATURE_BASE,
+	  FEATURE_TOOL,
+	  FEATURE_CUSTOM // not supported yet - reserved for future
+  };
+
   /**
     * @returns Can be used to disconnect from the robot. To reconnect you have to call the reconnect() function.
     */
@@ -318,6 +325,19 @@ class RTDEControlInterface
     * @brief Resets the robot mode from force mode to normal operation.
     */
   RTDE_EXPORT bool forceModeStop();
+
+
+  /**
+   * Starts jogging with the given speed vector with respect to the given
+   * feature.
+   */
+  RTDE_EXPORT bool jogStart(const std::vector<double> &speeds, int feature = FEATURE_BASE);
+
+  /**
+   * Stops jogging that has been started start_jog
+   */
+  RTDE_EXPORT bool jogStop();
+
 
   /**
     * @brief Zeroes the TCP force/torque measurement from the builtin force/torque sensor by subtracting the current

@@ -326,6 +326,13 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
       "input_double_register_5", "input_double_register_6", "input_double_register_7"};
   rtde_->sendInputSetup(setp_input);
 
+  // Recipe 15
+  std::vector<std::string> jog_input = {
+      "input_int_register_0",    "input_double_register_0", "input_double_register_1",
+      "input_double_register_2", "input_double_register_3", "input_double_register_4",
+      "input_double_register_5", "input_double_register_6"};
+  rtde_->sendInputSetup(jog_input);
+
   return true;
 }
 
@@ -676,6 +683,27 @@ bool RTDEControlInterface::moveL(const std::vector<double> &transform, double sp
   robot_cmd.val_.push_back(acceleration);
   return sendCommand(robot_cmd);
 }
+
+
+bool RTDEControlInterface::jogStart(const std::vector<double> &speeds, int feature)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::JOG_START;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_15;
+  robot_cmd.val_ = speeds;
+  robot_cmd.val_.push_back(feature);
+  return sendCommand(robot_cmd);
+}
+
+
+bool RTDEControlInterface::jogStop()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::JOG_STOP;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  return sendCommand(robot_cmd);
+}
+
 
 bool RTDEControlInterface::moveL_FK(const std::vector<double> &q, double speed, double acceleration, bool async)
 {

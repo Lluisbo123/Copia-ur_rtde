@@ -244,6 +244,13 @@ tool speed v. @param pose target pose @param speed tool speed [m/s]
 @param acceleration tool acceleration [m/s^2] @param blend blend
 radius [m])doc";
 
+static const char *__doc_ur_rtde_RTDEControlInterface_jogStart =
+R"doc(Starts jogging with the given speed vector with respect to the given
+feature.)doc";
+
+static const char *__doc_ur_rtde_RTDEControlInterface_jogStop =
+R"doc(Stops jogging that has been started start_jog)doc";
+
 static const char *__doc_ur_rtde_RTDEControlInterface_poseTrans =
 R"doc(@brief Pose transformation to move with respect to a tool or w.r.t. a
 custom feature/frame The first argument, p_from, is used to transform
