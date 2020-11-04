@@ -331,7 +331,7 @@ class RTDEControlInterface
    * Starts jogging with the given speed vector with respect to the given
    * feature.
    */
-  RTDE_EXPORT bool jogStart(const std::vector<double> &speeds, int feature =  FEATURE_BASE);
+  RTDE_EXPORT bool jogStart(const std::vector<double> &speeds, int feature = FEATURE_BASE);
 
   /**
    * Stops jogging that has been started start_jog

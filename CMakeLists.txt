@@ -256,6 +256,20 @@ if(${CODE})
 		target_include_directories(robotiq_gripper_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 		target_link_libraries(robotiq_gripper_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
 
+		if (UNIX)
+			find_package(Curses)
+			if(Curses_FOUND)
+				add_executable(jog_example examples/cpp/jog_example.cpp)
+				target_include_directories(jog_example PUBLIC ${CURSES_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+				target_link_libraries(jog_example PRIVATE rtde ${CURSES_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+				set_target_properties(jog_example
+					PROPERTIES
+					RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+					)
+				add_executable(ur_rtde::jog_example.cpp ALIAS jog_example)
+			endif()
+		endif (UNIX)
+
 		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example move_async_example robotiq_gripper_example
 				PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
