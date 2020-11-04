@@ -35,6 +35,13 @@ def rtde_control():
     global speed_thrd = 0
     global force_thrd = 0
 
+    global jog_feature = 0 # 0 - base, 1 - tool, 2 - custom
+    global jog_speed_vector_dt = p[0, 0, 0, 0, 0, 0]
+    global jog_start_pose = p[0, 0, 0, 0, 0, 0]
+    global jog_thrd = 0
+    global jog_dt = 0.002
+    global jog_state = 0 # 0 - inactive, 1 - new setpoint, 2 - jogging, 3 - stopping (decelerating)
+
     thread move_thread():
         textmsg("move_thread started")
         while (True):
@@ -133,6 +140,88 @@ def rtde_control():
       pose[5] = read_input_float_register(register_index + 5)
       return pose
     end
+
+    # Returs a pose that contains only the translation part of a given pose
+    def get_pose_translation(pose):
+      return p[pose[0], pose[1], pose[2], 0, 0, 0]
+    end
+  
+    # Returns a pose that contains only the rotation part of a given pose
+    def get_pose_rotation(pose):
+      return p[0, 0, 0, pose[3], pose[4], pose[5]]
+    end
+
+    # scales the given pose by the given factor
+    def scale_pose(p, factor):
+      p[0] = p[0] * factor
+      p[1] = p[1] * factor
+      p[2] = p[2] * factor
+      p[3] = p[3] * factor
+      p[4] = p[4] * factor
+      p[5] = p[5] * factor
+      return p
+    end
+
+  # The jog thread provides jogging functionality similar to the one you
+  # find in the teach pendant.
+  thread jog_thread():
+    textmsg("jog_thread started")
+    # We latch the global jog settings. The feature setting is only latched
+    # here. That means, it is not possible to change the feature as soon as the 
+    # move started. To change the feature, you first have to stop the move
+    enter_critical
+    start_pose = jog_start_pose
+    feature = jog_feature
+    exit_critical
+
+    # Initialize target_pose depending on feature
+    if feature == 0: # base feature
+      target_pose = start_pose
+    elif feature == 1: # tool feature
+      target_pose = p[0, 0, 0, 0, 0, 0]
+    end
+    deceleration_counter = 0
+
+    while (jog_state > 0 and deceleration_counter < 50):
+      enter_critical
+      if jog_state == 1: # 1 = new setpoint
+        speeds = jog_speed_vector_dt
+        jog_state = 2 # 2 = jogging
+        deceleration_counter = 0
+        textmsg("new jog setpoint")
+      end
+      exit_critical
+
+      if jog_state == 3: # 3 - stopping (decelerating)
+        # We do a simple deceleration by just decreasing the speed by a
+        # certain factor. That is not a perfect deceleration ramp but it is
+        # ok to prevent jerks when stopping the jog thread
+        speeds = scale_pose(speeds, 0.7)
+        deceleration_counter = deceleration_counter + 1
+      else:
+        deceleration_counter = 0
+      end
+
+      if feature == 0: # base feature
+        target_transl = get_pose_translation(pose_add(target_pose, speeds))
+        speeds_rot = get_pose_rotation(speeds)
+        target_rot = pose_trans(speeds_rot, get_pose_rotation(target_pose))
+        target_pose = pose_add(target_transl, target_rot)
+        q = get_inverse_kin(target_pose)
+      elif feature == 1: # tool feature
+        target_pose = pose_add(target_pose, speeds)
+        pose_wrt_base = pose_trans(start_pose, target_pose)
+        q = get_inverse_kin(pose_wrt_base)
+      end
+      textmsg("servoing")
+      servoj(q, jog_dt, lookahead_time=0.03, gain=1000)
+    end
+    textmsg("jog_thread finished")
+    enter_critical
+    jogging_state = 0 # inactive
+    jog_thrd = 0
+    exit_critical
+  end
 
 
     def signal_ready():
@@ -698,6 +787,26 @@ $V38        protective_stop()
             write_output_float_register(4, tcp_offset[4])
             write_output_float_register(5, tcp_offset[5])
             textmsg("get_tcp_offset done")
+        elif cmd == 41:
+              textmsg("start_jog")
+              enter_critical
+              jog_state = 1 # 3 = stopping (decelerating)
+              speed_pose = pose_from_input_float_registers(0)
+              jog_speed_vector_dt = scale_pose(speed_pose, jog_dt)
+              jog_feature = read_input_float_register(6)
+              jog_start_pose = get_actual_tcp_pose()
+              if jog_thrd == 0:
+                jog_thrd = run jog_thread()
+              end
+              exit_critical
+              textmsg("jog_speed_vector_dt: ", jog_speed_vector_dt)
+              textmsg("jog_feature: ", jog_feature)
+              textmsg("start_jog done")    
+        elif cmd == 42:
+              textmsg("stop_jog")
+              jog_state = 3 # 3 = stopping (decelerating)
+              join jog_thrd
+              textmsg("stop_jog done")   
         elif cmd == 255:
             textmsg("Received stop script!")
         end
