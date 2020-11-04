@@ -10,6 +10,7 @@ The ur_rtde library API consists of the following parts:
 * :ref:`rtde.h <rtde-api>`: The RTDE class
 * :ref:`script_client.h <script-client-api>`: Script client
 * :ref:`dashboard_client.h <dashboard-client-api>`: Dashboard client
+* :ref:`robotiq_gripper.h <robotiq-gripper-api>`: Robotiq gripper interface
 
 .. _rtde-control-api:
 
@@ -70,6 +71,17 @@ Dashboard Client API
 ====================
 
 .. doxygenclass:: ur_rtde::DashboardClient
+    :project: ur_rtde
+    :path: ../doxygen/xml
+    :members:
+    :undoc-members:
+
+.. _robotiq-gripper-api:
+
+Robotiq Gripper API
+===================
+
+.. doxygenclass:: ur_rtde::RobotiqGripper
     :project: ur_rtde
     :path: ../doxygen/xml
     :members:

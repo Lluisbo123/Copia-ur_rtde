@@ -70,7 +70,7 @@ use with Python here: `robotiq_preamble.py <https://sdurobotics.gitlab.io/ur_rtd
 and a python interface for using the robotiq gripper this way here:
 `robotiq_gripper_control.py <https://sdurobotics.gitlab.io/ur_rtde/_static/robotiq_gripper_control.py>`_.
 
-Example of the using this method:
+Example of this method:
 
 .. code-block:: python
 
@@ -139,6 +139,13 @@ A robotiq gripper can be controlled through a port (*63352*) that is opened by t
 port provides direct communication to the gripper. So you simply connect to the robot IP at this port and you
 can command it using the Robotiq string commands, see the 'Control' section of this
 `manual <https://assets.robotiq.com/website-assets/support_documents/document/Hand-E_Manual_UniversalRobots_PDF_20191219.pdf>`_.
+
+*C++*:
+
+ur_rtde includes a C++ interface for robotiq grippers implemented by (Uwe Kindler). See the API here:
+:ref:`Robotiq Gripper API <robotiq-gripper-api>`, and the example here: :ref:`Robotiq Gripper Example <robotiq-gripper-example>`
+
+*Python*:
 
 You can download an example Python class for controlling the gripper using this method here: `robotiq_gripper.py <https://sdurobotics.gitlab.io/ur_rtde/_static/robotiq_gripper.py>`_.
 This class was implemented by Sam (Rasp) thanks! The class can be used like this:
