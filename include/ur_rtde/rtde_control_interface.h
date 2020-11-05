@@ -328,8 +328,21 @@ class RTDEControlInterface
 
 
   /**
-   * Starts jogging with the given speed vector with respect to the given
+   * @brief Starts jogging with the given speed vector with respect to the given
    * feature.
+   * When jogging has started, it is possible to provide new speed vectors by
+   * calling the jogStart() function over and over again. This makes it
+   * possible to use a joystick or a 3D Space Navigator to provide new speed
+   * vectors if the user moves the joystick or the Space Navigator cap.
+   * Switching the feature (base or tool) is only possible, if the jogging has
+   * been stopped before the jogStart() function is called. That means, with
+   * the first call of jogStart() the speed vector and feature parameter is
+   * evaluated. With all following calls of the function only the speed vector
+   * will be evaluated.
+   * @param speed Speed vector for translation and rotation. Translation values
+   * are given in mm / s and rotation values in rad / s.
+   * @param feature Configures to move to move with respect to base frame
+   * (FEATURE_BASE) or with respect to tcp frame (FEATURE_TOOL)
    */
   RTDE_EXPORT bool jogStart(const std::vector<double> &speeds, int feature = FEATURE_BASE);
 
