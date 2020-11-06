@@ -15,19 +15,20 @@ namespace ur_rtde
  * C++ driver for Robot IQ grippers
  * Communicates with the gripper directly, via socket with string commands,
  * leveraging string names for variables.
- * WRITE VARIABLES (CAN ALSO READ)
- * ACT = 'ACT'  # act : activate (1 while activated, can be reset to clear fault status)
- * GTO = 'GTO'  # gto : go to (will perform go to with the actions set in pos, for, spe)
- * ATR = 'ATR'  # atr : auto-release (emergency slow move)
- * ADR = 'ADR'  # adr : auto-release direction (open(1) or close(0) during auto-release)
- * FOR = 'FOR'  # for : force (0-255)
- * SPE = 'SPE'  # spe : speed (0-255)
- * POS = 'POS'  # pos : position (0-255), 0 = open
-        # READ VARIABLES
- * STA = 'STA'  # status (0 = is reset, 1 = activating, 3 = active)
- * PRE = 'PRE'  # position request (echo of last commanded position)
- * OBJ = 'OBJ'  # object detection (0 = moving, 1 = outer grip, 2 = inner grip, 3 = no object at rest)
- * FLT = 'FLT'  # fault (0=ok, see manual for errors if not zero)
+ *
+ * - WRITE VARIABLES (CAN ALSO READ):
+ *   - ACT = 'ACT'  # act : activate (1 while activated, can be reset to clear fault status)
+ *   - GTO = 'GTO'  # gto : go to (will perform go to with the actions set in pos, for, spe)
+ *   - ATR = 'ATR'  # atr : auto-release (emergency slow move)
+ *   - ADR = 'ADR'  # adr : auto-release direction (open(1) or close(0) during auto-release)
+ *   - FOR = 'FOR'  # for : force (0-255)
+ *   - SPE = 'SPE'  # spe : speed (0-255)
+ *   - POS = 'POS'  # pos : position (0-255), 0 = open
+ * - READ VARIABLES
+ *   - STA = 'STA'  # status (0 = is reset, 1 = activating, 3 = active)
+ *   - PRE = 'PRE'  # position request (echo of last commanded position)
+ *   - OBJ = 'OBJ'  # object detection (0 = moving, 1 = outer grip, 2 = inner grip, 3 = no object at rest)
+ *   - FLT = 'FLT'  # fault (0=ok, see manual for errors if not zero)
  */
 class RobotiqGripper
 {
