@@ -309,7 +309,48 @@ class RobotiqGripper
    */
   RTDE_EXPORT eObjectStatus waitForMotionComplete();
 
- private:
+  /**
+   * Sends the appropriate command via socket to set the value of n variables,
+   * and waits for its 'ack' response.
+   * \param Vars Dictionary of variables to set (variable_name, value).
+   * \return: True on successful reception of ack, false if no ack was
+   * 		received, indicating the set may not have been effective.
+   */
+  RTDE_EXPORT bool setVars(const std::vector<std::pair<std::string, int>> Vars);
+
+  /**
+   * Sends the appropriate command via socket to set the value of a variable,
+   * and waits for its 'ack' response.
+   * \param Var: Variable to set.
+   * \param Value: Value to set for the variable.
+   * \return: True on successful reception of ack, false if no ack was received,
+   * indicating the set may not have been effective.
+   */
+  RTDE_EXPORT bool setVar(const std::string& Var, int Value);
+
+  /**
+   * Sends the appropriate command to retrieve the value of a variable from
+   * the gripper, blocking until the response is received or the socket times out.
+   * \param var: Name of the variable to retrieve.
+   * \return: Value of the variable as integer.
+   */
+  RTDE_EXPORT int getVar(const std::string& var);
+
+  /**
+   * This function enables the reading of a number of variables into
+   * a vector of values:
+   * \code
+   * std::vector<std::string> Vars{"STA", "OBJ", "ACT", "POS"};
+   * auto Result = Gripper.getVars(Vars);
+   * for (int i = 0; i < Vars.size(); ++i)
+   * {
+   *    std::cout << Vars[i] << ": " << Result[i] << std::endl;
+   * }
+   * \endcode
+   */
+  RTDE_EXPORT std::vector<int> getVars(const std::vector<std::string>& Vars);
+
+private:
   /**
    * Print all variables for debugging
    */
@@ -324,33 +365,6 @@ class RobotiqGripper
    * Send function to send data to the gripper
    */
   void send(const std::string& str);
-
-  /**
-   * Sends the appropriate command via socket to set the value of n variables,
-   * and waits for its 'ack' response.
-   * \param Vars Dictionary of variables to set (variable_name, value).
-   * \return: True on successful reception of ack, false if no ack was
-   * 		received, indicating the set may not have been effective.
-   */
-  bool setVars(const std::vector<std::pair<std::string, int>> Vars);
-
-  /**
-   * Sends the appropriate command via socket to set the value of a variable,
-   * and waits for its 'ack' response.
-   * \param Var: Variable to set.
-   * \param Value: Value to set for the variable.
-   * \return: True on successful reception of ack, false if no ack was received,
-   * indicating the set may not have been effective.
-   */
-  bool setVar(const std::string& Var, int Value);
-
-  /**
-   * Sends the appropriate command to retrieve the value of a variable from
-   * the gripper, blocking until the response is received or the socket times out.
-   * \param var: Name of the variable to retrieve.
-   * \return: Value of the variable as integer.
-   */
-  int getVar(const std::string& var);
 
   /**
    * Resets the gripper.
