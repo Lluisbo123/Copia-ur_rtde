@@ -18,13 +18,17 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
   db_client_ = std::make_shared<DashboardClient>(hostname_);
   db_client_->connect();
 
-  PolyScopeVersion polyscope_version(db_client_->polyscopeVersion());
-  if (polyscope_version.major == 5 && polyscope_version.minor > 5)
+  // Only check if in remote on real robot.
+  if (hostname_ != "localhost" && hostname_ != "127.0.0.1")
   {
-    // Check if robot is in remote control
-    if (!db_client_->isInRemoteControl())
+    PolyScopeVersion polyscope_version(db_client_->polyscopeVersion());
+    if (polyscope_version.major == 5 && polyscope_version.minor > 5)
     {
-      throw std::logic_error("ur_rtde: Please enable remote control on the robot!");
+      // Check if robot is in remote control
+      if (!db_client_->isInRemoteControl())
+      {
+        throw std::logic_error("ur_rtde: Please enable remote control on the robot!");
+      }
     }
   }
 
