@@ -1,9 +1,9 @@
 #include <ur_rtde/robotiq_gripper.h>
 
+#include <boost/algorithm/clamp.hpp>
 #include <boost/array.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/write.hpp>
-#include <boost/algorithm/clamp.hpp>
 #include <iostream>
 #include <thread>
 
@@ -34,50 +34,45 @@ static bool isAck(const std::string& data)
 }
 
 RobotiqGripper::RobotiqGripper(const std::string& Hostname, int Port, bool verbose)
-    : hostname_(Hostname), port_(Port), verbose_(verbose),
-      deadline_(io_service_)
+    : hostname_(Hostname), port_(Port), verbose_(verbose), deadline_(io_service_)
 {
-	// No deadline is required until the first socket operation is started. We
-    // set the deadline to positive infinity so that the actor takes no action
-    // until a specific deadline is set.
-    deadline_.expires_at(boost::posix_time::pos_infin);
+  // No deadline is required until the first socket operation is started. We
+  // set the deadline to positive infinity so that the actor takes no action
+  // until a specific deadline is set.
+  deadline_.expires_at(boost::posix_time::pos_infin);
 
-    // Start the persistent actor that checks for deadline expiry.
-    check_deadline();
+  // Start the persistent actor that checks for deadline expiry.
+  check_deadline();
 }
 
-void RobotiqGripper::connect(uint32_t Timeout_ms)
+void RobotiqGripper::connect(uint32_t timeout_ms)
 {
-	socket_.reset(new boost::asio::ip::tcp::socket(io_service_));
-	socket_->open(boost::asio::ip::tcp::v4());
-	boost::asio::ip::tcp::no_delay no_delay_option(true);
-	boost::asio::socket_base::reuse_address sol_reuse_option(true);
-	socket_->set_option(no_delay_option);
-	socket_->set_option(sol_reuse_option);
-	resolver_ = std::make_shared<tcp::resolver>(io_service_);
-	tcp::resolver::query query(hostname_, std::to_string(port_));
+  socket_.reset(new boost::asio::ip::tcp::socket(io_service_));
+  socket_->open(boost::asio::ip::tcp::v4());
+  boost::asio::ip::tcp::no_delay no_delay_option(true);
+  boost::asio::socket_base::reuse_address sol_reuse_option(true);
+  socket_->set_option(no_delay_option);
+  socket_->set_option(sol_reuse_option);
+  resolver_ = std::make_shared<tcp::resolver>(io_service_);
+  tcp::resolver::query query(hostname_, std::to_string(port_));
 
-	if (verbose_)
-		std::cout << "Connecting..." << std::endl;
-	deadline_.expires_from_now(boost::posix_time::milliseconds(Timeout_ms));
-	boost::system::error_code ec_ = boost::asio::error::would_block;
-	boost::asio::async_connect(*socket_, resolver_->resolve(query),
-		[&ec_](const boost::system::error_code& ec, const tcp::endpoint& endpoint)
-		{
-			ec_ = ec;
-		});
-	do
-	{
-		io_service_.run_one();
-	}
-	while (ec_ == boost::asio::error::would_block);
-	if (ec_ || !socket_->is_open())
-	{
-		throw std::runtime_error("Timeout connecting to gripper device.");
-	}
-	conn_state_ = ConnectionState::CONNECTED;
-	if (verbose_)
-		std::cout << "Connected successfully to RobotIQ server: " << hostname_ << " at " << port_ << std::endl;
+  if (verbose_)
+    std::cout << "Connecting..." << std::endl;
+  deadline_.expires_from_now(boost::posix_time::milliseconds(timeout_ms));
+  boost::system::error_code ec_ = boost::asio::error::would_block;
+  boost::asio::async_connect(*socket_, resolver_->resolve(query),
+                             [&ec_](const boost::system::error_code& ec, const tcp::endpoint& endpoint) { ec_ = ec; });
+  do
+  {
+    io_service_.run_one();
+  } while (ec_ == boost::asio::error::would_block);
+  if (ec_ || !socket_->is_open())
+  {
+    throw std::runtime_error("Timeout connecting to gripper device.");
+  }
+  conn_state_ = ConnectionState::CONNECTED;
+  if (verbose_)
+    std::cout << "Connected successfully to RobotIQ server: " << hostname_ << " at " << port_ << std::endl;
 }
 
 void RobotiqGripper::disconnect()
@@ -445,24 +440,24 @@ void RobotiqGripper::setPositionRange_mm(int MinPosition, int MaxPosition)
 
 void RobotiqGripper::check_deadline()
 {
-    // Check whether the deadline has passed. We compare the deadline against
-    // the current time since a new asynchronous operation may have moved the
-    // deadline before this actor had a chance to run.
-    if (deadline_.expires_at() <= boost::asio::deadline_timer::traits_type::now())
-    {
-      // The deadline has passed. The socket is closed so that any outstanding
-      // asynchronous operations are cancelled. This allows the blocked
-      // connect(), read_line() or write_line() functions to return.
-      boost::system::error_code ignored_ec;
-      socket_->close(ignored_ec);
+  // Check whether the deadline has passed. We compare the deadline against
+  // the current time since a new asynchronous operation may have moved the
+  // deadline before this actor had a chance to run.
+  if (deadline_.expires_at() <= boost::asio::deadline_timer::traits_type::now())
+  {
+    // The deadline has passed. The socket is closed so that any outstanding
+    // asynchronous operations are cancelled. This allows the blocked
+    // connect(), read_line() or write_line() functions to return.
+    boost::system::error_code ignored_ec;
+    socket_->close(ignored_ec);
 
-      // There is no longer an active deadline. The expiry is set to positive
-      // infinity so that the actor takes no action until a new deadline is set.
-      deadline_.expires_at(boost::posix_time::pos_infin);
-    }
+    // There is no longer an active deadline. The expiry is set to positive
+    // infinity so that the actor takes no action until a new deadline is set.
+    deadline_.expires_at(boost::posix_time::pos_infin);
+  }
 
-    // Put the actor back to sleep.
-    deadline_.async_wait(std::bind(&RobotiqGripper::check_deadline, this));
+  // Put the actor back to sleep.
+  deadline_.async_wait(std::bind(&RobotiqGripper::check_deadline, this));
 }
 
 }  // namespace ur_rtde

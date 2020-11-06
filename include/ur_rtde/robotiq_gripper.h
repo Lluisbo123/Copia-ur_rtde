@@ -147,7 +147,7 @@ class RobotiqGripper
   /**
    * Connects to the gripper server with the given millisecond timeout
    */
-  RTDE_EXPORT void connect(uint32_t Timeout_ms = 2000);
+  RTDE_EXPORT void connect(uint32_t timeout_ms = 2000);
 
   /**
    * Disconnects from the gripper server
