@@ -20,7 +20,7 @@ namespace ur_rtde
  *   - ACT = 'ACT'  # act : activate (1 while activated, can be reset to clear fault status)
  *   - GTO = 'GTO'  # gto : go to (will perform go to with the actions set in pos, for, spe)
  *   - ATR = 'ATR'  # atr : auto-release (emergency slow move)
- *   - ADR = 'ADR'  # adr : auto-release direction (open(1) or close(0) during auto-release)
+ *   - ARD = 'ARD'  # ard : auto-release direction (open(1) or close(0) during auto-release)
  *   - FOR = 'FOR'  # for : force (0-255)
  *   - SPE = 'SPE'  # spe : speed (0-255)
  *   - POS = 'POS'  # pos : position (0-255), 0 = open
