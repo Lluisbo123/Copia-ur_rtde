@@ -282,7 +282,10 @@ void RobotiqGripper::reset()
 
 void RobotiqGripper::emergencyRelease(ePostionId Direction, eMoveMode MoveMode)
 {
-  setVar("ADR", (CLOSE == Direction) ? 0 : 1);
+  setVar("ATR", 0);
+  setVar("ARD", (CLOSE == Direction) ? 0 : 1);
+  setVar("ACT", 1);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   setVar("ATR", 1);
 
   // wait until the gripper acknowledges that it started auto release
