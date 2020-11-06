@@ -188,6 +188,8 @@ PYBIND11_MODULE(rtde_receive, m)
            py::call_guard<py::gil_scoped_release>())
       .def("getSafetyMode", &RTDEReceiveInterface::getSafetyMode, DOC(ur_rtde, RTDEReceiveInterface, getSafetyMode),
            py::call_guard<py::gil_scoped_release>())
+      .def("getSafetyStatusBits", &RTDEReceiveInterface::getSafetyStatusBits, DOC(ur_rtde, RTDEReceiveInterface, getSafetyStatusBits),
+           py::call_guard<py::gil_scoped_release>())
       .def("getActualToolAccelerometer", &RTDEReceiveInterface::getActualToolAccelerometer,
            DOC(ur_rtde, RTDEReceiveInterface, getActualToolAccelerometer), py::call_guard<py::gil_scoped_release>())
       .def("getSpeedScaling", &RTDEReceiveInterface::getSpeedScaling,
