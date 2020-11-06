@@ -5,6 +5,7 @@
 #include <ur_rtde/rtde_export.h>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/deadline_timer.hpp>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -144,9 +145,9 @@ class RobotiqGripper
   RTDE_EXPORT RobotiqGripper(const std::string& Hostname, int Port = 63352, bool verbose = false);
 
   /**
-   * Connects to the gripper server
+   * Connects to the gripper server with the given millisecond timeout
    */
-  RTDE_EXPORT void connect();
+  RTDE_EXPORT void connect(uint32_t timeout_ms = 2000);
 
   /**
    * Disconnects from the gripper server
@@ -382,14 +383,20 @@ class RobotiqGripper
    */
   int getCurrentDevicePosition();
 
+  /**
+   * For socket timeouts
+   */
+  void check_deadline();
+
  private:
   std::string hostname_;
   int port_;
   bool verbose_;
   ConnectionState conn_state_;
-  std::shared_ptr<boost::asio::io_service> io_service_;
+  boost::asio::io_service io_service_;
   std::shared_ptr<boost::asio::ip::tcp::socket> socket_;
   std::shared_ptr<boost::asio::ip::tcp::resolver> resolver_;
+  boost::asio::deadline_timer deadline_;
   int min_position_ = 0;
   int max_position_ = 255;
   int min_position_mm_ = 0;
