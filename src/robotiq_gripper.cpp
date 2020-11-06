@@ -4,6 +4,7 @@
 #include <boost/array.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/write.hpp>
+#include <boost/bind.hpp>
 #include <iostream>
 #include <thread>
 
@@ -460,7 +461,7 @@ void RobotiqGripper::check_deadline()
   }
 
   // Put the actor back to sleep.
-  deadline_.async_wait(std::bind(&RobotiqGripper::check_deadline, this));
+  deadline_.async_wait(boost::bind(&RobotiqGripper::check_deadline, this));
 }
 
 }  // namespace ur_rtde
