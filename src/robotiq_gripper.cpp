@@ -5,10 +5,14 @@
 #include <boost/asio/connect.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/bind.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <iostream>
 #include <thread>
 
 using boost::asio::ip::tcp;
+using boost::lambda::var;
+using boost::lambda::_1;
 
 namespace ur_rtde
 {
@@ -60,14 +64,13 @@ void RobotiqGripper::connect(uint32_t timeout_ms)
   if (verbose_)
     std::cout << "Connecting..." << std::endl;
   deadline_.expires_from_now(boost::posix_time::milliseconds(timeout_ms));
-  boost::system::error_code ec_ = boost::asio::error::would_block;
-  boost::asio::async_connect(*socket_, resolver_->resolve(query),
-                             [&ec_](const boost::system::error_code& ec, const tcp::endpoint& endpoint) { ec_ = ec; });
+  boost::system::error_code ec = boost::asio::error::would_block;
+  boost::asio::async_connect(*socket_, resolver_->resolve(query), var(ec) = boost::lambda::_1);
   do
   {
     io_service_.run_one();
-  } while (ec_ == boost::asio::error::would_block);
-  if (ec_ || !socket_->is_open())
+  } while (ec == boost::asio::error::would_block);
+  if (ec || !socket_->is_open())
   {
     throw std::runtime_error("Timeout connecting to gripper device.");
   }
