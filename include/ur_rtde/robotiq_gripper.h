@@ -105,8 +105,8 @@ class RobotiqGripper
    */
   enum ePostionId
   {
-    OPEN,
-    CLOSE
+    OPEN = 0,
+    CLOSE = 1,
   };
 
   /**

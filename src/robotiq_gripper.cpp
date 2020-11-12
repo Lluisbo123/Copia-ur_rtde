@@ -314,13 +314,15 @@ void RobotiqGripper::reset()
 void RobotiqGripper::emergencyRelease(ePostionId Direction, eMoveMode MoveMode)
 {
   setVar("ATR", 0);
-  setVar("ARD", (CLOSE == Direction) ? 0 : 1);
+  setVar("ARD", Direction);
   setVar("ACT", 1);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   setVar("ATR", 1);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   // wait until the gripper acknowledges that it started auto release
-  while (faultStatus() != FAULT_EMCY_RELEASE_ACTIVE)
+  // if it is already at the requested position, then the move is finished
+  while (faultStatus() != FAULT_EMCY_RELEASE_ACTIVE && faultStatus() != FAULT_EMCY_RELEASE_FINISHED)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
