@@ -348,7 +348,10 @@ void RTDEControlInterface::receiveCallback()
     try
     {
       rtde_->receiveData(robot_state_);
+      // temporary hack to fix synchronization problems on windows.
+#ifndef _WIN32
       std::this_thread::sleep_for(std::chrono::microseconds(100));
+#endif
     }
     catch (std::exception &e)
     {
