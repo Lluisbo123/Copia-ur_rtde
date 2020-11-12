@@ -1324,6 +1324,50 @@ std::vector<double> RTDEControlInterface::getTCPOffset()
   }
 }
 
+std::vector<double> RTDEControlInterface::getForwardKinematics(const std::vector<double> &q,
+                                                               const std::vector<double> &tcp_offset)
+{
+  RTDE::RobotCommand robot_cmd;
+  if (q.empty() && tcp_offset.empty())
+  {
+    robot_cmd.type_ = RTDE::RobotCommand::Type::GET_FORWARD_KINEMATICS_DEFAULT;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  }
+  else if (tcp_offset.empty() && !q.empty())
+  {
+    robot_cmd.type_ = RTDE::RobotCommand::Type::GET_FORWARD_KINEMATICS_ARGS;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+    robot_cmd.val_ = q;
+  }
+  else
+  {
+    robot_cmd.type_ = RTDE::RobotCommand::Type::GET_FORWARD_KINEMATICS_ARGS;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_13;
+    robot_cmd.val_ = q;
+    robot_cmd.val_.insert(robot_cmd.val_.end(), tcp_offset.begin(), tcp_offset.end());
+  }
+
+  if (sendCommand(robot_cmd))
+  {
+    if (robot_state_ != nullptr)
+    {
+      std::vector<double> forward_kin = {
+          robot_state_->getOutput_double_register_0(), robot_state_->getOutput_double_register_1(),
+          robot_state_->getOutput_double_register_2(), robot_state_->getOutput_double_register_3(),
+          robot_state_->getOutput_double_register_4(), robot_state_->getOutput_double_register_5()};
+      return forward_kin;
+    }
+    else
+    {
+      throw std::logic_error("Please initialize the RobotState, before using it!");
+    }
+  }
+  else
+  {
+    return std::vector<double>();
+  }
+}
+
 bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 {
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
@@ -1448,5 +1492,4 @@ void RTDEControlInterface::sendClearCommand()
   clear_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
   rtde_->send(clear_cmd);
 }
-
 }  // namespace ur_rtde

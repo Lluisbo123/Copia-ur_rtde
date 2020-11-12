@@ -85,6 +85,8 @@ class RTDE
       GET_TCP_OFFSET = 40,
       JOG_START = 41,
       JOG_STOP = 42,
+      GET_FORWARD_KINEMATICS_DEFAULT = 43,
+      GET_FORWARD_KINEMATICS_ARGS = 44,
       STOP_SCRIPT = 255
     };
 

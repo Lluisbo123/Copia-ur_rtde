@@ -129,6 +129,8 @@ PYBIND11_MODULE(rtde_control, m)
       .def("getJointTorques", &RTDEControlInterface::getJointTorques,
            DOC(ur_rtde, RTDEControlInterface, getJointTorques), py::call_guard<py::gil_scoped_release>())
       .def("getTCPOffset", &RTDEControlInterface::getTCPOffset, py::call_guard<py::gil_scoped_release>())
+      .def("getForwardKinematics", &RTDEControlInterface::getForwardKinematics, py::arg("q") = std::vector<double>(),
+          py::arg("tcp_offset") = std::vector<double>(), py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control

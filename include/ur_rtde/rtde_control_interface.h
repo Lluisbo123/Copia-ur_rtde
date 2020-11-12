@@ -549,6 +549,24 @@ class RTDEControlInterface
     */
   RTDE_EXPORT std::vector<double> getTCPOffset();
 
+
+  /**
+    * @brief Calculate the forward kinematic transformation (joint space -> tool
+    * space) using the calibrated robot kinematics. If no joint position vector
+    * is provided the current joint angles of the robot arm will be used. If no
+    * tcp is provided the currently active tcp of the controller will be used.
+    *
+    * NOTICE! If you specify the tcp_offset you must also specify the q.
+    *
+    * @param q joint position vector (Optional)
+    * @param tcp_offset tcp offset pose (Optional)
+    * @returns the forward kinematic transformation as a pose
+    */
+  RTDE_EXPORT std::vector<double> getForwardKinematics(const std::vector<double>& q = {},
+                                                       const std::vector<double>& tcp_offset = {});
+
+
+
  private:
   bool setupRecipes(const double &frequency);
 
