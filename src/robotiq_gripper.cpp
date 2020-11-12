@@ -205,6 +205,33 @@ int RobotiqGripper::getVar(const std::string& var)
   return value;
 }
 
+
+std::vector<int> RobotiqGripper::getVars(const std::vector<std::string>& Vars)
+{
+  std::string cmd;
+  for (auto var : Vars)
+  {
+	  cmd += "GET ";
+	  cmd += var;
+	  cmd += "\n";
+  }
+
+  std::string rx_string;
+  {
+    const std::lock_guard<std::mutex> lock(mutex_);
+    send(cmd);
+    rx_string = receive();
+  }
+  auto data = split(rx_string, '\n');
+  std::vector<int> Result(data.size());
+  for (size_t i = 0; i < data.size(); ++i)
+  {
+	  auto value = split(data[i]);
+	  Result[i] = std::stoi(value[1]);
+  }
+  return Result;
+}
+
 bool RobotiqGripper::setVars(const std::vector<std::pair<std::string, int>> Vars)
 {
   std::string cmd = "SET";
