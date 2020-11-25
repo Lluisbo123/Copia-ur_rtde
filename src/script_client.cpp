@@ -8,6 +8,7 @@
 #include <iostream>
 #include <streambuf>
 #include <string>
+#include <algorithm>
 
 #include "ur_rtde/rtde_control_script.h"
 
@@ -128,16 +129,8 @@ bool ScriptClient::sendScript()
     ur_script = UR_SCRIPT;
   }
 
-  // search injection hook
-  std::size_t n = ur_script.find("# Injection");
-  if (n != std::string::npos)
-  {
-	  std::cout << "# Injection found at: " << n << std::endl;
-  }
-
-
   // Remove lines not fitting for the specific version of the controller
-  n = ur_script.find("$");
+  auto n = ur_script.find("$");
 
   while (n != std::string::npos)
   {
@@ -169,6 +162,24 @@ bool ScriptClient::sendScript()
     }
 
     n = ur_script.find("$");
+  }
+
+  //this->setScriptInjection("# inject movel path\n", "textmsg(\"injected code\")\n");
+
+  for (const auto& script_injection : script_injections_)
+  {
+	  n = ur_script.find(script_injection.search_string);
+	  if (std::string::npos == n)
+	  {
+		  std::cout << "script_injection [" << script_injection.search_string << "] not found in script" << std::endl;
+		  continue;
+	  }
+	  else
+	  {
+		  std::cout << "script_injection [" << script_injection.search_string << "] found at pos " << n << std::endl;
+		  ur_script.insert(n + script_injection.search_string.length(), script_injection.inject_string);
+		  std::cout << ur_script.substr(n - 100, n + script_injection.search_string.length() + script_injection.inject_string.length() + 100) << std::endl;
+	  }
   }
 
   if (isConnected() && !ur_script.empty())
@@ -204,6 +215,25 @@ bool ScriptClient::sendScript(const std::string &file_name)
   }
 
   return true;
+}
+
+
+void ScriptClient::setScriptInjection(const std::string& search_string, const std::string& inject_string)
+{
+	auto it = std::find_if(script_injections_.begin(), script_injections_.end(),[&](const ScriptInjectItem& val)
+		{
+			return search_string == val.search_string;
+		});
+	if (it != script_injections_.end())
+	{
+		std::cout << "set script injection for [" << search_string << "]" << std::endl;
+		it->inject_string = inject_string;
+	}
+	else
+	{
+		std::cout << "add script injection for [" << search_string << "]" << std::endl;
+		script_injections_.push_back({search_string, inject_string});
+	}
 }
 
 }  // namespace ur_rtde

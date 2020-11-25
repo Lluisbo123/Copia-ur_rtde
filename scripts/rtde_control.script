@@ -262,6 +262,7 @@ def rtde_control():
 
     def process_cmd():
         cmd = read_input_integer_register(0)
+        textmsg("cmd: ", cmd)
 
         if cmd == 1:
             textmsg("movej")
@@ -700,6 +701,7 @@ $V38        protective_stop()
         elif cmd == 45:
               textmsg("movel_path")
               async = read_input_integer_register(1)
+              textmsg("async: ", async)
               stop_async_move()
               if async == 1:
                   enter_critical
@@ -725,7 +727,7 @@ $V38        protective_stop()
     # RTDE Control script - Main loop
     #
 
-    textmsg("RTDE Control Script Loaded (25.11.2020-11:52)")
+    textmsg("RTDE Control Script Loaded (25.11.2020-13:32)")
 
     # Initialize gain and damping for force mode to a more stable default
 $V50force_mode_set_gain_scaling(0.5)

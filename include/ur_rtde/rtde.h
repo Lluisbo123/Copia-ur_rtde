@@ -87,6 +87,7 @@ class RTDE
       JOG_STOP = 42,
       GET_FORWARD_KINEMATICS_DEFAULT = 43,
       GET_FORWARD_KINEMATICS_ARGS = 44,
+      MOVEL_PATH = 45,
       STOP_SCRIPT = 255
     };
 
@@ -107,6 +108,7 @@ class RTDE
       RECIPE_13 = 13,
       RECIPE_14 = 14,
       RECIPE_15 = 15,
+      RECIPE_16 = 16,
     };
 
     RTDE_EXPORT RobotCommand() : type_(NO_CMD), recipe_id_(1)

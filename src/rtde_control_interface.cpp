@@ -337,6 +337,10 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
       "input_double_register_5", "input_double_register_6"};
   rtde_->sendInputSetup(jog_input);
 
+  // Recipe 16
+  std::vector<std::string> async_path_input = {"input_int_register_0", "input_int_register_1"};
+  rtde_->sendInputSetup(async_path_input);
+
   return true;
 }
 
@@ -536,37 +540,49 @@ void RTDEControlInterface::verifyValueIsWithin(const double &value, const double
   }
 }
 
+
+std::string RTDEControlInterface::buildPathScriptCode(const std::vector<std::vector<double>> &path, const std::string &cmd)
+{
+	std::stringstream ss;
+	for (const auto &pose : path)
+	{
+		if (cmd == "movej(")
+		{
+			verifyValueIsWithin(pose[6], UR_JOINT_VELOCITY_MIN,
+			    UR_JOINT_VELOCITY_MAX);
+			verifyValueIsWithin(pose[7], UR_JOINT_ACCELERATION_MIN,
+			    UR_JOINT_ACCELERATION_MAX);
+			verifyValueIsWithin(pose[8], UR_BLEND_MIN, UR_BLEND_MAX);
+		}
+		else if (cmd == "movel(p")
+		{
+			verifyValueIsWithin(pose[6], UR_TOOL_VELOCITY_MIN,
+			    UR_TOOL_VELOCITY_MAX);
+			verifyValueIsWithin(pose[7], UR_TOOL_ACCELERATION_MIN,
+			    UR_TOOL_ACCELERATION_MAX);
+			verifyValueIsWithin(pose[8], UR_BLEND_MIN, UR_BLEND_MAX);
+		}
+		ss << "\t" << cmd << "[" << pose[0] << "," << pose[1] << "," << pose[2]
+		    << "," << pose[3] << "," << pose[4] << "," << pose[5] << "],"
+		    << "a=" << pose[7] << ",v=" << pose[6] << ",r=" << pose[8] << ")\n";
+	}
+	return ss.str();
+}
+
+
 std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector<double>> &path, const std::string &cmd)
 {
   std::string cmd_str;
-  std::stringstream ss;
   cmd_str += "def motions():\n";
   cmd_str += "\twrite_output_integer_register(0, 1)\n";
-  for (const auto &pose : path)
-  {
-    if (cmd == "movej(")
-    {
-      verifyValueIsWithin(pose[6], UR_JOINT_VELOCITY_MIN, UR_JOINT_VELOCITY_MAX);
-      verifyValueIsWithin(pose[7], UR_JOINT_ACCELERATION_MIN, UR_JOINT_ACCELERATION_MAX);
-      verifyValueIsWithin(pose[8], UR_BLEND_MIN, UR_BLEND_MAX);
-    }
-    else if (cmd == "movel(p")
-    {
-      verifyValueIsWithin(pose[6], UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX);
-      verifyValueIsWithin(pose[7], UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
-      verifyValueIsWithin(pose[8], UR_BLEND_MIN, UR_BLEND_MAX);
-    }
-    ss << "\t" << cmd << "[" << pose[0] << "," << pose[1] << "," << pose[2] << "," << pose[3] << "," << pose[4] << ","
-       << pose[5] << "],"
-       << "a=" << pose[7] << ",v=" << pose[6] << ",r=" << pose[8] << ")\n";
-  }
-  cmd_str += ss.str();
+  cmd_str += buildPathScriptCode(path, cmd);
 
   // Signal when motions are finished
   cmd_str += "\twrite_output_integer_register(0, 2)\n";
   cmd_str += "end\n";
   return cmd_str;
 }
+
 
 bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path)
 {
@@ -639,38 +655,25 @@ bool RTDEControlInterface::moveJ_IK(const std::vector<double> &transform, double
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path)
+bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path, bool async)
 {
-  // First stop the running RTDE control script
+  // This is the first step because it may throw an exception
+  auto PathScript = buildPathScriptCode(path, "movel(p");
+  // stop the running RTDE control script
   stopScript();
-
-  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-  // Send motions
-  script_client_->sendScriptCommand(prepareCmdScript(path, "movel(p"));
-
-  while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
-  {
-    // Wait until the controller is done with command or timeout
-    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-    if (duration > UR_PATH_EXECUTION_TIMEOUT)
-    {
-      sendClearCommand();
-      return false;
-    }
-
-    if (isProtectiveStopped() || isEmergencyStopped())
-    {
-      sendClearCommand();
-      return false;
-    }
-  }
-
-  sendClearCommand();
-
+  script_client_->setScriptInjection("# inject movel path\n", PathScript);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
-  return true;
+
+  // Now send the command
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEL_PATH;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
+  if (async)
+    robot_cmd.async_ = 1;
+  else
+    robot_cmd.async_ = 0;
+  return sendCommand(robot_cmd);
 }
 
 bool RTDEControlInterface::moveL(const std::vector<double> &transform, double speed, double acceleration, bool async)

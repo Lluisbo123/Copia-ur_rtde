@@ -205,7 +205,7 @@ class RTDEControlInterface
     * @brief Move to each pose specified in a path
     * @param path with tool poses that includes acceleration, speed and blend for each position
     */
-  RTDE_EXPORT bool moveL(const std::vector<std::vector<double>> &path);
+  RTDE_EXPORT bool moveL(const std::vector<std::vector<double>> &path, bool async=false);
 
   /**
     * @brief Move to position (linear in tool-space)
@@ -595,6 +595,8 @@ class RTDEControlInterface
   void verifyValueIsWithin(const double &value, const double &min, const double &max);
 
   std::string prepareCmdScript(const std::vector<std::vector<double>> &path, const std::string &cmd);
+
+  std::string buildPathScriptCode(const std::vector<std::vector<double>> &path, const std::string &cmd);
 
   void receiveCallback();
 

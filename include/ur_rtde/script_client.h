@@ -7,9 +7,19 @@
 #include <boost/asio/io_service.hpp>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace ur_rtde
 {
+
+struct ScriptInjectItem
+{
+	std::string search_string;
+	std::string inject_string;
+	ScriptInjectItem(const std::string& search, const std::string& inject)
+	: search_string(search), inject_string(inject) {}
+};
+
 class ScriptClient
 {
  public:
@@ -50,6 +60,8 @@ class ScriptClient
   RTDE_EXPORT bool sendScript(const std::string &file_name);
   RTDE_EXPORT bool sendScriptCommand(const std::string &cmd_str);
 
+  RTDE_EXPORT void setScriptInjection(const std::string& search_string, const std::string& inject_string);
+
  private:
   std::string hostname_;
   uint32_t major_control_version_;
@@ -61,6 +73,7 @@ class ScriptClient
   std::shared_ptr<boost::asio::io_service> io_service_;
   std::shared_ptr<boost::asio::ip::tcp::socket> socket_;
   std::shared_ptr<boost::asio::ip::tcp::resolver> resolver_;
+  std::vector<ScriptInjectItem> script_injections_;
 };
 
 }  // namespace ur_rtde

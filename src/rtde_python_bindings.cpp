@@ -48,8 +48,8 @@ PYBIND11_MODULE(rtde_control, m)
       .def("moveJ_IK", &RTDEControlInterface::moveJ_IK, DOC(ur_rtde, RTDEControlInterface, moveJ_IK), py::arg("pose"),
            py::arg("speed") = 1.05, py::arg("acceleration") = 1.4, py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
       .def("moveL",
-           (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveL,
-           DOC(ur_rtde, RTDEControlInterface, moveL_2), py::call_guard<py::gil_scoped_release>())
+           (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path, bool async)) & RTDEControlInterface::moveL,
+           DOC(ur_rtde, RTDEControlInterface, moveL_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
       .def("moveL",
            (bool (RTDEControlInterface::*)(const std::vector<double> &pose, double speed, double acceleration, bool async)) &
                RTDEControlInterface::moveL,
