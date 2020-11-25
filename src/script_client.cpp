@@ -128,9 +128,16 @@ bool ScriptClient::sendScript()
     ur_script = UR_SCRIPT;
   }
 
+  // search injection hook
+  std::size_t n = ur_script.find("# Injection");
+  if (n != std::string::npos)
+  {
+	  std::cout << "# Injection found at: " << n << std::endl;
+  }
+
 
   // Remove lines not fitting for the specific version of the controller
-  std::size_t n = ur_script.find("$");
+  n = ur_script.find("$");
 
   while (n != std::string::npos)
   {
