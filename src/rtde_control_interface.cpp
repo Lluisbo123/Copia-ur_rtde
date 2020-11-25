@@ -570,53 +570,23 @@ std::string RTDEControlInterface::buildPathScriptCode(const std::vector<std::vec
 }
 
 
-std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector<double>> &path, const std::string &cmd)
+bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path, bool async)
 {
-  std::string cmd_str;
-  cmd_str += "def motions():\n";
-  cmd_str += "\twrite_output_integer_register(0, 1)\n";
-  cmd_str += buildPathScriptCode(path, cmd);
-
-  // Signal when motions are finished
-  cmd_str += "\twrite_output_integer_register(0, 2)\n";
-  cmd_str += "end\n";
-  return cmd_str;
-}
-
-
-bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path)
-{
-  // First stop the running RTDE control script
+  // This is the first step because it may throw an exception
+  auto PathScript = buildPathScriptCode(path, "movej(");
+  // stop the running RTDE control script
   stopScript();
-
-  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-
-  // Send motions
-  script_client_->sendScriptCommand(prepareCmdScript(path, "movej("));
-
-  while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
-  {
-    // Wait until the controller is done with command
-    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-    if (duration > UR_PATH_EXECUTION_TIMEOUT)
-    {
-      sendClearCommand();
-      return false;
-    }
-
-    if (isProtectiveStopped() || isEmergencyStopped())
-    {
-      sendClearCommand();
-      return false;
-    }
-  }
-
-  sendClearCommand();
-
+  // now inject the movej path into the main UR script
+  script_client_->setScriptInjection("# inject movej path\n", PathScript);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
-  return true;
+
+  // Now send the command
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEJ_PATH;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
+  robot_cmd.async_ = async ? 1 : 0;
+  return sendCommand(robot_cmd);
 }
 
 bool RTDEControlInterface::moveJ(const std::vector<double> &q, double speed, double acceleration, bool async)
@@ -661,6 +631,7 @@ bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path, b
   auto PathScript = buildPathScriptCode(path, "movel(p");
   // stop the running RTDE control script
   stopScript();
+  // now inject the movel path into the main UR script
   script_client_->setScriptInjection("# inject movel path\n", PathScript);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
@@ -669,10 +640,7 @@ bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path, b
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEL_PATH;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
-  if (async)
-    robot_cmd.async_ = 1;
-  else
-    robot_cmd.async_ = 0;
+  robot_cmd.async_ = async ? 1 : 0;
   return sendCommand(robot_cmd);
 }
 

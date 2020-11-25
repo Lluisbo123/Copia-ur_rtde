@@ -38,8 +38,8 @@ PYBIND11_MODULE(rtde_control, m)
       .def("reuploadScript", &RTDEControlInterface::reuploadScript, DOC(ur_rtde, RTDEControlInterface, reuploadScript),
            py::call_guard<py::gil_scoped_release>())
       .def("moveJ",
-           (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path)) & RTDEControlInterface::moveJ,
-           DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::call_guard<py::gil_scoped_release>())
+           (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path, bool async)) & RTDEControlInterface::moveJ,
+           DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
       .def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration, bool async)) &
                RTDEControlInterface::moveJ,

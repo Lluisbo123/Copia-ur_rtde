@@ -164,20 +164,23 @@ bool ScriptClient::sendScript()
     n = ur_script.find("$");
   }
 
-  //this->setScriptInjection("# inject movel path\n", "textmsg(\"injected code\")\n");
-
+  // Now scan the script for injection points where we can inject additional
+  // script code
   for (const auto& script_injection : script_injections_)
   {
 	  n = ur_script.find(script_injection.search_string);
 	  if (std::string::npos == n)
 	  {
-		  std::cout << "script_injection [" << script_injection.search_string << "] not found in script" << std::endl;
+		  if (verbose_)
+			  std::cout << "script_injection [" << script_injection.search_string << "] not found in script" << std::endl;
 		  continue;
 	  }
-	  else
+
+	  // Now inject custom script code into the script
+	  ur_script.insert(n + script_injection.search_string.length(), script_injection.inject_string);
+	  if (verbose_)
 	  {
 		  std::cout << "script_injection [" << script_injection.search_string << "] found at pos " << n << std::endl;
-		  ur_script.insert(n + script_injection.search_string.length(), script_injection.inject_string);
 		  std::cout << ur_script.substr(n - 100, n + script_injection.search_string.length() + script_injection.inject_string.length() + 100) << std::endl;
 	  }
   }
@@ -226,12 +229,10 @@ void ScriptClient::setScriptInjection(const std::string& search_string, const st
 		});
 	if (it != script_injections_.end())
 	{
-		std::cout << "set script injection for [" << search_string << "]" << std::endl;
 		it->inject_string = inject_string;
 	}
 	else
 	{
-		std::cout << "add script injection for [" << search_string << "]" << std::endl;
 		script_injections_.push_back({search_string, inject_string});
 	}
 }

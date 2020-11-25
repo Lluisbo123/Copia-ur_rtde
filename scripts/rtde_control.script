@@ -43,9 +43,15 @@ def rtde_control():
     global jog_state = 0 # 0 - inactive, 1 - new setpoint, 2 - jogging, 3 - stopping (decelerating)
 
     def exec_movel_path():
-      textmsg("movel path with blend")
+      textmsg("exec_movel_path")
       # inject movel path
     end
+
+    def exec_movej_path():
+      textmsg("exec_movej_path")
+      # inject movej path
+    end
+
 
     thread move_thread():
         textmsg("move_thread started")
@@ -58,6 +64,8 @@ def rtde_control():
                 movel(move_q, a=move_acc, v=move_vel)
             elif move_type == 4:
                 exec_movel_path()
+            elif move_type == 5:
+                exec_movej_path()
             end
             enter_critical
             move_thrd = 0
@@ -262,7 +270,6 @@ def rtde_control():
 
     def process_cmd():
         cmd = read_input_integer_register(0)
-        textmsg("cmd: ", cmd)
 
         if cmd == 1:
             textmsg("movej")
@@ -705,12 +712,26 @@ $V38        protective_stop()
               stop_async_move()
               if async == 1:
                   enter_critical
-                  move_type = 4
+                  move_type = 4 # movel_path
                   exit_critical
                   move_thrd = run move_thread()
               else:
                   exec_movel_path()
                   textmsg("movel_path done")
+              end
+        elif cmd == 46:
+              textmsg("movej_path")
+              async = read_input_integer_register(1)
+              textmsg("async: ", async)
+              stop_async_move()
+              if async == 1:
+                  enter_critical
+                  move_type = 5 # movej_path
+                  exit_critical
+                  move_thrd = run move_thread()
+              else:
+                  exec_movej_path()
+                  textmsg("movej_path done")
               end
         elif cmd == 255:
             textmsg("Received stop script!")
