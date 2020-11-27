@@ -238,10 +238,9 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   // Setup input recipes
   // Recipe 1
   std::vector<std::string> async_setp_input = {
-      "input_int_register_0",    "input_double_register_0", "input_double_register_1",
-      "input_double_register_2", "input_double_register_3", "input_double_register_4",
-      "input_double_register_5", "input_double_register_6", "input_double_register_7",
-      "input_int_register_1"};
+      "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
+      "input_double_register_7", "input_int_register_1"};
   rtde_->sendInputSetup(async_setp_input);
 
   // Recipe 2
@@ -316,11 +315,10 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
 
   // Recipe 13
   std::vector<std::string> pose_trans_input = {
-      "input_int_register_0",
-      "input_double_register_0", "input_double_register_1", "input_double_register_2",
-      "input_double_register_3", "input_double_register_4", "input_double_register_5", 
-      "input_double_register_6", "input_double_register_7", "input_double_register_8",  
-      "input_double_register_9", "input_double_register_10", "input_double_register_11"};
+      "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
+      "input_double_register_7", "input_double_register_8", "input_double_register_9", "input_double_register_10",
+      "input_double_register_11"};
   rtde_->sendInputSetup(pose_trans_input);
 
   // Recipe 14
@@ -331,11 +329,14 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   rtde_->sendInputSetup(setp_input);
 
   // Recipe 15
-  std::vector<std::string> jog_input = {
-      "input_int_register_0",    "input_double_register_0", "input_double_register_1",
-      "input_double_register_2", "input_double_register_3", "input_double_register_4",
-      "input_double_register_5", "input_double_register_6"};
+  std::vector<std::string> jog_input = {"input_int_register_0",    "input_double_register_0", "input_double_register_1",
+                                        "input_double_register_2", "input_double_register_3", "input_double_register_4",
+                                        "input_double_register_5", "input_double_register_6"};
   rtde_->sendInputSetup(jog_input);
+
+  // Recipe 16
+  std::vector<std::string> async_path_input = {"input_int_register_0", "input_int_register_1"};
+  rtde_->sendInputSetup(async_path_input);
 
   return true;
 }
@@ -422,7 +423,7 @@ bool RTDEControlInterface::reuploadScript()
   if (script_client_->sendScript())
   {
     db_client_->popup("The RTDE Control script has been re-uploaded due to an error.");
-	if (verbose_)
+    if (verbose_)
       std::cout << "The RTDE Control script has been re-uploaded." << std::endl;
     return true;
   }
@@ -451,7 +452,6 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
 
   return sendCustomScript(cmd_str);
 }
-
 
 bool RTDEControlInterface::sendCustomScript(const std::string &script)
 {
@@ -482,7 +482,6 @@ bool RTDEControlInterface::sendCustomScript(const std::string &script)
   return true;
 }
 
-
 bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
 {
   // First stop the running RTDE control script
@@ -511,11 +510,10 @@ bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
   return true;
 }
 
-
 RTDE_EXPORT void RTDEControlInterface::setCustomScriptFile(const std::string &file_path)
 {
-	script_client_->setScriptFile(file_path);
-	reuploadScript();
+  script_client_->setScriptFile(file_path);
+  reuploadScript();
 }
 
 void RTDEControlInterface::verifyValueIsWithin(const double &value, const double &min, const double &max)
@@ -536,12 +534,10 @@ void RTDEControlInterface::verifyValueIsWithin(const double &value, const double
   }
 }
 
-std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector<double>> &path, const std::string &cmd)
+std::string RTDEControlInterface::buildPathScriptCode(const std::vector<std::vector<double>> &path,
+                                                      const std::string &cmd)
 {
-  std::string cmd_str;
   std::stringstream ss;
-  cmd_str += "def motions():\n";
-  cmd_str += "\twrite_output_integer_register(0, 1)\n";
   for (const auto &pose : path)
   {
     if (cmd == "movej(")
@@ -560,47 +556,26 @@ std::string RTDEControlInterface::prepareCmdScript(const std::vector<std::vector
        << pose[5] << "],"
        << "a=" << pose[7] << ",v=" << pose[6] << ",r=" << pose[8] << ")\n";
   }
-  cmd_str += ss.str();
-
-  // Signal when motions are finished
-  cmd_str += "\twrite_output_integer_register(0, 2)\n";
-  cmd_str += "end\n";
-  return cmd_str;
+  return ss.str();
 }
 
-bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path)
+bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path, bool async)
 {
-  // First stop the running RTDE control script
+  // This is the first step because it may throw an exception
+  auto PathScript = buildPathScriptCode(path, "movej(");
+  // stop the running RTDE control script
   stopScript();
-
-  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-
-  // Send motions
-  script_client_->sendScriptCommand(prepareCmdScript(path, "movej("));
-
-  while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
-  {
-    // Wait until the controller is done with command
-    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-    if (duration > UR_PATH_EXECUTION_TIMEOUT)
-    {
-      sendClearCommand();
-      return false;
-    }
-
-    if (isProtectiveStopped() || isEmergencyStopped())
-    {
-      sendClearCommand();
-      return false;
-    }
-  }
-
-  sendClearCommand();
-
+  // now inject the movej path into the main UR script
+  script_client_->setScriptInjection("# inject movej path\n", PathScript);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
-  return true;
+
+  // Now send the command
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEJ_PATH;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
+  robot_cmd.async_ = async ? 1 : 0;
+  return sendCommand(robot_cmd);
 }
 
 bool RTDEControlInterface::moveJ(const std::vector<double> &q, double speed, double acceleration, bool async)
@@ -639,38 +614,23 @@ bool RTDEControlInterface::moveJ_IK(const std::vector<double> &transform, double
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path)
+bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path, bool async)
 {
-  // First stop the running RTDE control script
+  // This is the first step because it may throw an exception
+  auto PathScript = buildPathScriptCode(path, "movel(p");
+  // stop the running RTDE control script
   stopScript();
-
-  std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-  // Send motions
-  script_client_->sendScriptCommand(prepareCmdScript(path, "movel(p"));
-
-  while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
-  {
-    // Wait until the controller is done with command or timeout
-    std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-    if (duration > UR_PATH_EXECUTION_TIMEOUT)
-    {
-      sendClearCommand();
-      return false;
-    }
-
-    if (isProtectiveStopped() || isEmergencyStopped())
-    {
-      sendClearCommand();
-      return false;
-    }
-  }
-
-  sendClearCommand();
-
+  // now inject the movel path into the main UR script
+  script_client_->setScriptInjection("# inject movel path\n", PathScript);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
-  return true;
+
+  // Now send the command
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEL_PATH;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
+  robot_cmd.async_ = async ? 1 : 0;
+  return sendCommand(robot_cmd);
 }
 
 bool RTDEControlInterface::moveL(const std::vector<double> &transform, double speed, double acceleration, bool async)
@@ -691,7 +651,6 @@ bool RTDEControlInterface::moveL(const std::vector<double> &transform, double sp
   return sendCommand(robot_cmd);
 }
 
-
 bool RTDEControlInterface::jogStart(const std::vector<double> &speeds, int feature)
 {
   RTDE::RobotCommand robot_cmd;
@@ -702,7 +661,6 @@ bool RTDEControlInterface::jogStart(const std::vector<double> &speeds, int featu
   return sendCommand(robot_cmd);
 }
 
-
 bool RTDEControlInterface::jogStop()
 {
   RTDE::RobotCommand robot_cmd;
@@ -710,7 +668,6 @@ bool RTDEControlInterface::jogStop()
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
   return sendCommand(robot_cmd);
 }
-
 
 bool RTDEControlInterface::moveL_FK(const std::vector<double> &q, double speed, double acceleration, bool async)
 {
@@ -1145,7 +1102,8 @@ std::vector<double> RTDEControlInterface::getInverseKinematics(const std::vector
   }
 }
 
-std::vector<double> RTDEControlInterface::poseTrans(const std::vector<double> &p_from, const std::vector<double> &p_from_to)
+std::vector<double> RTDEControlInterface::poseTrans(const std::vector<double> &p_from,
+                                                    const std::vector<double> &p_from_to)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::POSE_TRANS;

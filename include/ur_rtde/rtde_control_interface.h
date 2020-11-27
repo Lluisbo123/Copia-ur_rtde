@@ -176,8 +176,11 @@ class RTDEControlInterface
   /**
     * @brief Move to each joint position specified in a path
     * @param path with joint positions that includes acceleration, speed and blend for each position
+    * @param async a bool specifying if the move command should be asynchronous. If async is true it is possible to
+    * stop a move command using either the stopJ or stopL function. Default is false, this means the function will
+    * block until the movement has completed.
     */
-  RTDE_EXPORT bool moveJ(const std::vector<std::vector<double>> &path);
+  RTDE_EXPORT bool moveJ(const std::vector<std::vector<double>> &path, bool async=false);
 
   /**
     * @brief Move to pose (linear in joint-space)
@@ -204,8 +207,11 @@ class RTDEControlInterface
   /**
     * @brief Move to each pose specified in a path
     * @param path with tool poses that includes acceleration, speed and blend for each position
+    * @param async a bool specifying if the move command should be asynchronous. If async is true it is possible to
+    * stop a move command using either the stopJ or stopL function. Default is false, this means the function will
+    * block until the movement has completed.
     */
-  RTDE_EXPORT bool moveL(const std::vector<std::vector<double>> &path);
+  RTDE_EXPORT bool moveL(const std::vector<std::vector<double>> &path, bool async=false);
 
   /**
     * @brief Move to position (linear in tool-space)
@@ -594,7 +600,7 @@ class RTDEControlInterface
 
   void verifyValueIsWithin(const double &value, const double &min, const double &max);
 
-  std::string prepareCmdScript(const std::vector<std::vector<double>> &path, const std::string &cmd);
+  std::string buildPathScriptCode(const std::vector<std::vector<double>> &path, const std::string &cmd);
 
   void receiveCallback();
 

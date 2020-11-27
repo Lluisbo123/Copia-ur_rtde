@@ -42,6 +42,17 @@ def rtde_control():
     global jog_dt = 0.002
     global jog_state = 0 # 0 - inactive, 1 - new setpoint, 2 - jogging, 3 - stopping (decelerating)
 
+    def exec_movel_path():
+      textmsg("exec_movel_path")
+      # inject movel path
+    end
+
+    def exec_movej_path():
+      textmsg("exec_movej_path")
+      # inject movej path
+    end
+
+
     thread move_thread():
         textmsg("move_thread started")
         while (True):
@@ -51,6 +62,10 @@ def rtde_control():
                 movel(move_p, a=move_acc, v=move_vel)
             elif move_type == 3:
                 movel(move_q, a=move_acc, v=move_vel)
+            elif move_type == 4:
+                exec_movel_path()
+            elif move_type == 5:
+                exec_movej_path()
             end
             enter_critical
             move_thrd = 0
@@ -682,7 +697,7 @@ $V38        protective_stop()
               textmsg(forward_kin)
               pose_to_output_float_registers(0, forward_kin)
               textmsg("get_forward_kinematics_default done")
-        elif cmd == 43:
+        elif cmd == 44:
               textmsg("get_forward_kinematics_args")
               q = q_from_input_float_registers(0)
               tcp_offset = pose_from_input_float_registers(6)
@@ -690,6 +705,34 @@ $V38        protective_stop()
               textmsg(forward_kin)
               pose_to_output_float_registers(0, forward_kin)
               textmsg("get_forward_kinematics_args done")
+        elif cmd == 45:
+              textmsg("movel_path")
+              async = read_input_integer_register(1)
+              textmsg("async: ", async)
+              stop_async_move()
+              if async == 1:
+                  enter_critical
+                  move_type = 4 # movel_path
+                  exit_critical
+                  move_thrd = run move_thread()
+              else:
+                  exec_movel_path()
+                  textmsg("movel_path done")
+              end
+        elif cmd == 46:
+              textmsg("movej_path")
+              async = read_input_integer_register(1)
+              textmsg("async: ", async)
+              stop_async_move()
+              if async == 1:
+                  enter_critical
+                  move_type = 5 # movej_path
+                  exit_critical
+                  move_thrd = run move_thread()
+              else:
+                  exec_movej_path()
+                  textmsg("movej_path done")
+              end
         elif cmd == 255:
             textmsg("Received stop script!")
         end
@@ -705,7 +748,7 @@ $V38        protective_stop()
     # RTDE Control script - Main loop
     #
 
-    textmsg("RTDE Control Script Loaded (25.11.2020-07:47)")
+    textmsg("RTDE Control Script Loaded (25.11.2020-13:32)")
 
     # Initialize gain and damping for force mode to a more stable default
 $V50force_mode_set_gain_scaling(0.5)

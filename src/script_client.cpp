@@ -1,5 +1,6 @@
 #include <ur_rtde/script_client.h>
 
+#include <algorithm>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/socket_base.hpp>
@@ -61,7 +62,7 @@ void ScriptClient::disconnect()
     std::cout << "Script Client - Socket disconnected" << std::endl;
 }
 
-bool ScriptClient::sendScriptCommand(const std::string &cmd_str)
+bool ScriptClient::sendScriptCommand(const std::string& cmd_str)
 {
   if (isConnected() && !cmd_str.empty())
   {
@@ -76,17 +77,15 @@ bool ScriptClient::sendScriptCommand(const std::string &cmd_str)
   return true;
 }
 
-
-void ScriptClient::setScriptFile(const std::string &file_name)
+void ScriptClient::setScriptFile(const std::string& file_name)
 {
-	script_file_name_ = file_name;
+  script_file_name_ = file_name;
 }
-
 
 /**
  * Internal private helper function to load a script to avoid duplicated code
  */
-static bool loadScript(const std::string &file_name, std::string& str)
+static bool loadScript(const std::string& file_name, std::string& str)
 {
   // Read in the UR script file
   // Notice! We use this method as it allocates the memory up front, strictly for performance.
@@ -107,7 +106,6 @@ static bool loadScript(const std::string &file_name, std::string& str)
   }
 }
 
-
 bool ScriptClient::sendScript()
 {
   std::string ur_script;
@@ -115,11 +113,11 @@ bool ScriptClient::sendScript()
   // of the internal compiled one.
   if (!script_file_name_.empty())
   {
-	// If loading fails, we fall back to the default script file
+    // If loading fails, we fall back to the default script file
     if (!loadScript(script_file_name_, ur_script))
     {
-    	std::cerr << "Error loading custom script file. Falling back to internal script file." << std::endl;
-    	ur_script = std::string();
+      std::cerr << "Error loading custom script file. Falling back to internal script file." << std::endl;
+      ur_script = std::string();
     }
   }
 
@@ -128,9 +126,8 @@ bool ScriptClient::sendScript()
     ur_script = UR_SCRIPT;
   }
 
-
   // Remove lines not fitting for the specific version of the controller
-  std::size_t n = ur_script.find("$");
+  auto n = ur_script.find("$");
 
   while (n != std::string::npos)
   {
@@ -164,6 +161,29 @@ bool ScriptClient::sendScript()
     n = ur_script.find("$");
   }
 
+  // Now scan the script for injection points where we can inject additional
+  // script code
+  for (const auto& script_injection : script_injections_)
+  {
+    n = ur_script.find(script_injection.search_string);
+    if (std::string::npos == n)
+    {
+      if (verbose_)
+        std::cout << "script_injection [" << script_injection.search_string << "] not found in script" << std::endl;
+      continue;
+    }
+
+    // Now inject custom script code into the script
+    ur_script.insert(n + script_injection.search_string.length(), script_injection.inject_string);
+    if (verbose_)
+    {
+      std::cout << "script_injection [" << script_injection.search_string << "] found at pos " << n << std::endl;
+      std::cout << ur_script.substr(n - 100, n + script_injection.search_string.length() +
+                                                 script_injection.inject_string.length() + 100)
+                << std::endl;
+    }
+  }
+
   if (isConnected() && !ur_script.empty())
   {
     boost::asio::write(*socket_, boost::asio::buffer(ur_script));
@@ -177,13 +197,12 @@ bool ScriptClient::sendScript()
   return true;
 }
 
-
-bool ScriptClient::sendScript(const std::string &file_name)
+bool ScriptClient::sendScript(const std::string& file_name)
 {
   std::string str;
   if (!loadScript(file_name, str))
   {
-	  return false;
+    return false;
   }
 
   if (isConnected() && !str.empty())
@@ -197,6 +216,20 @@ bool ScriptClient::sendScript(const std::string &file_name)
   }
 
   return true;
+}
+
+void ScriptClient::setScriptInjection(const std::string& search_string, const std::string& inject_string)
+{
+  auto it = std::find_if(script_injections_.begin(), script_injections_.end(),
+                         [&](const ScriptInjectItem& val) { return search_string == val.search_string; });
+  if (it != script_injections_.end())
+  {
+    it->inject_string = inject_string;
+  }
+  else
+  {
+    script_injections_.push_back({search_string, inject_string});
+  }
 }
 
 }  // namespace ur_rtde

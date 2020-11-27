@@ -176,7 +176,8 @@ void RTDE::send(const RobotCommand &robot_cmd)
   }
 
   if (robot_cmd.type_ == RobotCommand::MOVEJ || robot_cmd.type_ == RobotCommand::MOVEJ_IK ||
-      robot_cmd.type_ == RobotCommand::MOVEL || robot_cmd.type_ == RobotCommand::MOVEL_FK )
+      robot_cmd.type_ == RobotCommand::MOVEL || robot_cmd.type_ == RobotCommand::MOVEL_FK ||
+      robot_cmd.type_ == RobotCommand::MOVEL_PATH || robot_cmd.type_ == RobotCommand::MOVEJ_PATH)
   {
     std::vector<char> async_packed = RTDEUtility::packInt32(robot_cmd.async_);
     cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(async_packed.begin()),
