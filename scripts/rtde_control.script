@@ -697,7 +697,7 @@ $V38        protective_stop()
               textmsg(forward_kin)
               pose_to_output_float_registers(0, forward_kin)
               textmsg("get_forward_kinematics_default done")
-        elif cmd == 43:
+        elif cmd == 44:
               textmsg("get_forward_kinematics_args")
               q = q_from_input_float_registers(0)
               tcp_offset = pose_from_input_float_registers(6)
