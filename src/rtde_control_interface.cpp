@@ -238,10 +238,9 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   // Setup input recipes
   // Recipe 1
   std::vector<std::string> async_setp_input = {
-      "input_int_register_0",    "input_double_register_0", "input_double_register_1",
-      "input_double_register_2", "input_double_register_3", "input_double_register_4",
-      "input_double_register_5", "input_double_register_6", "input_double_register_7",
-      "input_int_register_1"};
+      "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
+      "input_double_register_7", "input_int_register_1"};
   rtde_->sendInputSetup(async_setp_input);
 
   // Recipe 2
@@ -316,11 +315,10 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
 
   // Recipe 13
   std::vector<std::string> pose_trans_input = {
-      "input_int_register_0",
-      "input_double_register_0", "input_double_register_1", "input_double_register_2",
-      "input_double_register_3", "input_double_register_4", "input_double_register_5", 
-      "input_double_register_6", "input_double_register_7", "input_double_register_8",  
-      "input_double_register_9", "input_double_register_10", "input_double_register_11"};
+      "input_int_register_0",    "input_double_register_0", "input_double_register_1", "input_double_register_2",
+      "input_double_register_3", "input_double_register_4", "input_double_register_5", "input_double_register_6",
+      "input_double_register_7", "input_double_register_8", "input_double_register_9", "input_double_register_10",
+      "input_double_register_11"};
   rtde_->sendInputSetup(pose_trans_input);
 
   // Recipe 14
@@ -331,10 +329,9 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   rtde_->sendInputSetup(setp_input);
 
   // Recipe 15
-  std::vector<std::string> jog_input = {
-      "input_int_register_0",    "input_double_register_0", "input_double_register_1",
-      "input_double_register_2", "input_double_register_3", "input_double_register_4",
-      "input_double_register_5", "input_double_register_6"};
+  std::vector<std::string> jog_input = {"input_int_register_0",    "input_double_register_0", "input_double_register_1",
+                                        "input_double_register_2", "input_double_register_3", "input_double_register_4",
+                                        "input_double_register_5", "input_double_register_6"};
   rtde_->sendInputSetup(jog_input);
 
   // Recipe 16
@@ -426,7 +423,7 @@ bool RTDEControlInterface::reuploadScript()
   if (script_client_->sendScript())
   {
     db_client_->popup("The RTDE Control script has been re-uploaded due to an error.");
-	if (verbose_)
+    if (verbose_)
       std::cout << "The RTDE Control script has been re-uploaded." << std::endl;
     return true;
   }
@@ -455,7 +452,6 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
 
   return sendCustomScript(cmd_str);
 }
-
 
 bool RTDEControlInterface::sendCustomScript(const std::string &script)
 {
@@ -486,7 +482,6 @@ bool RTDEControlInterface::sendCustomScript(const std::string &script)
   return true;
 }
 
-
 bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
 {
   // First stop the running RTDE control script
@@ -515,11 +510,10 @@ bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
   return true;
 }
 
-
 RTDE_EXPORT void RTDEControlInterface::setCustomScriptFile(const std::string &file_path)
 {
-	script_client_->setScriptFile(file_path);
-	reuploadScript();
+  script_client_->setScriptFile(file_path);
+  reuploadScript();
 }
 
 void RTDEControlInterface::verifyValueIsWithin(const double &value, const double &min, const double &max)
@@ -540,35 +534,30 @@ void RTDEControlInterface::verifyValueIsWithin(const double &value, const double
   }
 }
 
-
-std::string RTDEControlInterface::buildPathScriptCode(const std::vector<std::vector<double>> &path, const std::string &cmd)
+std::string RTDEControlInterface::buildPathScriptCode(const std::vector<std::vector<double>> &path,
+                                                      const std::string &cmd)
 {
-	std::stringstream ss;
-	for (const auto &pose : path)
-	{
-		if (cmd == "movej(")
-		{
-			verifyValueIsWithin(pose[6], UR_JOINT_VELOCITY_MIN,
-			    UR_JOINT_VELOCITY_MAX);
-			verifyValueIsWithin(pose[7], UR_JOINT_ACCELERATION_MIN,
-			    UR_JOINT_ACCELERATION_MAX);
-			verifyValueIsWithin(pose[8], UR_BLEND_MIN, UR_BLEND_MAX);
-		}
-		else if (cmd == "movel(p")
-		{
-			verifyValueIsWithin(pose[6], UR_TOOL_VELOCITY_MIN,
-			    UR_TOOL_VELOCITY_MAX);
-			verifyValueIsWithin(pose[7], UR_TOOL_ACCELERATION_MIN,
-			    UR_TOOL_ACCELERATION_MAX);
-			verifyValueIsWithin(pose[8], UR_BLEND_MIN, UR_BLEND_MAX);
-		}
-		ss << "\t" << cmd << "[" << pose[0] << "," << pose[1] << "," << pose[2]
-		    << "," << pose[3] << "," << pose[4] << "," << pose[5] << "],"
-		    << "a=" << pose[7] << ",v=" << pose[6] << ",r=" << pose[8] << ")\n";
-	}
-	return ss.str();
+  std::stringstream ss;
+  for (const auto &pose : path)
+  {
+    if (cmd == "movej(")
+    {
+      verifyValueIsWithin(pose[6], UR_JOINT_VELOCITY_MIN, UR_JOINT_VELOCITY_MAX);
+      verifyValueIsWithin(pose[7], UR_JOINT_ACCELERATION_MIN, UR_JOINT_ACCELERATION_MAX);
+      verifyValueIsWithin(pose[8], UR_BLEND_MIN, UR_BLEND_MAX);
+    }
+    else if (cmd == "movel(p")
+    {
+      verifyValueIsWithin(pose[6], UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX);
+      verifyValueIsWithin(pose[7], UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
+      verifyValueIsWithin(pose[8], UR_BLEND_MIN, UR_BLEND_MAX);
+    }
+    ss << "\t" << cmd << "[" << pose[0] << "," << pose[1] << "," << pose[2] << "," << pose[3] << "," << pose[4] << ","
+       << pose[5] << "],"
+       << "a=" << pose[7] << ",v=" << pose[6] << ",r=" << pose[8] << ")\n";
+  }
+  return ss.str();
 }
-
 
 bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path, bool async)
 {
@@ -662,7 +651,6 @@ bool RTDEControlInterface::moveL(const std::vector<double> &transform, double sp
   return sendCommand(robot_cmd);
 }
 
-
 bool RTDEControlInterface::jogStart(const std::vector<double> &speeds, int feature)
 {
   RTDE::RobotCommand robot_cmd;
@@ -673,7 +661,6 @@ bool RTDEControlInterface::jogStart(const std::vector<double> &speeds, int featu
   return sendCommand(robot_cmd);
 }
 
-
 bool RTDEControlInterface::jogStop()
 {
   RTDE::RobotCommand robot_cmd;
@@ -681,7 +668,6 @@ bool RTDEControlInterface::jogStop()
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
   return sendCommand(robot_cmd);
 }
-
 
 bool RTDEControlInterface::moveL_FK(const std::vector<double> &q, double speed, double acceleration, bool async)
 {
@@ -1116,7 +1102,8 @@ std::vector<double> RTDEControlInterface::getInverseKinematics(const std::vector
   }
 }
 
-std::vector<double> RTDEControlInterface::poseTrans(const std::vector<double> &p_from, const std::vector<double> &p_from_to)
+std::vector<double> RTDEControlInterface::poseTrans(const std::vector<double> &p_from,
+                                                    const std::vector<double> &p_from_to)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::POSE_TRANS;

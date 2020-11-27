@@ -3,21 +3,22 @@
 #define RTDE_SCRIPT_CLIENT_H
 
 #include <ur_rtde/rtde_export.h>
-#include <boost/asio/ip/tcp.hpp>
+
 #include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/tcp.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace ur_rtde
 {
-
 struct ScriptInjectItem
 {
-	std::string search_string;
-	std::string inject_string;
-	ScriptInjectItem(const std::string& search, const std::string& inject)
-	: search_string(search), inject_string(inject) {}
+  std::string search_string;
+  std::string inject_string;
+  ScriptInjectItem(const std::string& search, const std::string& inject) : search_string(search), inject_string(inject)
+  {
+  }
 };
 
 class ScriptClient
@@ -46,7 +47,7 @@ class ScriptClient
    * This eases debugging when modifying the control
    * script because it does not require to recompile the whole library
    */
-  RTDE_EXPORT void setScriptFile(const std::string &file_name);
+  RTDE_EXPORT void setScriptFile(const std::string& file_name);
 
   /**
    * Send the internal control script that is compiled into the library
@@ -57,8 +58,8 @@ class ScriptClient
   /**
    * Send the script file with the given file_name
    */
-  RTDE_EXPORT bool sendScript(const std::string &file_name);
-  RTDE_EXPORT bool sendScriptCommand(const std::string &cmd_str);
+  RTDE_EXPORT bool sendScript(const std::string& file_name);
+  RTDE_EXPORT bool sendScriptCommand(const std::string& cmd_str);
 
   RTDE_EXPORT void setScriptInjection(const std::string& search_string, const std::string& inject_string);
 
