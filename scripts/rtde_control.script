@@ -667,9 +667,9 @@ $V38        protective_stop()
             textmsg("pose_trans done")
         elif cmd == 40:
             textmsg("get_tcp_offset")
-            tcp_offset = get_tcp_offset()
-            textmsg(tcp_offset)
-            pose_to_output_float_registers(0, tcp_offset)
+$V36        tcp_offset = get_tcp_offset()
+$V36        textmsg(tcp_offset)
+$V36        pose_to_output_float_registers(0, tcp_offset)
             textmsg("get_tcp_offset done")
         elif cmd == 41:
               textmsg("start_jog")
