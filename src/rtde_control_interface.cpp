@@ -1339,6 +1339,29 @@ std::vector<double> RTDEControlInterface::getForwardKinematics(const std::vector
   }
 }
 
+bool RTDEControlInterface::isSteady()
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::IS_STEADY;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+
+  if (sendCommand(robot_cmd))
+  {
+    if (robot_state_ != nullptr)
+    {
+      return robot_state_->getOutput_int_register_1() == 1;
+    }
+    else
+    {
+      throw std::logic_error("Please initialize the RobotState, before using it!");
+    }
+  }
+  else
+  {
+    return false;
+  }
+}
+
 bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 {
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();

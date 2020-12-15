@@ -571,6 +571,19 @@ class RTDEControlInterface
   RTDE_EXPORT std::vector<double> getForwardKinematics(const std::vector<double>& q = {},
                                                        const std::vector<double>& tcp_offset = {});
 
+  /**
+    * @brief Checks if robot is fully at rest.
+    *
+    * True when the robot is fully at rest, and ready to accept higher external
+    * forces and torques, such as from industrial screwdrivers.
+    *
+    * Note: This function will always return false in modes other than the
+    * standard position mode, e.g. false in force and teach mode.
+    *
+    * @returns True when the robot is fully at rest. Returns False otherwise.
+    */
+  RTDE_EXPORT bool isSteady();
+
 
 
  private:

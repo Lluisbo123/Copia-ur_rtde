@@ -739,6 +739,15 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
               q = get_inverse_kin(x)
               q_to_output_float_registers(0, q)
               textmsg("get_inverse_kin_default done")
+        elif cmd == 48:
+              textmsg("is_steady")
+              robot_is_steady = is_steady()
+              if robot_is_steady == True:
+                 write_output_integer_register(1, 1)
+              else:
+                 write_output_integer_register(1, 0)
+              end
+              textmsg("is_steady done")
 
         elif cmd == 255:
             textmsg("Received stop script!")
