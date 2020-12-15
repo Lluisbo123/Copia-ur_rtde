@@ -105,7 +105,7 @@ PYBIND11_MODULE(rtde_control, m)
       .def("setTcp", &RTDEControlInterface::setTcp, DOC(ur_rtde, RTDEControlInterface, setTcp),
            py::call_guard<py::gil_scoped_release>())
       .def("getInverseKinematics", &RTDEControlInterface::getInverseKinematics,
-           DOC(ur_rtde, RTDEControlInterface, getInverseKinematics), py::arg("x"), py::arg("qnear"),
+           DOC(ur_rtde, RTDEControlInterface, getInverseKinematics), py::arg("x"), py::arg("qnear") = std::vector<double>(),
            py::arg("max_position_error") = 1e-10, py::arg("max_orientation_error") = 1e-10,
            py::call_guard<py::gil_scoped_release>())
       .def("poseTrans", &RTDEControlInterface::poseTrans,

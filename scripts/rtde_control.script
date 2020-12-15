@@ -594,7 +594,7 @@ $V53        pose_to_output_float_registers(0, target_waypoint)
             set_tcp(pose)
             textmsg("set_tcp done")
         elif cmd == 30:
-            textmsg("get_inverse_kin")
+            textmsg("get_inverse_kin_args")
             x = pose_from_input_float_registers(0)
             qnear = q_from_input_float_registers(6)
             maxPositionError = read_input_float_register(12)
@@ -733,6 +733,13 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
                   exec_movej_path()
                   textmsg("movej_path done")
               end
+        elif cmd == 47:
+              textmsg("get_inverse_kin_default")
+              x = pose_from_input_float_registers(0)
+              q = get_inverse_kin(x)
+              q_to_output_float_registers(0, q)
+              textmsg("get_inverse_kin_default done")
+
         elif cmd == 255:
             textmsg("Received stop script!")
         end

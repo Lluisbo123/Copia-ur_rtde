@@ -467,7 +467,7 @@ class RTDEControlInterface
     * @param maxOrientationError the maximum allowed orientationerror (Optional)
     * @returns joint positions
     */
-  RTDE_EXPORT std::vector<double> getInverseKinematics(const std::vector<double> &x, const std::vector<double> &qnear,
+  RTDE_EXPORT std::vector<double> getInverseKinematics(const std::vector<double> &x, const std::vector<double> &qnear = {},
       double max_position_error=1e-10, double max_orientation_error=1e-10);
 
   /**

@@ -1086,12 +1086,22 @@ std::vector<double> RTDEControlInterface::getInverseKinematics(const std::vector
                                                                double max_position_error, double max_orientation_error)
 {
   RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::GET_INVERSE_KINEMATICS;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_11;
-  robot_cmd.val_ = x;
-  robot_cmd.val_.insert(robot_cmd.val_.end(), qnear.begin(), qnear.end());
-  robot_cmd.val_.push_back(max_position_error);
-  robot_cmd.val_.push_back(max_orientation_error);
+  if (!qnear.empty())
+  {
+    robot_cmd.type_ = RTDE::RobotCommand::Type::GET_INVERSE_KINEMATICS_ARGS;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_11;
+    robot_cmd.val_ = x;
+    robot_cmd.val_.insert(robot_cmd.val_.end(), qnear.begin(), qnear.end());
+    robot_cmd.val_.push_back(max_position_error);
+    robot_cmd.val_.push_back(max_orientation_error);
+  }
+  else
+  {
+    robot_cmd.type_ = RTDE::RobotCommand::Type::GET_INVERSE_KINEMATICS_DEFAULT;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+    robot_cmd.val_ = x;
+  }
+
   if (sendCommand(robot_cmd))
   {
     return getInverseKinematicsValue();
