@@ -49,6 +49,7 @@ class DashboardClient
   RTDE_EXPORT std::string polyscopeVersion();
   RTDE_EXPORT std::string programState();
   RTDE_EXPORT std::string robotmode();
+  RTDE_EXPORT std::string getRobotModel();
   RTDE_EXPORT std::string getLoadedProgram();
   RTDE_EXPORT std::string safetymode();
   RTDE_EXPORT std::string safetystatus();

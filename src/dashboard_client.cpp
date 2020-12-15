@@ -191,6 +191,15 @@ std::string DashboardClient::robotmode()
   return state_str;
 }
 
+std::string DashboardClient::getRobotModel()
+{
+  std::string robot_model = "get robot model\n";
+  send(robot_model);
+  auto state_str = receive();
+  return state_str;
+}
+
+
 std::string DashboardClient::getLoadedProgram()
 {
   std::string get_loaded_program = "get loaded program\n";
