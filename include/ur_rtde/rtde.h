@@ -91,6 +91,7 @@ class RTDE
       MOVEJ_PATH = 46,
       GET_INVERSE_KINEMATICS_DEFAULT = 47,
       IS_STEADY = 48,
+      WATCHDOG = 99,
       STOP_SCRIPT = 255
     };
 

@@ -1188,7 +1188,7 @@ bool RTDEControlInterface::setWatchdog(double min_frequency)
 bool RTDEControlInterface::kickWatchdog()
 {
   RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::NO_CMD;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::WATCHDOG;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_12;
   return sendCommand(robot_cmd);
 }
@@ -1389,7 +1389,8 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 
     if (cmd.type_ == RTDE::RobotCommand::Type::SERVOJ || cmd.type_ == RTDE::RobotCommand::Type::SERVOL ||
         cmd.type_ == RTDE::RobotCommand::Type::SERVOC || cmd.type_ == RTDE::RobotCommand::Type::SPEEDJ ||
-        cmd.type_ == RTDE::RobotCommand::Type::SPEEDL || cmd.type_ == RTDE::RobotCommand::Type::FORCE_MODE)
+        cmd.type_ == RTDE::RobotCommand::Type::SPEEDL || cmd.type_ == RTDE::RobotCommand::Type::FORCE_MODE ||
+        cmd.type_ == RTDE::RobotCommand::Type::WATCHDOG)
     {
       // Send command to the controller
       rtde_->send(cmd);

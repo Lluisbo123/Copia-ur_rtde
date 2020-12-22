@@ -148,7 +148,12 @@ bool RTDE::sendOutputSetup(const std::vector<std::string> &output_names, double 
 void RTDE::send(const RobotCommand &robot_cmd)
 {
   std::uint8_t command = RTDE_DATA_PACKAGE;
-  std::vector<char> cmd_packed = RTDEUtility::packInt32(robot_cmd.type_);
+  std::vector<char> cmd_packed;
+  cmd_packed = RTDEUtility::packInt32(robot_cmd.type_);
+  if (robot_cmd.type_ == RobotCommand::WATCHDOG)
+  {
+    cmd_packed = RTDEUtility::packInt32(RobotCommand::NO_CMD);
+  }
 
   if (robot_cmd.type_ == RobotCommand::FORCE_MODE)
   {
