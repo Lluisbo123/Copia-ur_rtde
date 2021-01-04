@@ -40,6 +40,13 @@ class RTDEIOInterface
   RTDE_EXPORT bool setStandardDigitalOut(std::uint8_t output_id, bool signal_level);
 
   /**
+    * @brief Set configurable digital output signal level
+    * @param output_id The number (id) of the output, integer: [0:7]
+    * @param signal_level The signal level. (boolean)
+    */
+  RTDE_EXPORT bool setConfigurableDigitalOut(std::uint8_t output_id, bool signal_level);
+
+  /**
     * @brief Set tool digital output signal level
     * @param output_id The number (id) of the output, integer: [0:1]
     * @param signal_level The signal level. (boolean)

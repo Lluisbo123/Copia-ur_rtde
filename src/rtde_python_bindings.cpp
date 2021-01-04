@@ -252,6 +252,7 @@ PYBIND11_MODULE(rtde_io, m)
            DOC(ur_rtde, RTDEIOInterface, setAnalogOutputVoltage), py::call_guard<py::gil_scoped_release>())
       .def("setAnalogOutputCurrent", &RTDEIOInterface::setAnalogOutputCurrent,
            DOC(ur_rtde, RTDEIOInterface, setAnalogOutputCurrent), py::call_guard<py::gil_scoped_release>())
+      .def("setConfigurableDigitalOut", &RTDEIOInterface::setConfigurableDigitalOut, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEIOInterface &a) { return "<rtde_io.RTDEIOInterface>"; });
 }
 };  // namespace rtde_io

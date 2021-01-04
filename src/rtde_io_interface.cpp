@@ -70,6 +70,11 @@ bool RTDEIOInterface::setupRecipes()
                                                     "standard_analog_output_type", "standard_analog_output_0",
                                                     "standard_analog_output_1"};
   rtde_->sendInputSetup(set_std_analog_output);
+
+  // Recipe 6
+  std::vector<std::string> set_conf_digital_out_input = {"input_int_register_20", "configurable_digital_output_mask",
+                                                         "configurable_digital_output"};
+  rtde_->sendInputSetup(set_conf_digital_out_input);
   return true;
 }
 
@@ -89,6 +94,26 @@ void RTDEIOInterface::verifyValueIsWithin(const double &value, const double &min
     oss << "The value is not within [" << min << ";" << max << "]";
     throw std::range_error(oss.str());
   }
+}
+
+bool RTDEIOInterface::setConfigurableDigitalOut(std::uint8_t output_id, bool signal_level)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SET_CONF_DIGITAL_OUT;
+  robot_cmd.recipe_id_ = 6;
+
+  if (signal_level)
+  {
+    robot_cmd.configurable_digital_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.configurable_digital_out_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+  }
+  else
+  {
+    robot_cmd.configurable_digital_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.configurable_digital_out_ = 0;
+  }
+
+  return sendCommand(robot_cmd);
 }
 
 bool RTDEIOInterface::setStandardDigitalOut(std::uint8_t output_id, bool signal_level)

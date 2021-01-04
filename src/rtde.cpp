@@ -202,6 +202,12 @@ void RTDE::send(const RobotCommand &robot_cmd)
     cmd_packed.push_back(robot_cmd.std_digital_out_);
   }
 
+  if (robot_cmd.type_ == RobotCommand::SET_CONF_DIGITAL_OUT)
+  {
+    cmd_packed.push_back(robot_cmd.configurable_digital_out_mask_);
+    cmd_packed.push_back(robot_cmd.configurable_digital_out_);
+  }
+
   if (robot_cmd.type_ == RobotCommand::SET_TOOL_DIGITAL_OUT)
   {
     cmd_packed.push_back(robot_cmd.std_tool_out_mask_);

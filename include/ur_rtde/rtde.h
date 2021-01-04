@@ -91,6 +91,7 @@ class RTDE
       MOVEJ_PATH = 46,
       GET_INVERSE_KINEMATICS_DEFAULT = 47,
       IS_STEADY = 48,
+      SET_CONF_DIGITAL_OUT = 49,
       WATCHDOG = 99,
       STOP_SCRIPT = 255
     };
@@ -128,6 +129,8 @@ class RTDE
     std::int32_t force_mode_type_;
     std::uint8_t std_digital_out_;
     std::uint8_t std_digital_out_mask_;
+    std::uint8_t configurable_digital_out_;
+    std::uint8_t configurable_digital_out_mask_;
     std::uint8_t std_tool_out_;
     std::uint8_t std_tool_out_mask_;
     std::uint8_t std_analog_output_mask_;
