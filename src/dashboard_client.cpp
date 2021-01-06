@@ -4,34 +4,59 @@
 #include <boost/asio/connect.hpp>
 #include <boost/asio/socket_base.hpp>
 #include <boost/asio/write.hpp>
+#include <boost/bind.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <cstring>
 #include <iostream>
 #include <memory>
 #include <regex>
 
 using boost::asio::ip::tcp;
+using boost::lambda::var;
+using boost::lambda::_1;
 
 namespace ur_rtde
 {
 DashboardClient::DashboardClient(std::string hostname, int port, bool verbose)
-    : hostname_(std::move(hostname)), port_(port), verbose_(verbose), conn_state_(ConnectionState::DISCONNECTED)
+    : hostname_(std::move(hostname)), port_(port), verbose_(verbose),
+      conn_state_(ConnectionState::DISCONNECTED), deadline_(io_service_)
 {
+  // No deadline is required until the first socket operation is started. We
+  // set the deadline to positive infinity so that the actor takes no action
+  // until a specific deadline is set.
+  deadline_.expires_at(boost::posix_time::pos_infin);
+
+  // Start the persistent actor that checks for deadline expiry.
+  check_deadline();
 }
 
 DashboardClient::~DashboardClient() = default;
 
-void DashboardClient::connect()
+void DashboardClient::connect(uint32_t timeout_ms)
 {
-  io_service_ = std::make_shared<boost::asio::io_service>();
-  socket_.reset(new boost::asio::ip::tcp::socket(*io_service_));
+  socket_.reset(new boost::asio::ip::tcp::socket(io_service_));
   socket_->open(boost::asio::ip::tcp::v4());
   boost::asio::ip::tcp::no_delay no_delay_option(true);
   boost::asio::socket_base::reuse_address sol_reuse_option(true);
   socket_->set_option(no_delay_option);
   socket_->set_option(sol_reuse_option);
-  resolver_ = std::make_shared<tcp::resolver>(*io_service_);
+  resolver_ = std::make_shared<tcp::resolver>(io_service_);
   tcp::resolver::query query(hostname_, std::to_string(port_));
-  boost::asio::connect(*socket_, resolver_->resolve(query));
+
+  if (verbose_)
+    std::cout << "Connecting to UR dashboard server..." << std::endl;
+  deadline_.expires_from_now(boost::posix_time::milliseconds(timeout_ms));
+  boost::system::error_code ec = boost::asio::error::would_block;
+  boost::asio::async_connect(*socket_, resolver_->resolve(query), var(ec) = boost::lambda::_1);
+  do
+  {
+    io_service_.run_one();
+  } while (ec == boost::asio::error::would_block);
+  if (ec || !socket_->is_open())
+  {
+    throw std::runtime_error("Timeout connecting to UR dashboard server.");
+  }
   conn_state_ = ConnectionState::CONNECTED;
   receive();
   if (verbose_)
@@ -292,6 +317,29 @@ void DashboardClient::restartSafety()
   std::string str = "restart safety\n";
   send(str);
   receive();
+}
+
+
+void DashboardClient::check_deadline()
+{
+  // Check whether the deadline has passed. We compare the deadline against
+  // the current time since a new asynchronous operation may have moved the
+  // deadline before this actor had a chance to run.
+  if (deadline_.expires_at() <= boost::asio::deadline_timer::traits_type::now())
+  {
+    // The deadline has passed. The socket is closed so that any outstanding
+    // asynchronous operations are cancelled. This allows the blocked
+    // connect(), read_line() or write_line() functions to return.
+    boost::system::error_code ignored_ec;
+    socket_->close(ignored_ec);
+
+    // There is no longer an active deadline. The expiry is set to positive
+    // infinity so that the actor takes no action until a new deadline is set.
+    deadline_.expires_at(boost::posix_time::pos_infin);
+  }
+
+  // Put the actor back to sleep.
+  deadline_.async_wait(boost::bind(&DashboardClient::check_deadline, this));
 }
 
 }  // namespace ur_rtde
