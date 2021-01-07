@@ -62,13 +62,13 @@ struct PathEntry
 	/**
 	 * Creates a waypoint for path
 	 */
-	PathEntry(eMoveType MoveType, ePositionType PositionType, const std::vector<double> Parameters)
+	RTDE_EXPORT PathEntry(eMoveType MoveType, ePositionType PositionType, const std::vector<double> Parameters)
 	: move_type_(MoveType), pos_type_(PositionType), param_(Parameters) {}
 
 	/**
 	 * Returns valid script code for the given path entry
 	 */
-	std::string toScriptCode() const;
+	RTDE_EXPORT std::string toScriptCode() const;
 
 	eMoveType move_type_;
 	ePositionType pos_type_;
@@ -86,41 +86,41 @@ public:
 	/**
 	 * Adds a single path entry to the path
 	 */
-	void addEntry(const PathEntry& Entry);
+	RTDE_EXPORT void addEntry(const PathEntry& Entry);
 
 	/**
 	 * Deletes all waypoints from the path
 	 */
-	void clear();
+	RTDE_EXPORT void clear();
 
 	/**
 	 * Returns the number of entries in the path
 	 */
-	std::size_t size() const;
+	RTDE_EXPORT std::size_t size() const;
 
 	/**
 	 * Read access to the waypoints of the path
 	 */
-	const std::vector<PathEntry>& waypoints() const;
+	RTDE_EXPORT const std::vector<PathEntry>& waypoints() const;
 
 	/**
 	 * Adds a path with only moveL commands to this path.
 	 * This is here for backward compatibility to ease switch to this new
 	 * path implementation for the old moveL and moveJ path functions.
 	 */
-	void appendMovelPath(const std::vector<std::vector<double>>& Path);
+	RTDE_EXPORT void appendMovelPath(const std::vector<std::vector<double>>& Path);
 
 	/**
 	 * Adds a path with moveJ commands to this path.
 	 * This is here for backward compatibility to ease switch to this new
 	 * path implementation for the old moveL and moveJ path functions.
 	 */
-	void appendMovejPath(const std::vector<std::vector<double>>& Path);
+	RTDE_EXPORT void appendMovejPath(const std::vector<std::vector<double>>& Path);
 
 	/**
 	 * Returns valid script code for the given path
 	 */
-	std::string toScriptCode() const;
+	RTDE_EXPORT std::string toScriptCode() const;
 
 private:
 	std::vector<PathEntry> waypoints_;
