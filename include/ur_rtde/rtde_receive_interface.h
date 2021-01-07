@@ -361,6 +361,12 @@ class RTDEReceiveInterface
    */
   RTDE_EXPORT double getOutputDoubleRegister(int output_id);
 
+  /**
+   * Reads progress information for asynchronous operations that support
+   * progress feedback (such as movePath)
+   */
+  RTDE_EXPORT int getAsyncOperationProgress();
+
   RTDE_EXPORT void receiveCallback();
 
  private:

@@ -465,4 +465,10 @@ double RTDEReceiveInterface::getOutputDoubleRegister(int output_id)
   }
 }
 
+
+RTDE_EXPORT int RTDEReceiveInterface::getAsyncOperationProgress()
+{
+
+}
+
 }  // namespace ur_rtde
