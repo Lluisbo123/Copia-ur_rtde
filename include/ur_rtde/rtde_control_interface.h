@@ -39,6 +39,94 @@ namespace ur_rtde { class RTDE; }
 
 namespace ur_rtde
 {
+
+/**
+ * Single path entry in a move path
+ */
+struct PathEntry
+{
+	enum eMoveType
+	{
+		MoveJ,
+		MoveL,
+		MoveP,
+		MoveC
+	};
+
+	enum ePositionType
+	{
+		PositionTcpPose,
+		PositionJoints
+	};
+
+	/**
+	 * Creates a waypoint for path
+	 */
+	PathEntry(eMoveType MoveType, ePositionType PositionType, const std::vector<double> Parameters)
+	: move_type_(MoveType), pos_type_(PositionType), param_(Parameters) {}
+
+	/**
+	 * Returns valid script code for the given path entry
+	 */
+	std::string toScriptCode() const;
+
+	eMoveType move_type_;
+	ePositionType pos_type_;
+	std::vector<double> param_;
+};
+
+
+/**
+ * A path with a number of move commands.
+ * It is possible to mix different move command types in a single path
+ */
+class Path
+{
+public:
+	/**
+	 * Adds a single path entry to the path
+	 */
+	void addEntry(const PathEntry& Entry);
+
+	/**
+	 * Deletes all waypoints from the path
+	 */
+	void clear();
+
+	/**
+	 * Returns the number of entries in the path
+	 */
+	std::size_t size() const;
+
+	/**
+	 * Read access to the waypoints of the path
+	 */
+	const std::vector<PathEntry>& waypoints() const;
+
+	/**
+	 * Adds a path with only moveL commands to this path.
+	 * This is here for backward compatibility to ease switch to this new
+	 * path implementation for the old moveL and moveJ path functions.
+	 */
+	void appendMovelPath(const std::vector<std::vector<double>>& Path);
+
+	/**
+	 * Adds a path with moveJ commands to this path.
+	 * This is here for backward compatibility to ease switch to this new
+	 * path implementation for the old moveL and moveJ path functions.
+	 */
+	void appendMovejPath(const std::vector<std::vector<double>>& Path);
+
+	/**
+	 * Returns valid script code for the given path
+	 */
+	std::string toScriptCode() const;
+
+private:
+	std::vector<PathEntry> waypoints_;
+};
+
+
 class RTDEControlInterface
 {
  public:
@@ -287,6 +375,16 @@ class RTDEControlInterface
     */
   RTDE_EXPORT bool servoL(const std::vector<double> &pose, double speed, double acceleration, double time,
                           double lookahead_time, double gain);
+
+  /**
+   * Move to each waypoint specified in the given path
+   * @param path The path with waypoints
+   * @param @param async a bool specifying if the move command should be asynchronous.
+   * If async is true it is possible to stop a move command using either the
+   * stopJ or stopL function. Default is false, this means the function will
+   * block until the movement has completed.
+   */
+  RTDE_EXPORT bool movePath(const Path& path, bool async=false);
 
   /**
     * @brief Stop servos
@@ -610,8 +708,6 @@ class RTDEControlInterface
   std::vector<double> getInverseKinematicsValue();
 
   std::vector<double> poseTransValue();
-
-  void verifyValueIsWithin(const double &value, const double &min, const double &max);
 
   std::string buildPathScriptCode(const std::vector<std::vector<double>> &path, const std::string &cmd);
 
