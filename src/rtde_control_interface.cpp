@@ -681,7 +681,8 @@ bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path, b
   Path NewPath;
   NewPath.appendMovejPath(path);
   auto PathScript = NewPath.toScriptCode();
-  std::cout << "PathScript: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
+  if (verbose_)
+	  std::cout << "PathScript: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
 
   // stop the running RTDE control script
   stopScript();
@@ -703,7 +704,8 @@ bool RTDEControlInterface::movePath(const Path& path, bool async)
 {
   // This is the first step because it may throw an exception
   auto PathScript = path.toScriptCode();
-  std::cout << "PathScript: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
+  if (verbose_)
+	  std::cout << "PathScript: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
 
   // stop the running RTDE control script
   stopScript();
@@ -765,7 +767,8 @@ bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path, b
   Path NewPath;
   NewPath.appendMovelPath(path);
   auto PathScript = NewPath.toScriptCode();
-  std::cout << "Path: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
+  if (verbose_)
+	  std::cout << "Path: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
 
   // stop the running RTDE control script
   stopScript();
