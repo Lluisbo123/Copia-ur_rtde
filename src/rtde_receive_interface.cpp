@@ -109,6 +109,7 @@ bool RTDEReceiveInterface::setupRecipes(const double& frequency)
                   "standard_analog_output1",
                   "robot_status_bits",
                   "safety_status_bits",
+                  "output_int_register_2",
                   "output_int_register_12",
                   "output_int_register_13",
                   "output_int_register_14",
@@ -468,7 +469,7 @@ double RTDEReceiveInterface::getOutputDoubleRegister(int output_id)
 
 RTDE_EXPORT int RTDEReceiveInterface::getAsyncOperationProgress()
 {
-
+	return robot_state_->getOutput_int_register_2();
 }
 
 }  // namespace ur_rtde

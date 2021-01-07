@@ -42,19 +42,26 @@ def rtde_control():
     global jog_dt = 0.002
     global jog_state = 0 # 0 - inactive, 1 - new setpoint, 2 - jogging, 3 - stopping (decelerating)
 
-    def exec_movel_path():
-      textmsg("exec_movel_path")
-      # inject movel path
+    def exec_move_path():
+      textmsg("exec_move_path")
+      # inject move path
     end
 
-    def exec_movej_path():
-      textmsg("exec_movej_path")
-      # inject movej path
+    def signal_async_progress(value):
+      write_output_integer_register(2, value)
     end
 
+    def signal_async_operation_started():
+      write_output_integer_register(2, 0) # 0 indicates operation started
+    end
+
+    def signal_async_operation_finished():
+      write_output_integer_register(2, -1) # -1 indicates operation finished
+    end
 
     thread move_thread():
         textmsg("move_thread started")
+        signal_async_operation_started()
         while (True):
             if move_type == 0 or move_type == 1:
                 movej(move_q, a=move_acc, v=move_vel)
@@ -63,9 +70,7 @@ def rtde_control():
             elif move_type == 3:
                 movel(move_q, a=move_acc, v=move_vel)
             elif move_type == 4:
-                exec_movel_path()
-            elif move_type == 5:
-                exec_movej_path()
+                exec_move_path()
             end
             enter_critical
             move_thrd = 0
@@ -73,6 +78,7 @@ def rtde_control():
             exit_critical
             break
         end
+        signal_async_operation_finished()
     end
 
     def stop_async_move():
@@ -266,6 +272,10 @@ def rtde_control():
 
     def rtde_cmd():
         return read_input_integer_register(0)
+    end
+
+    def reset_async_progress():
+        write_output_integer_register(2, -1)
     end
 
     def process_cmd():
@@ -706,32 +716,19 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
               pose_to_output_float_registers(0, forward_kin)
               textmsg("get_forward_kinematics_args done")
         elif cmd == 45:
-              textmsg("movel_path")
+              textmsg("move_path")
+              write_output_integer_register(2, 0)
               async = read_input_integer_register(1)
               textmsg("async: ", async)
               stop_async_move()
               if async == 1:
                   enter_critical
-                  move_type = 4 # movel_path
+                  move_type = 4 # move_path
                   exit_critical
                   move_thrd = run move_thread()
               else:
-                  exec_movel_path()
-                  textmsg("movel_path done")
-              end
-        elif cmd == 46:
-              textmsg("movej_path")
-              async = read_input_integer_register(1)
-              textmsg("async: ", async)
-              stop_async_move()
-              if async == 1:
-                  enter_critical
-                  move_type = 5 # movej_path
-                  exit_critical
-                  move_thrd = run move_thread()
-              else:
-                  exec_movej_path()
-                  textmsg("movej_path done")
+                  exec_move_path()
+                  textmsg("move_path done")
               end
         elif cmd == 47:
               textmsg("get_inverse_kin_default")
@@ -764,7 +761,7 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
     # RTDE Control script - Main loop
     #
 
-    textmsg("RTDE Control Script Loaded (25.11.2020-13:32)")
+    textmsg("RTDE Control Script Loaded (07.01.2021-09:47)")
 
     # Initialize gain and damping for force mode to a more stable default
 $V50force_mode_set_gain_scaling(0.5)
@@ -772,6 +769,7 @@ $V35force_mode_set_damping(0.025)
 
     keep_running = True
     executing_cmd = False
+    reset_async_progress()
     signal_ready()
 
     while keep_running:

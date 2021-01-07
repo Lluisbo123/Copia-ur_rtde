@@ -95,7 +95,7 @@ std::string Path::toScriptCode() const
 	std::stringstream ss;
 	for (int i = 0; i < waypoints_.size(); ++i)
 	{
-		ss << "\twrite_output_integer_register(2, " << i << ")\n";
+		ss << "\tsignal_async_progress(" << i << ")\n";
 		ss << waypoints_[i].toScriptCode();
 	}
 
