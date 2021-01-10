@@ -422,7 +422,6 @@ bool RTDEControlInterface::reuploadScript()
   // Re-upload RTDE script to the UR Controller
   if (script_client_->sendScript())
   {
-    db_client_->popup("The RTDE Control script has been re-uploaded due to an error.");
     if (verbose_)
       std::cout << "The RTDE Control script has been re-uploaded." << std::endl;
     return true;
