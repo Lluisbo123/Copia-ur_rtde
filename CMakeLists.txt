@@ -42,7 +42,7 @@ if(${CODE})
 	endif()
 endif()
 
-project(ur_rtde VERSION 1.3.7 LANGUAGES ${PROJECT_LANGUAGES})
+project(ur_rtde VERSION 1.3.8 LANGUAGES ${PROJECT_LANGUAGES})
 set(PROJECT_VERSION_SUFFIX "") # alpha/beta/rc, e.g. "-rc0"
 set(PROJECT_VERSION "${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX}")
 set(PROJECT_AUTHOR "Anders Prier Lindvig")

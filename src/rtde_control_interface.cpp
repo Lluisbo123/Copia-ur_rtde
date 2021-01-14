@@ -11,8 +11,8 @@
 
 namespace ur_rtde
 {
-RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool verbose)
-    : hostname_(std::move(hostname)), port_(port), verbose_(verbose)
+RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_script, bool verbose)
+    : hostname_(std::move(hostname)), upload_script_(upload_script), verbose_(verbose)
 {
   // Create a connection to the dashboard server
   db_client_ = std::make_shared<DashboardClient>(hostname_);
@@ -31,7 +31,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
       }
     }
   }
-
+  port_ = 30004;
   rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
@@ -88,35 +88,64 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
   // Clear command register
   sendClearCommand();
 
-  if (!isProgramRunning())
+  if (upload_script_)
   {
-    // Send script to the UR Controller
-    script_client_->sendScript();
-
-    while(!isProgramRunning())
+    if (!isProgramRunning())
     {
-      // Wait for program to be running
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      // Send script to the UR Controller
+      script_client_->sendScript();
+
+      while (!isProgramRunning())
+      {
+        // Wait for program to be running
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      }
+    }
+    else
+    {
+      if (verbose_)
+        std::cout << "A script was running on the controller, killing it!" << std::endl;
+      // Stop the running script first
+      stopScript();
+      db_client_->stop();
+
+      // Wait until terminated
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+      // Send script to the UR Controller
+      script_client_->sendScript();
+
+      while (!isProgramRunning())
+      {
+        // Wait for program to be running
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      }
     }
   }
   else
   {
-    if (verbose_)
-      std::cout << "A script was running on the controller, killing it!" << std::endl;
-    // Stop the running script first
-    stopScript();
-    db_client_->stop();
-
-    // Wait until terminated
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-    // Send script to the UR Controller
-    script_client_->sendScript();
-
-    while(!isProgramRunning())
+    if (!isProgramRunning())
     {
-      // Wait for program to be running
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      start_time = std::chrono::high_resolution_clock::now();
+      std::cout << "Waiting for RTDE control program to be running on the controller" << std::endl;
+      while (!isProgramRunning())
+      {
+        std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+        if (duration > WAIT_FOR_PROGRAM_RUNNING_TIMEOUT)
+        {
+          break;
+        }
+        // Wait for program to be running
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      }
+
+      if (!isProgramRunning())
+      {
+        disconnect();
+        throw std::logic_error("RTDE control program is not running on controller, before timeout of " +
+                               std::to_string(WAIT_FOR_PROGRAM_RUNNING_TIMEOUT) + " seconds");
+      }
     }
   }
 }

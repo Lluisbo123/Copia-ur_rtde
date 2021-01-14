@@ -11,10 +11,11 @@
 
 namespace ur_rtde
 {
-RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables, int port,
+RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables,
                                            bool verbose)
-    : variables_(std::move(variables)), hostname_(std::move(hostname)), port_(port), verbose_(verbose)
+    : variables_(std::move(variables)), hostname_(std::move(hostname)), verbose_(verbose)
 {
+  port_ = 30004;
   rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
   rtde_->negotiateProtocolVersion();

@@ -19,7 +19,7 @@ PYBIND11_MODULE(rtde_control, m)
 {
   m.doc() = "RTDE Control Interface";
   py::class_<RTDEControlInterface>(m, "RTDEControlInterface")
-      .def(py::init<std::string, int, bool>(), py::arg("hostname"), py::arg("port") = 30004, py::arg("verbose") = false)
+      .def(py::init<std::string, bool, bool>(), py::arg("hostname"), py::arg("upload_script") = true, py::arg("verbose") = false)
       .def("disconnect", &RTDEControlInterface::disconnect, py::call_guard<py::gil_scoped_release>())
       .def("reconnect", &RTDEControlInterface::reconnect, DOC(ur_rtde, RTDEControlInterface, reconnect),
            py::call_guard<py::gil_scoped_release>())
@@ -142,8 +142,8 @@ PYBIND11_MODULE(rtde_receive, m)
 {
   m.doc() = "RTDE Receive Interface";
   py::class_<RTDEReceiveInterface>(m, "RTDEReceiveInterface")
-      .def(py::init<std::string, std::vector<std::string>, int, bool>(), py::arg("hostname"),
-           py::arg("variables") = std::vector<std::string>(), py::arg("port") = 30004, py::arg("verbose") = false)
+      .def(py::init<std::string, std::vector<std::string>, bool>(), py::arg("hostname"),
+           py::arg("variables") = std::vector<std::string>(), py::arg("verbose") = false)
       .def("disconnect", &RTDEReceiveInterface::disconnect, py::call_guard<py::gil_scoped_release>())
       .def("reconnect", &RTDEReceiveInterface::reconnect, DOC(ur_rtde, RTDEReceiveInterface, reconnect),
            py::call_guard<py::gil_scoped_release>())

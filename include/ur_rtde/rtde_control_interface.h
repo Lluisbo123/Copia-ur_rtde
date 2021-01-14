@@ -14,6 +14,7 @@
 #define UR_PATH_EXECUTION_TIMEOUT 600
 #define UR_GET_READY_TIMEOUT 3
 #define RTDE_START_SYNCHRONIZATION_TIMEOUT 5
+#define WAIT_FOR_PROGRAM_RUNNING_TIMEOUT 60
 
 #define UR_JOINT_VELOCITY_MAX 3.14 // rad/s
 #define UR_JOINT_VELOCITY_MIN 0 // rad/s
@@ -42,7 +43,7 @@ namespace ur_rtde
 class RTDEControlInterface
 {
  public:
-  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, int port = 30004, bool verbose = false);
+  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, bool upload_script = true, bool verbose = false);
 
   RTDE_EXPORT virtual ~RTDEControlInterface();
 
@@ -473,10 +474,10 @@ class RTDEControlInterface
   /**
    * @brief Pose transformation to move with respect to a tool or w.r.t. a custom feature/frame
    * The first argument, p_from, is used to transform the second argument,
-   * p_from_to, and the result is then returned. This means that the result is the resulting pose, when starting at 
+   * p_from_to, and the result is then returned. This means that the result is the resulting pose, when starting at
    * the coordinate system of p_from, and then in that coordinate system moving p_from_to.
-   * This function can be seen in two different views. Either the function transforms, that is translates and rotates, 
-   * p_from_to by the parameters of p_from. Or the function is used to get the resulting pose, when first 
+   * This function can be seen in two different views. Either the function transforms, that is translates and rotates,
+   * p_from_to by the parameters of p_from. Or the function is used to get the resulting pose, when first
    * making a move of p_from and then from there, a move of p_from_to.
    * If the poses were regarded as transformation matrices, it would look like:
    * @verbatim
@@ -620,6 +621,7 @@ class RTDEControlInterface
  private:
   std::string hostname_;
   int port_;
+  bool upload_script_;
   bool verbose_;
   double frequency_;
   double delta_time_;

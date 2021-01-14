@@ -37,7 +37,7 @@ class RTDEReceiveInterface
 {
  public:
   RTDE_EXPORT explicit RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables = {},
-                                            int port = 30004, bool verbose = false);
+                                            bool verbose = false);
 
   RTDE_EXPORT virtual ~RTDEReceiveInterface();
 

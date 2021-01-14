@@ -37,11 +37,11 @@ build-ubuntu-2004:
   tags:
     - linux
 
-build-MAC:
-  extends: .bash_build
-  allow_failure: true
-  tags:
-    - mac
+#build-MAC:
+#  extends: .bash_build
+#  allow_failure: true
+#  tags:
+#    - mac
 
 build-WINDOWS:
   stage: build
@@ -91,13 +91,13 @@ examples-ubuntu-2004:
     - build-ubuntu-2004
   needs: ["build-ubuntu-2004"]
 
-.examples-MAC:
-  extends: .bash-examples
-  tags:
-    - mac
-  dependencies:
-    - build-MAC
-  needs: ["build-MAC"]
+#.examples-MAC:
+#  extends: .bash-examples
+#  tags:
+#    - mac
+#  dependencies:
+#    - build-MAC
+#  needs: ["build-MAC"]
 
 .examples-WINDOWS:
   stage: test
