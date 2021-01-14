@@ -39,6 +39,7 @@ build-ubuntu-2004:
 
 build-MAC:
   extends: .bash_build
+  allow_failure: true
   tags:
     - mac
 

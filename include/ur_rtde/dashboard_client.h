@@ -6,6 +6,7 @@
 #include <ur_rtde/dashboard_enums.h>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/io_service.hpp>
+#include <boost/asio/deadline_timer.hpp>
 #include <memory>
 #include <string>
 
@@ -26,7 +27,10 @@ class DashboardClient
   };
 
  public:
-  RTDE_EXPORT void connect();
+  /**
+   * Connects to the dashboard server with the given timeout value
+   */
+  RTDE_EXPORT void connect(uint32_t timeout_ms = 2000);
   RTDE_EXPORT bool isConnected();
   RTDE_EXPORT void disconnect();
   RTDE_EXPORT void send(const std::string &str);
@@ -59,13 +63,19 @@ class DashboardClient
   RTDE_EXPORT void setUserRole(const UserRole &role);
 
  private:
+  /**
+   * For socket timeouts
+   */
+  void check_deadline();
+
   std::string hostname_;
   int port_;
   bool verbose_;
   ConnectionState conn_state_;
-  std::shared_ptr<boost::asio::io_service> io_service_;
+  boost::asio::io_service io_service_;
   std::shared_ptr<boost::asio::ip::tcp::socket> socket_;
   std::shared_ptr<boost::asio::ip::tcp::resolver> resolver_;
+  boost::asio::deadline_timer deadline_;
 };
 
 }  // namespace ur_rtde
