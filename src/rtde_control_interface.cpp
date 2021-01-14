@@ -92,6 +92,12 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
   {
     // Send script to the UR Controller
     script_client_->sendScript();
+
+    while(!isProgramRunning())
+    {
+      // Wait for program to be running
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
   }
   else
   {
@@ -106,6 +112,12 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, int port, bool 
 
     // Send script to the UR Controller
     script_client_->sendScript();
+
+    while(!isProgramRunning())
+    {
+      // Wait for program to be running
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
   }
 }
 
@@ -1368,95 +1380,103 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 
   try
   {
-    while (getControlScriptState() != UR_CONTROLLER_RDY_FOR_CMD)
+    if (isProgramRunning())
     {
-      // If robot is in an emergency or protective stop return false
-      if (isProtectiveStopped() || isEmergencyStopped())
+      while (getControlScriptState() != UR_CONTROLLER_RDY_FOR_CMD)
       {
-        sendClearCommand();
-        return false;
-      }
-
-      // Wait until the controller is ready for a command or timeout
-      std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-      auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-      if (duration > UR_GET_READY_TIMEOUT)
-      {
-        sendClearCommand();
-        return false;
-      }
-    }
-
-    if (cmd.type_ == RTDE::RobotCommand::Type::SERVOJ || cmd.type_ == RTDE::RobotCommand::Type::SERVOL ||
-        cmd.type_ == RTDE::RobotCommand::Type::SERVOC || cmd.type_ == RTDE::RobotCommand::Type::SPEEDJ ||
-        cmd.type_ == RTDE::RobotCommand::Type::SPEEDL || cmd.type_ == RTDE::RobotCommand::Type::FORCE_MODE ||
-        cmd.type_ == RTDE::RobotCommand::Type::WATCHDOG)
-    {
-      // Send command to the controller
-      rtde_->send(cmd);
-
-      // We do not wait for 'continuous' commands to finish.
-
-      // Make controller ready for next command
-      // sendClearCommand();
-
-      return true;
-    }
-    else
-    {
-      // Send command to the controller
-      rtde_->send(cmd);
-
-      if (cmd.type_ != RTDE::RobotCommand::Type::STOP_SCRIPT)
-      {
-        start_time = std::chrono::high_resolution_clock::now();
-        while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
+        // If robot is in an emergency or protective stop return false
+        if (isProtectiveStopped() || isEmergencyStopped())
         {
-          // If robot is in an emergency or protective stop return false
-          if (isProtectiveStopped() || isEmergencyStopped())
-          {
-            sendClearCommand();
-            return false;
-          }
-
-          // Wait until the controller has finished executing or timeout
-          auto current_time = std::chrono::high_resolution_clock::now();
-          auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-          if (duration > UR_EXECUTION_TIMEOUT)
-          {
-            sendClearCommand();
-            return false;
-          }
-          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+          sendClearCommand();
+          return false;
         }
+
+        // Wait until the controller is ready for a command or timeout
+        std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+        if (duration > UR_GET_READY_TIMEOUT)
+        {
+          sendClearCommand();
+          return false;
+        }
+      }
+
+      if (cmd.type_ == RTDE::RobotCommand::Type::SERVOJ || cmd.type_ == RTDE::RobotCommand::Type::SERVOL ||
+          cmd.type_ == RTDE::RobotCommand::Type::SERVOC || cmd.type_ == RTDE::RobotCommand::Type::SPEEDJ ||
+          cmd.type_ == RTDE::RobotCommand::Type::SPEEDL || cmd.type_ == RTDE::RobotCommand::Type::FORCE_MODE ||
+          cmd.type_ == RTDE::RobotCommand::Type::WATCHDOG)
+      {
+        // Send command to the controller
+        rtde_->send(cmd);
+
+        // We do not wait for 'continuous' commands to finish.
+
+        // Make controller ready for next command
+        // sendClearCommand();
+
+        return true;
       }
       else
       {
-        while (isProgramRunning())
+        // Send command to the controller
+        rtde_->send(cmd);
+
+        if (cmd.type_ != RTDE::RobotCommand::Type::STOP_SCRIPT)
         {
-          // If robot is in an emergency or protective stop return false
-          if (isProtectiveStopped() || isEmergencyStopped())
+          start_time = std::chrono::high_resolution_clock::now();
+          while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
           {
-            sendClearCommand();
-            return false;
-          }
+            // If robot is in an emergency or protective stop return false
+            if (isProtectiveStopped() || isEmergencyStopped())
+            {
+              sendClearCommand();
+              return false;
+            }
 
-          // Wait for program to stop running or timeout
-          auto current_time = std::chrono::high_resolution_clock::now();
-          auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-          if (duration > UR_EXECUTION_TIMEOUT)
-          {
-            sendClearCommand();
-            return false;
+            // Wait until the controller has finished executing or timeout
+            auto current_time = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+            if (duration > UR_EXECUTION_TIMEOUT)
+            {
+              sendClearCommand();
+              return false;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
           }
-          std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+        else
+        {
+          while (isProgramRunning())
+          {
+            // If robot is in an emergency or protective stop return false
+            if (isProtectiveStopped() || isEmergencyStopped())
+            {
+              sendClearCommand();
+              return false;
+            }
+
+            // Wait for program to stop running or timeout
+            auto current_time = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+            if (duration > UR_EXECUTION_TIMEOUT)
+            {
+              sendClearCommand();
+              return false;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+          }
+        }
+
+        // Make controller ready for next command
+        sendClearCommand();
+
+        return true;
       }
-
-      // Make controller ready for next command
-      sendClearCommand();
-
-      return true;
+    }
+    else
+    {
+      std::cerr << "RTDEControlInterface: RTDE control script is not running!" << std::endl;
+      return false;
     }
   }
   catch (std::exception &e)
