@@ -42,6 +42,8 @@ def rtde_control():
     global jog_dt = 0.002
     global jog_state = 0 # 0 - inactive, 1 - new setpoint, 2 - jogging, 3 - stopping (decelerating)
 
+    global async_finished = -2
+
     def exec_move_path():
       textmsg("exec_move_path")
       # inject move path
@@ -56,7 +58,17 @@ def rtde_control():
     end
 
     def signal_async_operation_finished():
-      write_output_integer_register(2, -1) # -1 indicates operation finished
+      if async_finished == -1:
+        async_finished = -2
+      else:
+        async_finished = -1
+      end
+      write_output_integer_register(2, async_finished) # negative values indicate operation finished
+    end
+
+    def reset_async_progress():
+      async_finished = -2
+      signal_async_operation_finished()
     end
 
     thread move_thread():
@@ -272,10 +284,6 @@ def rtde_control():
 
     def rtde_cmd():
         return read_input_integer_register(0)
-    end
-
-    def reset_async_progress():
-        write_output_integer_register(2, -1)
     end
 
     def process_cmd():
@@ -717,7 +725,6 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
               textmsg("get_forward_kinematics_args done")
         elif cmd == 45:
               textmsg("move_path")
-              write_output_integer_register(2, 0)
               async = read_input_integer_register(1)
               textmsg("async: ", async)
               stop_async_move()
@@ -761,7 +768,7 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
     # RTDE Control script - Main loop
     #
 
-    textmsg("RTDE Control Script Loaded (07.01.2021-09:47)")
+    textmsg("RTDE Control Script Loaded (15.01.2021-11:13)")
 
     # Initialize gain and damping for force mode to a more stable default
 $V50force_mode_set_gain_scaling(0.5)
