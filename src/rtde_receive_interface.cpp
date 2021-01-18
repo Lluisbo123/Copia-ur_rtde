@@ -11,9 +11,12 @@
 
 namespace ur_rtde
 {
-RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables,
-                                           bool verbose)
-    : variables_(std::move(variables)), hostname_(std::move(hostname)), verbose_(verbose)
+RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables, bool verbose,
+                                           bool use_upper_range_registers)
+    : variables_(std::move(variables)),
+      hostname_(std::move(hostname)),
+      verbose_(verbose),
+      use_upper_range_registers_(use_upper_range_registers)
 {
   port_ = 30004;
   rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
@@ -30,14 +33,22 @@ RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std
   // Set delta time to be used by receiveCallback
   delta_time_ = 1 / frequency_;
 
+  // Init Robot state
+  robot_state_ = std::make_shared<RobotState>();
+
+  // Map the output registers to functions
+  initOutputRegFuncMap();
+
+  if (use_upper_range_registers_)
+    register_offset_ = 24;
+  else
+    register_offset_ = 0;
+
   // Setup recipes
   setupRecipes(frequency_);
 
   // Start RTDE data synchronization
   rtde_->sendStart();
-
-  // Init Robot state
-  robot_state_ = std::make_shared<RobotState>();
 
   // Start executing receiveCallback
   th_ = std::make_shared<boost::thread>(boost::bind(&RTDEReceiveInterface::receiveCallback, this));
@@ -110,27 +121,176 @@ bool RTDEReceiveInterface::setupRecipes(const double& frequency)
                   "standard_analog_output1",
                   "robot_status_bits",
                   "safety_status_bits",
-                  "output_int_register_12",
-                  "output_int_register_13",
-                  "output_int_register_14",
-                  "output_int_register_15",
-                  "output_int_register_16",
-                  "output_int_register_17",
-                  "output_int_register_18",
-                  "output_int_register_19",
-                  "output_double_register_12",
-                  "output_double_register_13",
-                  "output_double_register_14",
-                  "output_double_register_15",
-                  "output_double_register_16",
-                  "output_double_register_17",
-                  "output_double_register_18",
-                  "output_double_register_19"};
+                  outIntReg(12),
+                  outIntReg(13),
+                  outIntReg(14),
+                  outIntReg(15),
+                  outIntReg(16),
+                  outIntReg(17),
+                  outIntReg(18),
+                  outIntReg(19),
+                  outDoubleReg(12),
+                  outDoubleReg(13),
+                  outDoubleReg(14),
+                  outDoubleReg(15),
+                  outDoubleReg(16),
+                  outDoubleReg(17),
+                  outDoubleReg(18),
+                  outDoubleReg(19)};
   }
 
   // Setup output
   rtde_->sendOutputSetup(variables_, frequency);
   return true;
+}
+
+void RTDEReceiveInterface::initOutputRegFuncMap()
+{
+  output_reg_func_map_["getOutput_int_register_0"] = std::bind(&RobotState::getOutput_int_register_0, robot_state_);
+  output_reg_func_map_["getOutput_int_register_1"] = std::bind(&RobotState::getOutput_int_register_1, robot_state_);
+  output_reg_func_map_["getOutput_int_register_2"] = std::bind(&RobotState::getOutput_int_register_2, robot_state_);
+  output_reg_func_map_["getOutput_int_register_3"] = std::bind(&RobotState::getOutput_int_register_3, robot_state_);
+  output_reg_func_map_["getOutput_int_register_4"] = std::bind(&RobotState::getOutput_int_register_4, robot_state_);
+  output_reg_func_map_["getOutput_int_register_5"] = std::bind(&RobotState::getOutput_int_register_5, robot_state_);
+  output_reg_func_map_["getOutput_int_register_6"] = std::bind(&RobotState::getOutput_int_register_6, robot_state_);
+  output_reg_func_map_["getOutput_int_register_7"] = std::bind(&RobotState::getOutput_int_register_7, robot_state_);
+  output_reg_func_map_["getOutput_int_register_8"] = std::bind(&RobotState::getOutput_int_register_8, robot_state_);
+  output_reg_func_map_["getOutput_int_register_9"] = std::bind(&RobotState::getOutput_int_register_9, robot_state_);
+  output_reg_func_map_["getOutput_int_register_10"] = std::bind(&RobotState::getOutput_int_register_10, robot_state_);
+  output_reg_func_map_["getOutput_int_register_11"] = std::bind(&RobotState::getOutput_int_register_11, robot_state_);
+  output_reg_func_map_["getOutput_int_register_12"] = std::bind(&RobotState::getOutput_int_register_12, robot_state_);
+  output_reg_func_map_["getOutput_int_register_13"] = std::bind(&RobotState::getOutput_int_register_13, robot_state_);
+  output_reg_func_map_["getOutput_int_register_14"] = std::bind(&RobotState::getOutput_int_register_14, robot_state_);
+  output_reg_func_map_["getOutput_int_register_15"] = std::bind(&RobotState::getOutput_int_register_15, robot_state_);
+  output_reg_func_map_["getOutput_int_register_16"] = std::bind(&RobotState::getOutput_int_register_16, robot_state_);
+  output_reg_func_map_["getOutput_int_register_17"] = std::bind(&RobotState::getOutput_int_register_17, robot_state_);
+  output_reg_func_map_["getOutput_int_register_18"] = std::bind(&RobotState::getOutput_int_register_18, robot_state_);
+  output_reg_func_map_["getOutput_int_register_19"] = std::bind(&RobotState::getOutput_int_register_19, robot_state_);
+  output_reg_func_map_["getOutput_int_register_20"] = std::bind(&RobotState::getOutput_int_register_20, robot_state_);
+  output_reg_func_map_["getOutput_int_register_21"] = std::bind(&RobotState::getOutput_int_register_21, robot_state_);
+  output_reg_func_map_["getOutput_int_register_22"] = std::bind(&RobotState::getOutput_int_register_22, robot_state_);
+  output_reg_func_map_["getOutput_int_register_23"] = std::bind(&RobotState::getOutput_int_register_23, robot_state_);
+  output_reg_func_map_["getOutput_int_register_24"] = std::bind(&RobotState::getOutput_int_register_24, robot_state_);
+  output_reg_func_map_["getOutput_int_register_25"] = std::bind(&RobotState::getOutput_int_register_25, robot_state_);
+  output_reg_func_map_["getOutput_int_register_26"] = std::bind(&RobotState::getOutput_int_register_26, robot_state_);
+  output_reg_func_map_["getOutput_int_register_27"] = std::bind(&RobotState::getOutput_int_register_27, robot_state_);
+  output_reg_func_map_["getOutput_int_register_28"] = std::bind(&RobotState::getOutput_int_register_28, robot_state_);
+  output_reg_func_map_["getOutput_int_register_29"] = std::bind(&RobotState::getOutput_int_register_29, robot_state_);
+  output_reg_func_map_["getOutput_int_register_30"] = std::bind(&RobotState::getOutput_int_register_30, robot_state_);
+  output_reg_func_map_["getOutput_int_register_31"] = std::bind(&RobotState::getOutput_int_register_31, robot_state_);
+  output_reg_func_map_["getOutput_int_register_32"] = std::bind(&RobotState::getOutput_int_register_32, robot_state_);
+  output_reg_func_map_["getOutput_int_register_33"] = std::bind(&RobotState::getOutput_int_register_33, robot_state_);
+  output_reg_func_map_["getOutput_int_register_34"] = std::bind(&RobotState::getOutput_int_register_34, robot_state_);
+  output_reg_func_map_["getOutput_int_register_35"] = std::bind(&RobotState::getOutput_int_register_35, robot_state_);
+  output_reg_func_map_["getOutput_int_register_36"] = std::bind(&RobotState::getOutput_int_register_36, robot_state_);
+  output_reg_func_map_["getOutput_int_register_37"] = std::bind(&RobotState::getOutput_int_register_37, robot_state_);
+  output_reg_func_map_["getOutput_int_register_38"] = std::bind(&RobotState::getOutput_int_register_38, robot_state_);
+  output_reg_func_map_["getOutput_int_register_39"] = std::bind(&RobotState::getOutput_int_register_39, robot_state_);
+  output_reg_func_map_["getOutput_int_register_40"] = std::bind(&RobotState::getOutput_int_register_40, robot_state_);
+  output_reg_func_map_["getOutput_int_register_41"] = std::bind(&RobotState::getOutput_int_register_41, robot_state_);
+  output_reg_func_map_["getOutput_int_register_42"] = std::bind(&RobotState::getOutput_int_register_42, robot_state_);
+  output_reg_func_map_["getOutput_int_register_43"] = std::bind(&RobotState::getOutput_int_register_43, robot_state_);
+  output_reg_func_map_["getOutput_int_register_44"] = std::bind(&RobotState::getOutput_int_register_44, robot_state_);
+  output_reg_func_map_["getOutput_int_register_45"] = std::bind(&RobotState::getOutput_int_register_45, robot_state_);
+  output_reg_func_map_["getOutput_int_register_46"] = std::bind(&RobotState::getOutput_int_register_46, robot_state_);
+  output_reg_func_map_["getOutput_int_register_47"] = std::bind(&RobotState::getOutput_int_register_47, robot_state_);
+
+  output_reg_func_map_["getOutput_double_register_0"] =
+      std::bind(&RobotState::getOutput_double_register_0, robot_state_);
+  output_reg_func_map_["getOutput_double_register_1"] =
+      std::bind(&RobotState::getOutput_double_register_1, robot_state_);
+  output_reg_func_map_["getOutput_double_register_2"] =
+      std::bind(&RobotState::getOutput_double_register_2, robot_state_);
+  output_reg_func_map_["getOutput_double_register_3"] =
+      std::bind(&RobotState::getOutput_double_register_3, robot_state_);
+  output_reg_func_map_["getOutput_double_register_4"] =
+      std::bind(&RobotState::getOutput_double_register_4, robot_state_);
+  output_reg_func_map_["getOutput_double_register_5"] =
+      std::bind(&RobotState::getOutput_double_register_5, robot_state_);
+  output_reg_func_map_["getOutput_double_register_6"] =
+      std::bind(&RobotState::getOutput_double_register_6, robot_state_);
+  output_reg_func_map_["getOutput_double_register_7"] =
+      std::bind(&RobotState::getOutput_double_register_7, robot_state_);
+  output_reg_func_map_["getOutput_double_register_8"] =
+      std::bind(&RobotState::getOutput_double_register_8, robot_state_);
+  output_reg_func_map_["getOutput_double_register_9"] =
+      std::bind(&RobotState::getOutput_double_register_9, robot_state_);
+  output_reg_func_map_["getOutput_double_register_10"] =
+      std::bind(&RobotState::getOutput_double_register_10, robot_state_);
+  output_reg_func_map_["getOutput_double_register_11"] =
+      std::bind(&RobotState::getOutput_double_register_11, robot_state_);
+  output_reg_func_map_["getOutput_double_register_12"] =
+      std::bind(&RobotState::getOutput_double_register_12, robot_state_);
+  output_reg_func_map_["getOutput_double_register_13"] =
+      std::bind(&RobotState::getOutput_double_register_13, robot_state_);
+  output_reg_func_map_["getOutput_double_register_14"] =
+      std::bind(&RobotState::getOutput_double_register_14, robot_state_);
+  output_reg_func_map_["getOutput_double_register_15"] =
+      std::bind(&RobotState::getOutput_double_register_15, robot_state_);
+  output_reg_func_map_["getOutput_double_register_16"] =
+      std::bind(&RobotState::getOutput_double_register_16, robot_state_);
+  output_reg_func_map_["getOutput_double_register_17"] =
+      std::bind(&RobotState::getOutput_double_register_17, robot_state_);
+  output_reg_func_map_["getOutput_double_register_18"] =
+      std::bind(&RobotState::getOutput_double_register_18, robot_state_);
+  output_reg_func_map_["getOutput_double_register_19"] =
+      std::bind(&RobotState::getOutput_double_register_19, robot_state_);
+  output_reg_func_map_["getOutput_double_register_20"] =
+      std::bind(&RobotState::getOutput_double_register_20, robot_state_);
+  output_reg_func_map_["getOutput_double_register_21"] =
+      std::bind(&RobotState::getOutput_double_register_21, robot_state_);
+  output_reg_func_map_["getOutput_double_register_22"] =
+      std::bind(&RobotState::getOutput_double_register_22, robot_state_);
+  output_reg_func_map_["getOutput_double_register_23"] =
+      std::bind(&RobotState::getOutput_double_register_23, robot_state_);
+  output_reg_func_map_["getOutput_double_register_24"] =
+      std::bind(&RobotState::getOutput_double_register_24, robot_state_);
+  output_reg_func_map_["getOutput_double_register_25"] =
+      std::bind(&RobotState::getOutput_double_register_25, robot_state_);
+  output_reg_func_map_["getOutput_double_register_26"] =
+      std::bind(&RobotState::getOutput_double_register_26, robot_state_);
+  output_reg_func_map_["getOutput_double_register_27"] =
+      std::bind(&RobotState::getOutput_double_register_27, robot_state_);
+  output_reg_func_map_["getOutput_double_register_28"] =
+      std::bind(&RobotState::getOutput_double_register_28, robot_state_);
+  output_reg_func_map_["getOutput_double_register_29"] =
+      std::bind(&RobotState::getOutput_double_register_29, robot_state_);
+  output_reg_func_map_["getOutput_double_register_30"] =
+      std::bind(&RobotState::getOutput_double_register_30, robot_state_);
+  output_reg_func_map_["getOutput_double_register_31"] =
+      std::bind(&RobotState::getOutput_double_register_31, robot_state_);
+  output_reg_func_map_["getOutput_double_register_32"] =
+      std::bind(&RobotState::getOutput_double_register_32, robot_state_);
+  output_reg_func_map_["getOutput_double_register_33"] =
+      std::bind(&RobotState::getOutput_double_register_33, robot_state_);
+  output_reg_func_map_["getOutput_double_register_34"] =
+      std::bind(&RobotState::getOutput_double_register_34, robot_state_);
+  output_reg_func_map_["getOutput_double_register_35"] =
+      std::bind(&RobotState::getOutput_double_register_35, robot_state_);
+  output_reg_func_map_["getOutput_double_register_36"] =
+      std::bind(&RobotState::getOutput_double_register_36, robot_state_);
+  output_reg_func_map_["getOutput_double_register_37"] =
+      std::bind(&RobotState::getOutput_double_register_37, robot_state_);
+  output_reg_func_map_["getOutput_double_register_38"] =
+      std::bind(&RobotState::getOutput_double_register_38, robot_state_);
+  output_reg_func_map_["getOutput_double_register_39"] =
+      std::bind(&RobotState::getOutput_double_register_39, robot_state_);
+  output_reg_func_map_["getOutput_double_register_40"] =
+      std::bind(&RobotState::getOutput_double_register_40, robot_state_);
+  output_reg_func_map_["getOutput_double_register_41"] =
+      std::bind(&RobotState::getOutput_double_register_41, robot_state_);
+  output_reg_func_map_["getOutput_double_register_42"] =
+      std::bind(&RobotState::getOutput_double_register_42, robot_state_);
+  output_reg_func_map_["getOutput_double_register_43"] =
+      std::bind(&RobotState::getOutput_double_register_43, robot_state_);
+  output_reg_func_map_["getOutput_double_register_44"] =
+      std::bind(&RobotState::getOutput_double_register_44, robot_state_);
+  output_reg_func_map_["getOutput_double_register_45"] =
+      std::bind(&RobotState::getOutput_double_register_45, robot_state_);
+  output_reg_func_map_["getOutput_double_register_46"] =
+      std::bind(&RobotState::getOutput_double_register_46, robot_state_);
+  output_reg_func_map_["getOutput_double_register_47"] =
+      std::bind(&RobotState::getOutput_double_register_47, robot_state_);
 }
 
 void RTDEReceiveInterface::receiveCallback()
@@ -172,6 +332,12 @@ bool RTDEReceiveInterface::reconnect()
 
     // Set delta time to be used by receiveCallback
     delta_time_ = 1 / frequency_;
+
+    // Init Robot state
+    robot_state_ = std::make_shared<RobotState>();
+
+    // Map the output registers to functions
+    initOutputRegFuncMap();
 
     // Setup recipes
     setupRecipes(frequency_);
@@ -416,54 +582,50 @@ bool RTDEReceiveInterface::isEmergencyStopped()
 
 int RTDEReceiveInterface::getOutputIntRegister(int output_id)
 {
-  switch (output_id)
+  if (use_upper_range_registers_)
   {
-    case OUTPUT_INT_REGISTER_12:
-      return robot_state_->getOutput_int_register_12();
-    case OUTPUT_INT_REGISTER_13:
-      return robot_state_->getOutput_int_register_13();
-    case OUTPUT_INT_REGISTER_14:
-      return robot_state_->getOutput_int_register_14();
-    case OUTPUT_INT_REGISTER_15:
-      return robot_state_->getOutput_int_register_15();
-    case OUTPUT_INT_REGISTER_16:
-      return robot_state_->getOutput_int_register_16();
-    case OUTPUT_INT_REGISTER_17:
-      return robot_state_->getOutput_int_register_17();
-    case OUTPUT_INT_REGISTER_18:
-      return robot_state_->getOutput_int_register_18();
-    case OUTPUT_INT_REGISTER_19:
-      return robot_state_->getOutput_int_register_19();
-    default:
-      throw std::range_error("The supported range of getOutputIntRegister() is [12-19], you specified: " +
-                             std::to_string(output_id));
+    if (!isWithinBounds(output_id, 36, 43))
+    {
+      throw std::range_error(
+          "The supported range of getOutputIntRegister() is [36-43], when using upper range, you specified: " +
+          std::to_string(output_id));
+    }
   }
+  else
+  {
+    if (!isWithinBounds(output_id, 12, 19))
+    {
+      throw std::range_error(
+          "The supported range of getOutputDoubleRegister() is [12-19], when using lower range you specified: " +
+          std::to_string(output_id));
+    }
+  }
+
+  return getOutputIntReg(output_id);
 }
 
 double RTDEReceiveInterface::getOutputDoubleRegister(int output_id)
 {
-  switch (output_id)
+  if (use_upper_range_registers_)
   {
-    case OUTPUT_DOUBLE_REGISTER_12:
-      return robot_state_->getOutput_double_register_12();
-    case OUTPUT_DOUBLE_REGISTER_13:
-      return robot_state_->getOutput_double_register_13();
-    case OUTPUT_DOUBLE_REGISTER_14:
-      return robot_state_->getOutput_double_register_14();
-    case OUTPUT_DOUBLE_REGISTER_15:
-      return robot_state_->getOutput_double_register_15();
-    case OUTPUT_DOUBLE_REGISTER_16:
-      return robot_state_->getOutput_double_register_16();
-    case OUTPUT_DOUBLE_REGISTER_17:
-      return robot_state_->getOutput_double_register_17();
-    case OUTPUT_DOUBLE_REGISTER_18:
-      return robot_state_->getOutput_double_register_18();
-    case OUTPUT_DOUBLE_REGISTER_19:
-      return robot_state_->getOutput_double_register_19();
-    default:
-      throw std::range_error("The supported range of getOutputDoubleRegister() is [12-19], you specified: " +
-                             std::to_string(output_id));
+    if (!isWithinBounds(output_id, 36, 43))
+    {
+      throw std::range_error(
+          "The supported range of getOutputIntRegister() is [36-43], when using upper range, you specified: " +
+          std::to_string(output_id));
+    }
   }
+  else
+  {
+    if (!isWithinBounds(output_id, 12, 19))
+    {
+      throw std::range_error(
+          "The supported range of getOutputDoubleRegister() is [12-19], when using lower range you specified: " +
+          std::to_string(output_id));
+    }
+  }
+
+  return getOutputDoubleReg(output_id);
 }
 
 }  // namespace ur_rtde

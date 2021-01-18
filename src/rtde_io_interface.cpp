@@ -8,9 +8,10 @@
 
 namespace ur_rtde
 {
-RTDEIOInterface::RTDEIOInterface(std::string hostname, int port, bool verbose)
-    : hostname_(std::move(hostname)), port_(port), verbose_(verbose)
+RTDEIOInterface::RTDEIOInterface(std::string hostname, bool verbose, bool use_upper_range_registers)
+    : hostname_(std::move(hostname)), verbose_(verbose), use_upper_range_registers_(use_upper_range_registers)
 {
+  port_ = 30004;
   rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
@@ -47,32 +48,38 @@ bool RTDEIOInterface::reconnect()
 
 bool RTDEIOInterface::setupRecipes()
 {
+  std::string cmd_reg = "";
+  if(use_upper_range_registers_)
+    cmd_reg = "input_int_register_44";
+  else
+    cmd_reg = "input_int_register_20";
+
   // Recipe 1
-  std::vector<std::string> no_cmd_input = {"input_int_register_20"};
+  std::vector<std::string> no_cmd_input = {cmd_reg};
   rtde_->sendInputSetup(no_cmd_input);
 
   // Recipe 2
-  std::vector<std::string> set_std_digital_out_input = {"input_int_register_20", "standard_digital_output_mask",
+  std::vector<std::string> set_std_digital_out_input = {cmd_reg, "standard_digital_output_mask",
                                                         "standard_digital_output"};
   rtde_->sendInputSetup(set_std_digital_out_input);
 
   // Recipe 3
-  std::vector<std::string> set_tool_digital_out_input = {"input_int_register_20", "tool_digital_output_mask",
+  std::vector<std::string> set_tool_digital_out_input = {cmd_reg, "tool_digital_output_mask",
                                                          "tool_digital_output"};
   rtde_->sendInputSetup(set_tool_digital_out_input);
 
   // Recipe 4
-  std::vector<std::string> set_speed_slider = {"input_int_register_20", "speed_slider_mask", "speed_slider_fraction"};
+  std::vector<std::string> set_speed_slider = {cmd_reg, "speed_slider_mask", "speed_slider_fraction"};
   rtde_->sendInputSetup(set_speed_slider);
 
   // Recipe 5
-  std::vector<std::string> set_std_analog_output = {"input_int_register_20", "standard_analog_output_mask",
+  std::vector<std::string> set_std_analog_output = {cmd_reg, "standard_analog_output_mask",
                                                     "standard_analog_output_type", "standard_analog_output_0",
                                                     "standard_analog_output_1"};
   rtde_->sendInputSetup(set_std_analog_output);
 
   // Recipe 6
-  std::vector<std::string> set_conf_digital_out_input = {"input_int_register_20", "configurable_digital_output_mask",
+  std::vector<std::string> set_conf_digital_out_input = {cmd_reg, "configurable_digital_output_mask",
                                                          "configurable_digital_output"};
   rtde_->sendInputSetup(set_conf_digital_out_input);
   return true;

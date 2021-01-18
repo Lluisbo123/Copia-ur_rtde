@@ -15,7 +15,8 @@ namespace ur_rtde
 class RTDEIOInterface
 {
  public:
-  RTDE_EXPORT explicit RTDEIOInterface(std::string hostname, int port = 30004, bool verbose = false);
+  RTDE_EXPORT explicit RTDEIOInterface(std::string hostname, bool verbose = false,
+                                       bool use_upper_range_registers = false);
 
   RTDE_EXPORT virtual ~RTDEIOInterface();
 
@@ -84,6 +85,7 @@ class RTDEIOInterface
   std::string hostname_;
   int port_;
   bool verbose_;
+  bool use_upper_range_registers_;
   std::shared_ptr<RTDE> rtde_;
 };
 

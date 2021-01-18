@@ -37,7 +37,7 @@ class RTDEReceiveInterface
 {
  public:
   RTDE_EXPORT explicit RTDEReceiveInterface(std::string hostname, std::vector<std::string> variables = {},
-                                            bool verbose = false);
+                                            bool verbose = false, bool use_upper_range_registers = false);
 
   RTDE_EXPORT virtual ~RTDEReceiveInterface();
 
@@ -346,17 +346,19 @@ class RTDEReceiveInterface
   RTDE_EXPORT bool isEmergencyStopped();
 
   /**
-   * @brief Get the specified output integer register [12-19].
-   * @param output_id the id of the register to read, current supported range is: [12-19], this can
-   * be adjusted by changing the RTDEReceiveInterface output recipes.
+   * @brief Get the specified output integer register in either lower range [12-19] or upper range [36-43].
+   * @param output_id the id of the register to read, current supported range is: [12-19] or [36-43], this can
+   * be adjusted by changing the RTDEReceiveInterface output recipes and by using the use_upper_range_registers
+   * constructor flag to switch between lower and upper range.
    * @returns an integer from the specified output register
    */
   RTDE_EXPORT int getOutputIntRegister(int output_id);
 
   /**
-   * @brief Get the specified output double register [12-19].
-   * @param output_id the id of the register to read, current supported range is: [12-19], this can
-   * be adjusted by changing the RTDEReceiveInterface output recipes.
+   * @brief Get the specified output double register in either lower range [12-19] or upper range [36-43].
+   * @param output_id the id of the register to read, current supported range is: [12-19] or [36-43], this can
+   * be adjusted by changing the RTDEReceiveInterface output recipes and by using the use_upper_range_registers
+   * constructor flag to switch between lower and upper range.
    * @returns a double from the specified output register
    */
   RTDE_EXPORT double getOutputDoubleRegister(int output_id);
@@ -364,19 +366,52 @@ class RTDEReceiveInterface
   RTDE_EXPORT void receiveCallback();
 
  private:
-  bool setupRecipes(const double &frequency);
+  bool setupRecipes(const double& frequency);
+
+  void initOutputRegFuncMap();
+
+  std::string outDoubleReg(int reg) const
+  {
+    return "output_double_register_" + std::to_string(register_offset_ + reg);
+  };
+
+  std::string outIntReg(int reg) const
+  {
+    return "output_int_register_" + std::to_string(register_offset_ + reg);
+  };
+
+  double getOutputDoubleReg(int reg)
+  {
+    std::string func_name = "getOutput_double_register_" + std::to_string(reg);
+    return output_reg_func_map_[func_name]();
+  };
+
+  int getOutputIntReg(int reg)
+  {
+    std::string func_name = "getOutput_int_register_" + std::to_string(reg);
+    return output_reg_func_map_[func_name]();
+  };
+
+  template <typename T>
+  bool isWithinBounds(const T& value, const T& low, const T& high)
+  {
+    return (low <= value && value <= high);
+  }
 
  private:
   std::vector<std::string> variables_;
   std::string hostname_;
   int port_;
   bool verbose_;
+  bool use_upper_range_registers_;
+  int register_offset_;
   double frequency_;
   double delta_time_;
   std::shared_ptr<RTDE> rtde_;
   std::atomic<bool> stop_thread{false};
   std::shared_ptr<boost::thread> th_;
   std::shared_ptr<RobotState> robot_state_;
+  std::map<std::string, std::function<double()>> output_reg_func_map_;
 };
 
 }  // namespace ur_rtde

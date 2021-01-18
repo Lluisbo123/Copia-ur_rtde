@@ -43,7 +43,8 @@ namespace ur_rtde
 class RTDEControlInterface
 {
  public:
-  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, bool upload_script = true, bool verbose = false);
+  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, bool upload_script = true, bool verbose = false,
+                                            bool use_upper_range_registers = false);
 
   RTDE_EXPORT virtual ~RTDEControlInterface();
 
@@ -219,7 +220,7 @@ class RTDEControlInterface
     * @param q joint positions
     * @param speed tool speed [m/s]
     * @param acceleration tool acceleration [m/s^2]
-    * @param async a bool specifying if the move command should be asynchronous. If async is true it is possible to
+    * @param async a bool specifying if the move command should be asynchrgonous. If async is true it is possible to
     * stop a move command using either the stopJ or stopL function. Default is false, this means the function will
     * block until the movement has completed.
     */
@@ -590,6 +591,8 @@ class RTDEControlInterface
  private:
   bool setupRecipes(const double &frequency);
 
+  void initOutputRegFuncMap();
+
   bool sendCommand(const RTDE::RobotCommand &cmd);
 
   void sendClearCommand();
@@ -618,19 +621,54 @@ class RTDEControlInterface
 
   void receiveCallback();
 
+  std::string outDoubleReg(int reg) const
+  {
+    return "output_double_register_" + std::to_string(register_offset_+reg);
+  };
+
+  std::string outIntReg(int reg) const
+  {
+    return "output_int_register_" + std::to_string(register_offset_+reg);
+  };
+
+  std::string inDoubleReg(int reg) const
+  {
+    return "input_double_register_" + std::to_string(register_offset_+reg);
+  };
+
+  std::string inIntReg(int reg) const
+  {
+    return "input_int_register_" + std::to_string(register_offset_+reg);
+  };
+
+  double getOutputDoubleReg(int reg)
+  {
+    std::string func_name = "getOutput_double_register_"+std::to_string(register_offset_+reg);
+    return output_reg_func_map_[func_name]();
+  };
+
+  int getOutputIntReg(int reg)
+  {
+    std::string func_name = "getOutput_int_register_"+std::to_string(register_offset_+reg);
+    return output_reg_func_map_[func_name]();
+  };
+
  private:
   std::string hostname_;
   int port_;
   bool upload_script_;
   bool verbose_;
+  bool use_upper_range_registers_;
   double frequency_;
   double delta_time_;
+  int register_offset_;
   std::shared_ptr<RTDE> rtde_;
   std::atomic<bool> stop_thread_{false};
   std::shared_ptr<boost::thread> th_;
   std::shared_ptr<DashboardClient> db_client_;
   std::shared_ptr<ScriptClient> script_client_;
   std::shared_ptr<RobotState> robot_state_;
+  std::map<std::string, std::function<double()>> output_reg_func_map_;
 };
 
 }  // namespace ur_rtde

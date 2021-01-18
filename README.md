@@ -20,6 +20,7 @@ A C++ interface for controlling and receiving data from a UR robot using the
  * Available on multiple platforms (Linux, Windows, macOS)
  * Can be used from C++ and Python.
  * Relies only on STL datatypes and can be used with various robot frameworks.
+ * Switchable register range (FieldBus / PLC [0..23] or external clients range [24..47])
  * Easy to install and setup.
  
 ### Documentation ###
