@@ -251,6 +251,10 @@ if(${CODE})
 		add_executable(move_async_example examples/cpp/move_async_example.cpp)
 		target_include_directories(move_async_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 		target_link_libraries(move_async_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+	
+		add_executable(move_path_async_example examples/cpp/move_path_async_example.cpp)
+		target_include_directories(move_path_async_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+		target_link_libraries(move_path_async_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
 
 		add_executable(robotiq_gripper_example examples/cpp/robotiq_gripper_example.cpp)
 		target_include_directories(robotiq_gripper_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
@@ -270,7 +274,7 @@ if(${CODE})
 			endif()
 		endif (UNIX)
 
-		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example move_async_example robotiq_gripper_example
+		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example move_async_example move_path_async_example robotiq_gripper_example
 				PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 				)

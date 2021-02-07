@@ -363,6 +363,26 @@ class RTDEReceiveInterface
    */
   RTDE_EXPORT double getOutputDoubleRegister(int output_id);
 
+  /**
+   * Reads progress information for asynchronous operations that supports
+   * progress feedback (such as movePath).
+   * @retval <0 Indicates that no async operation is running or
+   * that an async operation has finished. The returned values of two 
+   * consecutive async operations is never equal. Normally the 
+   * returned values are toggled between -1 and -2. This allows the application
+   * to clearly detect the end of an operation even if it is too short to see its
+   * start. That means, if the value returned by this function is less than 0 
+   * and is different from that last value returned by this function, then a
+   * new async operation has finished.
+   * @retval 0 Indicates that an async operation has started - progress 0
+   * @retval >= 0 Indicates the progress of an async operation. For example,
+   * if an operation has 3 steps, the progress ranges from 0 - 2. The progress
+   * value is updated, before a step is executed. When the last step has been
+   * executed, the value will change to -1 to indicate the end of the async
+   * operation.
+   */
+  RTDE_EXPORT int getAsyncOperationProgress();
+
   RTDE_EXPORT void receiveCallback();
 
  private:

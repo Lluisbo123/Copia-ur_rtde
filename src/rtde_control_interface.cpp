@@ -13,6 +13,26 @@
 
 namespace ur_rtde
 {
+static const std::string move_path_inject_id = "# inject move path\n";
+
+static void verifyValueIsWithin(const double &value, const double &min, const double &max)
+{
+  if (std::isnan(min) || std::isnan(max))
+  {
+    throw std::invalid_argument("Make sure both min and max are not NaN's");
+  }
+  else if (std::isnan(value))
+  {
+    throw std::invalid_argument("The value is considered NaN");
+  }
+  else if (!(std::isgreaterequal(value, min) && std::islessequal(value, max)))
+  {
+    std::ostringstream oss;
+    oss << "The value is not within [" << min << ";" << max << "]";
+    throw std::range_error(oss.str());
+  }
+}
+
 RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_script, bool verbose,
                                            bool use_upper_range_registers)
     : hostname_(std::move(hostname)),
@@ -815,18 +835,43 @@ std::string RTDEControlInterface::buildPathScriptCode(const std::vector<std::vec
 
 bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path, bool async)
 {
-  // This is the first step because it may throw an exception
-  auto PathScript = buildPathScriptCode(path, "movej(");
+  Path NewPath;
+  NewPath.appendMovejPath(path);
+  auto PathScript = NewPath.toScriptCode();
+  if (verbose_)
+    std::cout << "PathScript: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
+
   // stop the running RTDE control script
   stopScript();
   // now inject the movej path into the main UR script
-  script_client_->setScriptInjection("# inject movej path\n", PathScript);
+  script_client_->setScriptInjection(move_path_inject_id, PathScript);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
 
   // Now send the command
   RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEJ_PATH;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVE_PATH;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
+  robot_cmd.async_ = async ? 1 : 0;
+  return sendCommand(robot_cmd);
+}
+
+bool RTDEControlInterface::movePath(const Path &path, bool async)
+{
+  // This is the first step because it may throw an exception
+  auto path_script = path.toScriptCode();
+  if (verbose_)
+    std::cout << "path_script: ----------------------------------------------\n" << path_script << "\n\n" << std::endl;
+  // stop the running RTDE control script
+  stopScript();
+  // now inject the movej path into the main UR script
+  script_client_->setScriptInjection(move_path_inject_id, path_script);
+  // Re-upload RTDE script to the UR Controller
+  script_client_->sendScript();
+
+  // Now send the command
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVE_PATH;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
   robot_cmd.async_ = async ? 1 : 0;
   return sendCommand(robot_cmd);
@@ -870,18 +915,22 @@ bool RTDEControlInterface::moveJ_IK(const std::vector<double> &transform, double
 
 bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path, bool async)
 {
-  // This is the first step because it may throw an exception
-  auto PathScript = buildPathScriptCode(path, "movel(p");
+  Path NewPath;
+  NewPath.appendMovelPath(path);
+  auto PathScript = NewPath.toScriptCode();
+  if (verbose_)
+    std::cout << "Path: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
+
   // stop the running RTDE control script
   stopScript();
   // now inject the movel path into the main UR script
-  script_client_->setScriptInjection("# inject movel path\n", PathScript);
+  script_client_->setScriptInjection(move_path_inject_id, PathScript);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
 
   // Now send the command
   RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEL_PATH;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVE_PATH;
   robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
   robot_cmd.async_ = async ? 1 : 0;
   return sendCommand(robot_cmd);
@@ -1679,6 +1728,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
           }
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         else
         {
@@ -1701,7 +1751,9 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
           }
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+      }
 
         // Make controller ready for next command
         sendClearCommand();
@@ -1742,5 +1794,112 @@ void RTDEControlInterface::sendClearCommand()
   clear_cmd.type_ = RTDE::RobotCommand::Type::NO_CMD;
   clear_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
   rtde_->send(clear_cmd);
+}
+
+struct VelocityAccLimits
+{
+  double velocity_min;
+  double velocity_max;
+  double acceleration_min;
+  double acceleration_max;
+};
+
+std::string PathEntry::toScriptCode() const
+{
+  static const VelocityAccLimits joint_limits = {UR_JOINT_VELOCITY_MIN, UR_JOINT_VELOCITY_MAX, UR_JOINT_ACCELERATION_MIN,
+                                                UR_JOINT_ACCELERATION_MAX};
+  static const VelocityAccLimits tool_limits = {UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX, UR_TOOL_ACCELERATION_MIN,
+                                               UR_TOOL_ACCELERATION_MAX};
+
+  const VelocityAccLimits &limits = (PositionJoints == pos_type_) ? joint_limits : tool_limits;
+  switch (move_type_)
+  {
+    case MoveJ:
+    case MoveL:
+    case MoveP:
+      verifyValueIsWithin(param_[6], limits.velocity_min, limits.velocity_max);
+      verifyValueIsWithin(param_[7], limits.acceleration_min, limits.acceleration_max);
+      verifyValueIsWithin(param_[8], UR_BLEND_MIN, UR_BLEND_MAX);
+      break;
+    case MoveC:
+      throw std::runtime_error("MoveC in path not supported yet");
+      break;
+  }
+
+  std::stringstream ss;
+  ss << "\t";
+  switch (move_type_)
+  {
+    case MoveJ:
+      ss << "movej(";
+      break;
+    case MoveL:
+      ss << "movel(";
+      break;
+    case MoveP:
+      ss << "movep(";
+      break;
+    case MoveC:
+      ss << "movec(";
+      break;
+  }
+
+  if (PositionTcpPose == pos_type_)
+  {
+    ss << "p";
+  }
+
+  ss << "[" << param_[0] << "," << param_[1] << "," << param_[2] << "," << param_[3] << "," << param_[4] << ","
+     << param_[5] << "],"
+     << "a=" << param_[7] << ",v=" << param_[6] << ",r=" << param_[8] << ")\n";
+  return ss.str();
+}
+
+std::string Path::toScriptCode() const
+{
+  std::stringstream ss;
+  for (int i = 0; i < waypoints_.size(); ++i)
+  {
+    ss << "\tsignal_async_progress(" << i << ")\n";
+    ss << waypoints_[i].toScriptCode();
+  }
+
+  return ss.str();
+}
+
+void Path::addEntry(const PathEntry &entry)
+{
+  waypoints_.push_back(entry);
+}
+
+void Path::clear()
+{
+  waypoints_.clear();
+}
+
+std::size_t Path::size() const
+{
+  return waypoints_.size();
+}
+
+const std::vector<PathEntry> &Path::waypoints() const
+{
+  return waypoints_;
+}
+
+void Path::appendMovelPath(const std::vector<std::vector<double>> &path)
+{
+  for (const auto &move_l : path)
+  {
+    waypoints_.push_back(PathEntry(PathEntry::MoveL, PathEntry::PositionTcpPose, move_l));
+  }
+}
+
+void Path::appendMovejPath(const std::vector<std::vector<double>> &path)
+{
+  for (const auto &move_j : path)
+  {
+    waypoints_.push_back(PathEntry(PathEntry::MoveJ, PathEntry::PositionJoints, move_j));
+  }
 }
 }  // namespace ur_rtde
