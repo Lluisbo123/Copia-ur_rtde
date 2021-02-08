@@ -11,7 +11,7 @@ target_link_libraries(forcemode_example PUBLIC ur_rtde::rtde)
 add_executable(io io_example.cpp)
 target_link_libraries(io PUBLIC ur_rtde::rtde)
 
-add_executable(move_path_async_example.cpp)
+add_executable(move_path_async_example move_path_async_example.cpp)
 target_link_libraries(move_path_async_example PUBLIC ur_rtde::rtde)
 
 add_executable(movej_path_with_blend movej_path_with_blend_example.cpp)

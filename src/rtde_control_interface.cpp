@@ -1899,7 +1899,7 @@ std::string PathEntry::toScriptCode() const
 std::string Path::toScriptCode() const
 {
   std::stringstream ss;
-  for (int i = 0; i < waypoints_.size(); ++i)
+  for (size_t i = 0; i < waypoints_.size(); ++i)
   {
     ss << "\tsignal_async_progress(" << i << ")\n";
     ss << waypoints_[i].toScriptCode();
