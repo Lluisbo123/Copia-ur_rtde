@@ -761,13 +761,13 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
                   exec_move_path()
                   textmsg("move_path done")
               end
-        elif cmd == 47:
+        elif cmd == 46:
               textmsg("get_inverse_kin_default")
               x = pose_from_input_float_registers(0)
               q = get_inverse_kin(x)
               q_to_output_float_registers(0, q)
               textmsg("get_inverse_kin_default done")
-        elif cmd == 48:
+        elif cmd == 47:
               textmsg("is_steady")
               robot_is_steady = is_steady()
               if robot_is_steady == True:

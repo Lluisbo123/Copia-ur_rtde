@@ -58,6 +58,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
     }
   }
   port_ = 30004;
+  custom_script_running_ = false;
   rtde_ = std::make_shared<RTDE>(hostname_, port_, verbose_);
   rtde_->connect();
   rtde_->negotiateProtocolVersion();
@@ -180,7 +181,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
           break;
         }
         // Wait for program to be running
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
       }
 
       if (!isProgramRunning())
@@ -314,7 +315,7 @@ bool RTDEControlInterface::reconnect()
       while (!isProgramRunning())
       {
         // Wait for program to be running
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
     }
     else
@@ -334,7 +335,7 @@ bool RTDEControlInterface::reconnect()
       while (!isProgramRunning())
       {
         // Wait for program to be running
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
     }
   }
@@ -729,6 +730,7 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
 
 bool RTDEControlInterface::sendCustomScript(const std::string &script)
 {
+  custom_script_running_ = true;
   // First stop the running RTDE control script
   stopScript();
 
@@ -753,11 +755,19 @@ bool RTDEControlInterface::sendCustomScript(const std::string &script)
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
 
+  while (!isProgramRunning())
+  {
+    // Wait for program to be running
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+
+  custom_script_running_ = false;
   return true;
 }
 
 bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
 {
+  custom_script_running_ = true;
   // First stop the running RTDE control script
   stopScript();
 
@@ -781,6 +791,14 @@ bool RTDEControlInterface::sendCustomScriptFile(const std::string &file_path)
 
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
+
+  while (!isProgramRunning())
+  {
+    // Wait for program to be running
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+
+  custom_script_running_ = false;
   return true;
 }
 
@@ -841,12 +859,20 @@ bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path, b
   if (verbose_)
     std::cout << "PathScript: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
 
+  custom_script_running_ = true;
   // stop the running RTDE control script
   stopScript();
   // now inject the movej path into the main UR script
   script_client_->setScriptInjection(move_path_inject_id, PathScript);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
+  while (!isProgramRunning())
+  {
+    // Wait for program to be running
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+
+  custom_script_running_ = false;
 
   // Now send the command
   RTDE::RobotCommand robot_cmd;
@@ -862,12 +888,21 @@ bool RTDEControlInterface::movePath(const Path &path, bool async)
   auto path_script = path.toScriptCode();
   if (verbose_)
     std::cout << "path_script: ----------------------------------------------\n" << path_script << "\n\n" << std::endl;
+
+  custom_script_running_ = true;
   // stop the running RTDE control script
   stopScript();
   // now inject the movej path into the main UR script
   script_client_->setScriptInjection(move_path_inject_id, path_script);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
+  while (!isProgramRunning())
+  {
+    // Wait for program to be running
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+
+  custom_script_running_ = false;
 
   // Now send the command
   RTDE::RobotCommand robot_cmd;
@@ -921,12 +956,20 @@ bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path, b
   if (verbose_)
     std::cout << "Path: ----------------------------------------------\n" << PathScript << "\n\n" << std::endl;
 
+  custom_script_running_ = true;
   // stop the running RTDE control script
   stopScript();
   // now inject the movel path into the main UR script
   script_client_->setScriptInjection(move_path_inject_id, PathScript);
   // Re-upload RTDE script to the UR Controller
   script_client_->sendScript();
+  while (!isProgramRunning())
+  {
+    // Wait for program to be running
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+
+  custom_script_running_ = false;
 
   // Now send the command
   RTDE::RobotCommand robot_cmd;
@@ -1665,7 +1708,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 
   try
   {
-    if (isProgramRunning())
+    if (isProgramRunning() || custom_script_running_)
     {
       while (getControlScriptState() != UR_CONTROLLER_RDY_FOR_CMD)
       {
@@ -1728,7 +1771,6 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
           }
-          std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         else
         {
@@ -1753,7 +1795,6 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
           }
           std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-      }
 
         // Make controller ready for next command
         sendClearCommand();

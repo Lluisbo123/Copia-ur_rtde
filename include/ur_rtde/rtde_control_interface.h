@@ -679,6 +679,7 @@ class RTDEControlInterface
   bool upload_script_;
   bool verbose_;
   bool use_upper_range_registers_;
+  bool custom_script_running_;
   double frequency_;
   double delta_time_;
   int register_offset_;

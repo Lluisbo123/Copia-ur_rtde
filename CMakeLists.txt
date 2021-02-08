@@ -291,6 +291,7 @@ if(${CODE})
 		add_executable(ur_rtde::movej_path_with_blend_example ALIAS movej_path_with_blend_example)
 		add_executable(ur_rtde::io_example ALIAS io_example)
 		add_executable(ur_rtde::move_async_example ALIAS move_async_example)
+		add_executable(ur_rtde::move_path_async_example ALIAS move_path_async_example)
 		add_executable(ur_rtde::robotiq_gripper_example.cpp ALIAS robotiq_gripper_example)
 	endif()
 
