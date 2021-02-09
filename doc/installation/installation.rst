@@ -188,7 +188,7 @@ The following commands can be executed from the command prompt after Boost has b
     cd ur_rtde
     mkdir Build
     cd Build
-    cmake -DBOOST_ROOT="<Path:\to\boost_<version>>" -DBOOST_LIBRARYDIR="<Path:\to\boost_<VERSION>\<COMPILER>>" -DPYTHON_BINDINGS=OFF
+    cmake -DBOOST_ROOT="<Path:\to\boost_<version>>" -DBOOST_LIBRARYDIR="<Path:\to\boost_<VERSION>\<COMPILER>>" -DPYTHON_BINDINGS=OFF ..
     msbuild ur_rtde.sln /property:Configuration=Release /maxcpucount:<NUMBER_OF_CORES>
 
 filling out the system specific variables the setup looks like this for a computer with 8 cores,
@@ -196,7 +196,7 @@ using visual studio 2019 and boost 1.71.0.
 
 .. code-block:: shell
 
-    cmake -DBOOST_ROOT="C:\local\boost_1_71_0" -DBOOST_LIBRARYDIR="C:\local\boost_1_71_0\lib64-msvc-14.2" -DPYTHON_BINDINGS=OFF
+    cmake -DBOOST_ROOT="C:\local\boost_1_71_0" -DBOOST_LIBRARYDIR="C:\local\boost_1_71_0\lib64-msvc-14.2" -DPYTHON_BINDINGS=OFF ..
     msbuild ur_rtde.sln /property:Configuration=Release /maxcpucount:8
 
 The example above is the basic setup for compiling ur_rtde below you'll find a list of other commands and what they do.
