@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 
 #define MAJOR_VERSION 0
 #define CB3_MAJOR_VERSION 3

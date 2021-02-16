@@ -4,6 +4,7 @@
 
 #include <ur_rtde/rtde_export.h>
 #include <ur_rtde/rtde.h>
+#include <map>
 
 #define MAJOR_VERSION 0
 #define MINOR_VERSION 1
