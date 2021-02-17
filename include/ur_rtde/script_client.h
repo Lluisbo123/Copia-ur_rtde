@@ -59,9 +59,15 @@ class ScriptClient
    * Send the script file with the given file_name
    */
   RTDE_EXPORT bool sendScript(const std::string& file_name);
+
   RTDE_EXPORT bool sendScriptCommand(const std::string& cmd_str);
 
   RTDE_EXPORT void setScriptInjection(const std::string& search_string, const std::string& inject_string);
+
+  /**
+   * Get the corrected rtde_control script as a std::string
+   */
+  RTDE_EXPORT std::string getScript();
 
  private:
   std::string hostname_;

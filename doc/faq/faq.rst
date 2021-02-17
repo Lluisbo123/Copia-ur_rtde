@@ -20,9 +20,12 @@ Currently 3 different ways of controlling a Robotiq gripper with ur_rtde exists.
 
 * **Can I pause the motion of the robot?**
 
-You cannot pause the motion of the move, servo and speed commands. However you can stop them. For the servo or speed movements
-you can stop the motion by using either servoStop() for a servo command and speedStop() for a speed
-command.
+If you use ur_rtde together with the ExternalControl UR cap or a custom script on the controller, you can pause
+the motions using the teach pendant.
+
+When uploading the default rtde_control script, you cannot pause the motion of the move, servo and speed commands.
+However you can stop them. For the servo or speed movements you can stop the motion by using either servoStop()
+for a servo command and speedStop() for a speed command.
 
 For the move commands you need to set the async flag to true, in order to be able to stop them, using either
 stopJ() or stopL(). see :ref:`Move Asynchronous Example <move-asynchronous-example>`.

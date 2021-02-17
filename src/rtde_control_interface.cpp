@@ -2,13 +2,13 @@
 #include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/script_client.h>
+#include <urcl/script_sender.h>
 
 #include <bitset>
 #include <boost/thread/thread.hpp>
 #include <chrono>
 #include <functional>
 #include <iostream>
-#include <map>
 #include <thread>
 
 namespace ur_rtde
@@ -33,10 +33,11 @@ static void verifyValueIsWithin(const double &value, const double &min, const do
   }
 }
 
-RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_script, bool verbose,
-                                           bool use_upper_range_registers)
+RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_script, bool use_external_control_ur_cap,
+                                           bool verbose, bool use_upper_range_registers)
     : hostname_(std::move(hostname)),
       upload_script_(upload_script),
+      use_external_control_ur_cap_(use_external_control_ur_cap),
       verbose_(verbose),
       use_upper_range_registers_(use_upper_range_registers)
 {
@@ -44,16 +45,19 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
   db_client_ = std::make_shared<DashboardClient>(hostname_);
   db_client_->connect();
 
-  // Only check if in remote on real robot.
-  if (hostname_ != "localhost" && hostname_ != "127.0.0.1")
+  // Only check if in remote on real robot or when not using the ExternalControl UR Cap.
+  if (!use_external_control_ur_cap_)
   {
-    PolyScopeVersion polyscope_version(db_client_->polyscopeVersion());
-    if (polyscope_version.major == 5 && polyscope_version.minor > 5)
+    if(hostname_ != "localhost" && hostname_ != "127.0.0.1")
     {
-      // Check if robot is in remote control
-      if (!db_client_->isInRemoteControl())
+      PolyScopeVersion polyscope_version(db_client_->polyscopeVersion());
+      if (polyscope_version.major == 5 && polyscope_version.minor > 5)
       {
-        throw std::logic_error("ur_rtde: Please enable remote control on the robot!");
+        // Check if robot is in remote control
+        if (!db_client_->isInRemoteControl())
+        {
+          throw std::logic_error("ur_rtde: Please enable remote control on the robot!");
+        }
       }
     }
   }
@@ -166,7 +170,41 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
       }
     }
   }
-  else
+
+  // When the user wants to use ur_rtde with the ExternalControl UR Cap
+  if(!upload_script_ && use_external_control_ur_cap_)
+  {
+    // Create a connection to the ExternalControl UR cap for sending scripts to the cap
+    urcl_script_sender_.reset(new urcl::comm::ScriptSender(UR_CAP_SCRIPT_PORT, script_client_->getScript(), false));
+    urcl_script_sender_->start();
+
+    if (!isProgramRunning())
+    {
+      start_time = std::chrono::high_resolution_clock::now();
+      std::cout << "Waiting for RTDE control program to be running on the controller" << std::endl;
+      while (!isProgramRunning())
+      {
+        std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+        if (duration > WAIT_FOR_PROGRAM_RUNNING_TIMEOUT)
+        {
+          break;
+        }
+        // Wait for program to be running
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      }
+
+      if (!isProgramRunning())
+      {
+        disconnect();
+        throw std::logic_error("RTDE control program is not running on controller, before timeout of " +
+                               std::to_string(WAIT_FOR_PROGRAM_RUNNING_TIMEOUT) + " seconds");
+      }
+    }
+  }
+
+  // When the user wants to a custom script / program on the controller interacting with ur_rtde.
+  if(!upload_script_ && !use_external_control_ur_cap_)
   {
     if (!isProgramRunning())
     {
@@ -1708,7 +1746,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 
   try
   {
-    if (isProgramRunning() || custom_script_running_)
+    if (isProgramRunning() || custom_script_running_ || use_external_control_ur_cap_)
     {
       while (getControlScriptState() != UR_CONTROLLER_RDY_FOR_CMD)
       {

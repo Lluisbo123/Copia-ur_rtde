@@ -123,7 +123,9 @@ bool ScriptClient::sendScript()
 
   if (ur_script.empty())
   {
-    ur_script = UR_SCRIPT;
+    ur_script = "def rtde_control():\n";
+    ur_script += UR_SCRIPT;
+    ur_script += "end\n";
   }
 
   // Remove lines not fitting for the specific version of the controller
@@ -230,6 +232,86 @@ void ScriptClient::setScriptInjection(const std::string& search_string, const st
   {
     script_injections_.push_back({search_string, inject_string});
   }
+}
+
+std::string ScriptClient::getScript()
+{
+  std::string ur_script;
+  // If the user assigned a custom control script, then we use this one instead
+  // of the internal compiled one.
+  if (!script_file_name_.empty())
+  {
+    // If loading fails, we fall back to the default script file
+    if (!loadScript(script_file_name_, ur_script))
+    {
+      std::cerr << "Error loading custom script file. Falling back to internal script file." << std::endl;
+      ur_script = std::string();
+    }
+  }
+
+  if (ur_script.empty())
+  {
+    ur_script = UR_SCRIPT;
+  }
+
+  // Remove lines not fitting for the specific version of the controller
+  auto n = ur_script.find("$");
+
+  while (n != std::string::npos)
+  {
+    const std::string major_str(1, ur_script.at(n + 2));
+    const std::string minor_str(1, ur_script.at(n + 3));
+
+    if (!major_str.empty() && !minor_str.empty() && major_str != " " && minor_str != " ")
+    {
+      uint32_t major_version_needed = uint32_t(std::stoi(major_str));
+      uint32_t minor_version_needed = uint32_t(std::stoi(minor_str));
+
+      if ((major_control_version_ > major_version_needed) ||
+          (major_control_version_ == major_version_needed && minor_control_version_ >= minor_version_needed))
+      {
+        // Keep the line
+        ur_script.erase(n, 4);
+        ur_script.insert(n, "    ");
+      }
+      else
+      {
+        // Erase the line
+        ur_script.erase(n, ur_script.find("\n", n) - n + 1);
+      }
+    }
+    else
+    {
+      std::cerr << "Could not read the control version required from the control script!" << std::endl;
+    }
+
+    n = ur_script.find("$");
+  }
+
+  // Now scan the script for injection points where we can inject additional
+  // script code
+  for (const auto& script_injection : script_injections_)
+  {
+    n = ur_script.find(script_injection.search_string);
+    if (std::string::npos == n)
+    {
+      if (verbose_)
+        std::cout << "script_injection [" << script_injection.search_string << "] not found in script" << std::endl;
+      continue;
+    }
+
+    // Now inject custom script code into the script
+    ur_script.insert(n + script_injection.search_string.length(), script_injection.inject_string);
+    if (verbose_)
+    {
+      std::cout << "script_injection [" << script_injection.search_string << "] found at pos " << n << std::endl;
+      std::cout << ur_script.substr(n - 100, n + script_injection.search_string.length() +
+                                             script_injection.inject_string.length() + 100)
+                << std::endl;
+    }
+  }
+
+  return ur_script;
 }
 
 }  // namespace ur_rtde

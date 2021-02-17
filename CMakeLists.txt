@@ -42,7 +42,7 @@ if(${CODE})
 	endif()
 endif()
 
-project(ur_rtde VERSION 1.3.8 LANGUAGES ${PROJECT_LANGUAGES})
+project(ur_rtde VERSION 1.3.9 LANGUAGES ${PROJECT_LANGUAGES})
 set(PROJECT_VERSION_SUFFIX "") # alpha/beta/rc, e.g. "-rc0"
 set(PROJECT_VERSION "${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX}")
 set(PROJECT_AUTHOR "Anders Prier Lindvig")
@@ -101,7 +101,9 @@ set(LIB_SOURCE_FILES
         src/rtde_control_interface.cpp
 		src/rtde_receive_interface.cpp
 		src/rtde_io_interface.cpp
-		src/robotiq_gripper.cpp)
+		src/robotiq_gripper.cpp
+		src/urcl/server.cpp
+		src/urcl/tcp_socket.cpp)
 
 set(LIB_HEADER_FILES
         include/ur_rtde/rtde.h
@@ -116,7 +118,10 @@ set(LIB_HEADER_FILES
 		include/ur_rtde/rtde_receive_interface_doc.h
 		include/ur_rtde/rtde_io_interface.h
 		include/ur_rtde/rtde_io_interface_doc.h
-		include/ur_rtde/robotiq_gripper.h)
+		include/ur_rtde/robotiq_gripper.h
+		include/urcl/script_sender.h
+		include/urcl/server.h
+		include/urcl/tcp_socket.h)
 
 if(NOT DOC STREQUAL "OFF")
 	add_subdirectory(doc)

@@ -1,4 +1,4 @@
-def rtde_control():
+    # HEADER_BEGIN
     global reg_offset_float = # float register offset
     global reg_offset_int = # int register offset
     global force_mode_type = 2
@@ -231,66 +231,48 @@ def rtde_control():
       return p
     end
 
-  # The jog thread provides jogging functionality similar to the one you
-  # find in the teach pendant.
-  thread jog_thread():
-    textmsg("jog_thread started")
-    # We latch the global jog settings. The feature setting is only latched
-    # here. That means, it is not possible to change the feature as soon as the 
-    # move started. To change the feature, you first have to stop the move
-    enter_critical
-    start_pose = jog_start_pose
-    feature = jog_feature
-    exit_critical
-
-    # Initialize target_pose depending on feature
-    if feature == 0: # base feature
-      target_pose = start_pose
-    elif feature == 1: # tool feature
-      target_pose = p[0, 0, 0, 0, 0, 0]
-    end
-    deceleration_counter = 0
-
-    while (jog_state > 0 and deceleration_counter < 50):
+    # The jog thread provides jogging functionality similar to the one you
+    # find in the teach pendant.
+    thread jog_thread():
+      textmsg("jog_thread started")
+      # We latch the global jog settings. The feature setting is only latched
+      # here. That means, it is not possible to change the feature as soon as the
+      # move started. To change the feature, you first have to stop the move
       enter_critical
-      if jog_state == 1: # 1 = new setpoint
-        speeds = jog_speed_vector_dt
-        jog_state = 2 # 2 = jogging
-        deceleration_counter = 0
-        textmsg("new jog setpoint")
-      end
+      start_pose = jog_start_pose
+      feature = jog_feature
       exit_critical
 
-      if jog_state == 3: # 3 - stopping (decelerating)
-        # We do a simple deceleration by just decreasing the speed by a
-        # certain factor. That is not a perfect deceleration ramp but it is
-        # ok to prevent jerks when stopping the jog thread
-        speeds = scale_pose(speeds, 0.7)
-        deceleration_counter = deceleration_counter + 1
-      else:
-        deceleration_counter = 0
-      end
-
+      # Initialize target_pose depending on feature
       if feature == 0: # base feature
-        target_transl = get_pose_translation(pose_add(target_pose, speeds))
-        speeds_rot = get_pose_rotation(speeds)
-        target_rot = pose_trans(speeds_rot, get_pose_rotation(target_pose))
-        target_pose = pose_add(target_transl, target_rot)
-        q = get_inverse_kin(target_pose)
+        target_pose = start_pose
       elif feature == 1: # tool feature
-        target_pose = pose_add(target_pose, speeds)
-        pose_wrt_base = pose_trans(start_pose, target_pose)
-        q = get_inverse_kin(pose_wrt_base)
+        target_pose = p[0, 0, 0, 0, 0, 0]
       end
-      servoj(q, jog_dt, lookahead_time=0.03, gain=1000)
-    end
-    textmsg("jog_thread finished")
-    enter_critical
-    jogging_state = 0 # inactive
-    jog_thrd = 0
-    exit_critical
-  end
 
+      while (True):
+        enter_critical
+        if jog_state == 1: # 1 = new setpoint
+          speeds = jog_speed_vector_dt
+          jog_state = 2 # 2 = jogging
+          textmsg("new jog setpoint")
+        end
+        exit_critical
+
+        if feature == 0: # base feature
+          target_transl = get_pose_translation(pose_add(target_pose, speeds))
+          speeds_rot = get_pose_rotation(speeds)
+          target_rot = pose_trans(speeds_rot, get_pose_rotation(target_pose))
+          target_pose = pose_add(target_transl, target_rot)
+          q = get_inverse_kin(target_pose)
+        elif feature == 1: # tool feature
+          target_pose = pose_add(target_pose, speeds)
+          pose_wrt_base = pose_trans(start_pose, target_pose)
+          q = get_inverse_kin(pose_wrt_base)
+        end
+        servoj(q, jog_dt, lookahead_time=0.03, gain=1000)
+      end
+    end
 
     def signal_ready():
         write_output_integer_reg(0, 1)
@@ -730,8 +712,14 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
               textmsg("start_jog done")    
         elif cmd == 42:
               textmsg("stop_jog")
-              jog_state = 3 # 3 = stopping (decelerating)
-              join jog_thrd
+              enter_critical
+              if jog_thrd != 0:
+                textmsg("stopping jogging - killing jog_thrd")
+                kill jog_thrd
+                jog_thrd = 0
+              end
+              exit_critical
+              stopl(1.2)
               textmsg("stop_jog done")
         elif cmd == 43:
               textmsg("get_forward_kinematics_default")
@@ -788,11 +776,15 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
         return cmd != 255
     end
 
+    # HEADER_END
+
+    # RTDE_CONTROL_LOOP_BEGIN
+
     #
     # RTDE Control script - Main loop
     #
 
-    textmsg("RTDE Control Script Loaded (15.01.2021-11:13)")
+    textmsg("RTDE Control Script Loaded (16.02.2021-14:53)")
 
     # Initialize gain and damping for force mode to a more stable default
 $V50force_mode_set_gain_scaling(0.5)
@@ -825,5 +817,4 @@ $V35force_mode_set_damping(0.025)
         sync()
     end
     textmsg("RTDE Control Script Terminated")
-end
-run program
+    # RTDE_CONTROL_LOOP_END

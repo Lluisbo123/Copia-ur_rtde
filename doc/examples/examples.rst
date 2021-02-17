@@ -101,6 +101,92 @@ Python:
    When using an e-Series robot data will be received at the maximum available frequency (500Hz), for a CB3
    robot the frequency will be (125Hz).
 
+Use with ExternalControl UR Cap
+===============================
+ur_rtde can be used together with UR's `ExternalControl UR Cap <https://github.com/UniversalRobots/Universal_Robots_ExternalControl_URCap>`_
+which is also used for the Universal Robot's ROS driver.
+
+You can download the UR Cap from
+`here <https://github.com/UniversalRobots/Universal_Robots_ROS_Driver/blob/master/ur_robot_driver/resources/externalcontrol-1.0.4.urcap>`_.
+
+To install it on your robot, please follow the instructions:
+
+`Installing a URCap on a e-Series robot <https://github.com/UniversalRobots/Universal_Robots_ROS_Driver/blob/master/ur_robot_driver/doc/install_urcap_e_series.md>`_
+(for an e-series robot)
+
+or
+
+`Installing a URCap on a CB3 robot <https://github.com/UniversalRobots/Universal_Robots_ROS_Driver/blob/master/ur_robot_driver/doc/install_urcap_cb3.md>`_
+(for a CB-series robot).
+
+In order to setup ur_rtde for using the ExternalControl UR Cap, all you have to do is to specify
+this in the RTDEControlInterface constructor and tell it to not upload the default rtde_control script.
+
+for Python:
+
+.. code-block:: python
+
+   import rtde_control
+   rtde_c = rtde_control.RTDEControlInterface("127.0.0.1", upload_script=False, use_external_control_ur_cap=True)
+   rtde_c.moveL([-0.143, -0.435, 0.20, -0.001, 3.12, 0.04], 0.5, 0.3)
+
+for C++:
+
+.. code-block:: c++
+
+
+   bool upload_script = false;
+   bool use_external_control_ur_cap = true;
+   RTDEControlInterface rtde_control("127.0.0.1", upload_script, use_external_control_ur_cap);
+   rtde_control.moveL({-0.143, -0.435, 0.20, -0.001, 3.12, 0.04}, 0.5, 0.2);
+
+When you execute your ur_rtde application it will simply wait for you to press play on the controller in order
+to start. Notice! you must have the ExternalControl node as a part of the program and it must be setup with the correct
+IP of the computer that you want to control the robot from (This can be changed under
+Installation tab -> URCaps -> ExternalControl).
+
+Use with custom script
+======================
+The rtde control script is uploaded to the robot by default. However if you want
+to modify the script and execute it as a part of a program on the controller, you
+have the option of *not* uploading the default rtde control script. This means that ur_rtde expects a
+script to be running on the controller that you have set up manually eg. copied to the controller from USB or
+scp over the network.
+
+What you can do, is to split the rtde_control script into two separate scripts: rtde_init.script and rtde_control.script.
+where rtde_init.script contains the header and rtde_control.script contains the control loop.
+You then create a new program in Polyscope and add a BeforeStart sequence to this new program. Simply add the
+rtde_init.script to the BeforeStart sequence and the rtde_control.script to the Robot Program. See picture below:
+
+.. image:: ../_static/ur_rtde_manual_program.png
+
+Remember! that if you copy the rtde_control.script, please remove the $MAJOR.MINOR tags, that is used for removing
+lines that are not compatible with specific controller versions. Also set the appropriate offset for reg_offset_float and
+reg_offset_int either 0 or 24.
+
+The benefit of the approach is that you have access to any functionality installed on the robot such as
+functions from a gripper UR cap etc. (the same is true, when using the ExternalControl UR Cap). You must simply specify
+that you do not want a script to be uploaded in the RTDEControlInterface constructor:
+
+for Python:
+
+.. code-block:: python
+
+   import rtde_control
+   rtde_c = rtde_control.RTDEControlInterface("127.0.0.1", upload_script=False)
+   rtde_c.moveL([-0.143, -0.435, 0.20, -0.001, 3.12, 0.04], 0.5, 0.3)
+
+for C++:
+
+.. code-block:: c++
+
+   bool upload_script = false;
+   RTDEControlInterface rtde_control("127.0.0.1", upload_script);
+   rtde_control.moveL({-0.143, -0.435, 0.20, -0.001, 3.12, 0.04}, 0.5, 0.2);
+
+Then before running your ur_rtde application, make sure the program is running on the controller
+and that the robot is in remote control.
+
 .. _move-asynchronous-example:
 
 Move Asynchronous Example

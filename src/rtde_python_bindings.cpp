@@ -19,8 +19,8 @@ PYBIND11_MODULE(rtde_control, m)
 {
   m.doc() = "RTDE Control Interface";
   py::class_<RTDEControlInterface>(m, "RTDEControlInterface")
-      .def(py::init<std::string, bool, bool, bool>(), py::arg("hostname"), py::arg("upload_script") = true, py::arg("verbose") = false,
-           py::arg("use_upper_range_registers") = false)
+      .def(py::init<std::string, bool, bool, bool, bool>(), py::arg("hostname"), py::arg("upload_script") = true,
+           py::arg("use_external_control_ur_cap") = false, py::arg("verbose") = false, py::arg("use_upper_range_registers") = false)
       .def("disconnect", &RTDEControlInterface::disconnect, py::call_guard<py::gil_scoped_release>())
       .def("reconnect", &RTDEControlInterface::reconnect, DOC(ur_rtde, RTDEControlInterface, reconnect),
            py::call_guard<py::gil_scoped_release>())
@@ -279,6 +279,7 @@ PYBIND11_MODULE(script_client, m)
       .def("sendScript", (bool (ScriptClient::*)(const std::string &file_name)) & ScriptClient::sendScript,
            py::call_guard<py::gil_scoped_release>())
       .def("sendScriptCommand", &ScriptClient::sendScriptCommand, py::call_guard<py::gil_scoped_release>())
+      .def("getScript", &ScriptClient::getScript, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const ScriptClient &a) { return "<script_client.ScriptClient>"; });
 }
 };  // namespace script_client

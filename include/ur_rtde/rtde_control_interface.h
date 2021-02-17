@@ -4,11 +4,13 @@
 
 #include <ur_rtde/rtde_export.h>
 #include <ur_rtde/rtde.h>
+#include <urcl/script_sender.h>
 #include <map>
 
 #define MAJOR_VERSION 0
 #define MINOR_VERSION 1
 #define CB3_MAJOR_VERSION 3
+#define UR_CAP_SCRIPT_PORT 50002
 #define UR_CONTROLLER_RDY_FOR_CMD 1
 #define UR_CONTROLLER_DONE_WITH_CMD 2
 #define UR_EXECUTION_TIMEOUT 300
@@ -46,7 +48,8 @@ class Path;
 class RTDEControlInterface
 {
  public:
-  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, bool upload_script = true, bool verbose = false,
+  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, bool upload_script = true,
+                                            bool use_external_control_ur_cap = false, bool verbose = false,
                                             bool use_upper_range_registers = false);
 
   RTDE_EXPORT virtual ~RTDEControlInterface();
@@ -678,6 +681,7 @@ class RTDEControlInterface
   std::string hostname_;
   int port_;
   bool upload_script_;
+  bool use_external_control_ur_cap_;
   bool verbose_;
   bool use_upper_range_registers_;
   bool custom_script_running_;
@@ -691,6 +695,7 @@ class RTDEControlInterface
   std::shared_ptr<ScriptClient> script_client_;
   std::shared_ptr<RobotState> robot_state_;
   std::map<std::string, std::function<double()>> output_reg_func_map_;
+  std::unique_ptr<urcl::comm::ScriptSender> urcl_script_sender_;
 };
 
 /**

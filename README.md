@@ -21,6 +21,10 @@ A C++ interface for controlling and receiving data from a UR robot using the
  * Can be used from C++ and Python.
  * Relies only on STL datatypes and can be used with various robot frameworks.
  * Switchable register range (FieldBus / PLC [0..23] or external clients range [24..47])
+ * Use it with the UR's [ExternalControl UR Cap](https://github.com/UniversalRobots/Universal_Robots_ExternalControl_URCap),
+    download it [here](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver/blob/master/ur_robot_driver/resources/externalcontrol-1.0.4.urcap) see
+    how to install it on the robot [here](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver/blob/master/ur_robot_driver/doc/install_urcap_e_series.md). 
+    In order to setup ur_rtde for using it see [here](https://sdurobotics.gitlab.io/ur_rtde/examples/examples.html#use-with-externalcontrol-ur-cap).
  * Easy to install and setup.
  
 ### Documentation ###
