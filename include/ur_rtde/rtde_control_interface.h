@@ -4,7 +4,9 @@
 
 #include <ur_rtde/rtde_export.h>
 #include <ur_rtde/rtde.h>
+#ifndef _WIN32
 #include <urcl/script_sender.h>
+#endif
 #include <map>
 
 #define MAJOR_VERSION 0
@@ -695,7 +697,9 @@ class RTDEControlInterface
   std::shared_ptr<ScriptClient> script_client_;
   std::shared_ptr<RobotState> robot_state_;
   std::map<std::string, std::function<double()>> output_reg_func_map_;
+#ifndef _WIN32
   std::unique_ptr<urcl::comm::ScriptSender> urcl_script_sender_;
+#endif
 };
 
 /**

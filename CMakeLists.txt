@@ -92,36 +92,64 @@ if(${CODE})
 	endif()
 endif()
 
-set(LIB_SOURCE_FILES
-		src/robot_state.cpp
-        src/rtde.cpp
-        src/dashboard_client.cpp
-        src/dashboard_enums.cpp
-        src/script_client.cpp
-        src/rtde_control_interface.cpp
-		src/rtde_receive_interface.cpp
-		src/rtde_io_interface.cpp
-		src/robotiq_gripper.cpp
-		src/urcl/server.cpp
-		src/urcl/tcp_socket.cpp)
+if(DEFINED WIN32)
+	set(LIB_SOURCE_FILES
+			src/robot_state.cpp
+			src/rtde.cpp
+			src/dashboard_client.cpp
+			src/dashboard_enums.cpp
+			src/script_client.cpp
+			src/rtde_control_interface.cpp
+			src/rtde_receive_interface.cpp
+			src/rtde_io_interface.cpp
+			src/robotiq_gripper.cpp)
 
-set(LIB_HEADER_FILES
-        include/ur_rtde/rtde.h
-        include/ur_rtde/rtde_utility.h
-		include/ur_rtde/dashboard_enums.h
-        include/ur_rtde/dashboard_client.h
-        include/ur_rtde/robot_state.h
-        include/ur_rtde/script_client.h
-        include/ur_rtde/rtde_control_interface.h
-		include/ur_rtde/rtde_control_interface_doc.h
-		include/ur_rtde/rtde_receive_interface.h
-		include/ur_rtde/rtde_receive_interface_doc.h
-		include/ur_rtde/rtde_io_interface.h
-		include/ur_rtde/rtde_io_interface_doc.h
-		include/ur_rtde/robotiq_gripper.h
-		include/urcl/script_sender.h
-		include/urcl/server.h
-		include/urcl/tcp_socket.h)
+	set(LIB_HEADER_FILES
+			include/ur_rtde/rtde.h
+			include/ur_rtde/rtde_utility.h
+			include/ur_rtde/dashboard_enums.h
+			include/ur_rtde/dashboard_client.h
+			include/ur_rtde/robot_state.h
+			include/ur_rtde/script_client.h
+			include/ur_rtde/rtde_control_interface.h
+			include/ur_rtde/rtde_control_interface_doc.h
+			include/ur_rtde/rtde_receive_interface.h
+			include/ur_rtde/rtde_receive_interface_doc.h
+			include/ur_rtde/rtde_io_interface.h
+			include/ur_rtde/rtde_io_interface_doc.h
+			include/ur_rtde/robotiq_gripper.h)
+else()
+	set(LIB_SOURCE_FILES
+			src/robot_state.cpp
+			src/rtde.cpp
+			src/dashboard_client.cpp
+			src/dashboard_enums.cpp
+			src/script_client.cpp
+			src/rtde_control_interface.cpp
+			src/rtde_receive_interface.cpp
+			src/rtde_io_interface.cpp
+			src/robotiq_gripper.cpp
+			src/urcl/server.cpp
+			src/urcl/tcp_socket.cpp)
+
+	set(LIB_HEADER_FILES
+			include/ur_rtde/rtde.h
+			include/ur_rtde/rtde_utility.h
+			include/ur_rtde/dashboard_enums.h
+			include/ur_rtde/dashboard_client.h
+			include/ur_rtde/robot_state.h
+			include/ur_rtde/script_client.h
+			include/ur_rtde/rtde_control_interface.h
+			include/ur_rtde/rtde_control_interface_doc.h
+			include/ur_rtde/rtde_receive_interface.h
+			include/ur_rtde/rtde_receive_interface_doc.h
+			include/ur_rtde/rtde_io_interface.h
+			include/ur_rtde/rtde_io_interface_doc.h
+			include/ur_rtde/robotiq_gripper.h
+			include/urcl/script_sender.h
+			include/urcl/server.h
+			include/urcl/tcp_socket.h)
+endif()
 
 if(NOT DOC STREQUAL "OFF")
 	add_subdirectory(doc)

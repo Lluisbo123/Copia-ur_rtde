@@ -2,7 +2,9 @@
 #include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/script_client.h>
+#ifndef _WIN32
 #include <urcl/script_sender.h>
+#endif
 
 #include <bitset>
 #include <boost/thread/thread.hpp>
@@ -171,6 +173,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
     }
   }
 
+#ifndef _WIN32
   // When the user wants to use ur_rtde with the ExternalControl UR Cap
   if(!upload_script_ && use_external_control_ur_cap_)
   {
@@ -202,6 +205,12 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
       }
     }
   }
+#else
+  if(!upload_script_ && use_external_control_ur_cap_)
+  {
+    throw std::logic_error("The use of ExternalControl UR Cap is not supported on Windows yet. Please contact author");
+  }
+#endif
 
   // When the user wants to a custom script / program on the controller interacting with ur_rtde.
   if(!upload_script_ && !use_external_control_ur_cap_)
