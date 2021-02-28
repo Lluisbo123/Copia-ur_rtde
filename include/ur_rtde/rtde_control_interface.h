@@ -724,7 +724,7 @@ struct PathEntry
   /**
    * Creates a waypoint for path
    */
-  RTDE_EXPORT PathEntry(eMoveType move_type, ePositionType position_type, const std::vector<double> parameters)
+  PathEntry(eMoveType move_type, ePositionType position_type, const std::vector<double> parameters)
       : move_type_(move_type), pos_type_(position_type), param_(parameters)
   {
   }
