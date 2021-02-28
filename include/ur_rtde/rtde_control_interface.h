@@ -50,9 +50,17 @@ class Path;
 class RTDEControlInterface
 {
  public:
-  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, bool upload_script = true,
-                                            bool use_external_control_ur_cap = false, bool verbose = false,
-                                            bool use_upper_range_registers = false);
+  enum Flags
+  {
+	  FLAG_UPLOAD_SCRIPT = 0x01,
+	  FLAG_USE_EXT_UR_CAP = 0x02,
+	  FLAG_VERBOSE = 0x04,
+	  FLAG_UPPER_RANGE_REGISTERS = 0x08,
+	  FLAGS_DEFAULT = FLAG_UPLOAD_SCRIPT
+  };
+
+
+  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, uint8_t flags = FLAGS_DEFAULT);
 
   RTDE_EXPORT virtual ~RTDEControlInterface();
 

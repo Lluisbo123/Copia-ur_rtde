@@ -35,13 +35,12 @@ static void verifyValueIsWithin(const double &value, const double &min, const do
   }
 }
 
-RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_script, bool use_external_control_ur_cap,
-                                           bool verbose, bool use_upper_range_registers)
+RTDEControlInterface::RTDEControlInterface(std::string hostname, uint8_t flags)
     : hostname_(std::move(hostname)),
-      upload_script_(upload_script),
-      use_external_control_ur_cap_(use_external_control_ur_cap),
-      verbose_(verbose),
-      use_upper_range_registers_(use_upper_range_registers)
+      upload_script_(flags & FLAG_UPLOAD_SCRIPT),
+      use_external_control_ur_cap_(flags & FLAG_USE_EXT_UR_CAP),
+      verbose_(flags & FLAG_VERBOSE),
+      use_upper_range_registers_(flags & FLAG_UPPER_RANGE_REGISTERS)
 {
   // Create a connection to the dashboard server
   db_client_ = std::make_shared<DashboardClient>(hostname_);
