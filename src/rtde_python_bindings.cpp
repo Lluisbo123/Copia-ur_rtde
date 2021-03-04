@@ -18,6 +18,33 @@ namespace rtde_control
 PYBIND11_MODULE(rtde_control, m)
 {
   m.doc() = "RTDE Control Interface";
+
+  py::class_<PathEntry> pentry(m, "PathEntry");
+  pentry.def(py::init<PathEntry::eMoveType, PathEntry::ePositionType, std::vector<double>>(), py::arg("move_type"), py::arg("position_type"), py::arg("parameters"))
+      .def("toScriptCode", &PathEntry::toScriptCode, "", py::call_guard<py::gil_scoped_release>())
+      .def("__repr__", [](const PathEntry &a) { return "<rtde_control.PathEntry>"; });
+  py::enum_<PathEntry::eMoveType>(pentry, "eMoveType")
+      .value("MoveJ", PathEntry::eMoveType::MoveJ)
+      .value("MoveL", PathEntry::eMoveType::MoveL)
+      .value("MoveP", PathEntry::eMoveType::MoveP)
+      .value("MoveC", PathEntry::eMoveType::MoveC)
+      .export_values();
+  py::enum_<PathEntry::ePositionType>(pentry, "ePositionType")
+      .value("PositionTcpPose", PathEntry::ePositionType::PositionTcpPose)
+      .value("PositionJoints", PathEntry::ePositionType::PositionJoints)
+      .export_values();
+
+  py::class_<Path>(m, "Path")
+      .def(py::init<>())
+      .def("addEntry", &Path::addEntry, "", py::arg("entry"), py::call_guard<py::gil_scoped_release>())
+      .def("clear", &Path::clear, "", py::call_guard<py::gil_scoped_release>())
+      .def("size", &Path::size, "", py::call_guard<py::gil_scoped_release>())
+      .def("waypoints", &Path::waypoints, "", py::call_guard<py::gil_scoped_release>())
+      .def("appendMovelPath", &Path::appendMovelPath, "", py::arg("path"), py::call_guard<py::gil_scoped_release>())
+      .def("appendMovejPath", &Path::appendMovejPath, "", py::arg("path"), py::call_guard<py::gil_scoped_release>())
+      .def("toScriptCode", &Path::toScriptCode, "", py::call_guard<py::gil_scoped_release>())
+      .def("__repr__", [](const Path &a) { return "<rtde_control.Path>"; });
+
   py::class_<RTDEControlInterface>(m, "RTDEControlInterface")
       .def(py::init<std::string, bool, bool, bool, bool>(), py::arg("hostname"), py::arg("upload_script") = true,
            py::arg("use_external_control_ur_cap") = false, py::arg("verbose") = false, py::arg("use_upper_range_registers") = false)
@@ -41,6 +68,9 @@ PYBIND11_MODULE(rtde_control, m)
       .def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path, bool async)) & RTDEControlInterface::moveJ,
            DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
+      .def("movePath",
+           (bool (RTDEControlInterface::*)(const Path &path, bool async)) & RTDEControlInterface::movePath,
+           "", py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
       .def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration, bool async)) &
                RTDEControlInterface::moveJ,
