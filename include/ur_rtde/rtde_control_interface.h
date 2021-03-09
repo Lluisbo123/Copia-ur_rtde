@@ -458,7 +458,7 @@ class RTDEControlInterface
    * send desired joint positions and velocities back to the robot. This happens with a predetermined frequency, in
    * regular intervals. This interval length is the robot time step.
    *
-   * @returns Duration of the robot step in seconds
+   * @returns Duration of the robot step in seconds or 0 in case of an error
    */
   RTDE_EXPORT double getStepTime();
 
@@ -469,6 +469,7 @@ class RTDEControlInterface
    * directions are considered.
    * @returns The returned value is the number of time steps back to just before the contact have started. A value
    * larger than 0 means that a contact is detected. A value of 0 means no contact.
+   * Returns an empty vector in case of an error.
    */
   RTDE_EXPORT std::vector<double> getActualJointPositionsHistory(int steps = 0);
 
@@ -481,7 +482,8 @@ class RTDEControlInterface
    *
    * This method is useful for calculating relative movements where the previous move command uses blends.
    *
-   * @returns The desired waypoint TCP vector [X, Y, Z, Rx, Ry, Rz]
+   * @returns The desired waypoint TCP vector [X, Y, Z, Rx, Ry, Rz] or and empty
+   *          vector in case of an error.
    */
   RTDE_EXPORT std::vector<double> getTargetWaypoint();
 
@@ -655,6 +657,14 @@ class RTDEControlInterface
   std::string buildPathScriptCode(const std::vector<std::vector<double>> &path, const std::string &cmd);
 
   void receiveCallback();
+
+  /**
+   * This function waits until the script program is running.
+   * If the program is not running after a certain amount of time, the function
+   * tries to resend the script. If the script is not running after the timeout
+   * time, an exception is thrown.
+   */
+  void waitForProgramRunning();
 
   std::string outDoubleReg(int reg) const
   {
