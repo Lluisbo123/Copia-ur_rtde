@@ -120,29 +120,27 @@ or
 (for a CB-series robot).
 
 In order to setup ur_rtde for using the ExternalControl UR Cap, all you have to do is to specify
-this in the RTDEControlInterface constructor and tell it to not upload the default rtde_control script.
+this in the RTDEControlInterface constructor with the flag FLAG_USE_EXT_UR_CAP.
 
 for Python:
 
 .. code-block:: python
 
-   import rtde_control
-   rtde_c = rtde_control.RTDEControlInterface("127.0.0.1", upload_script=False, use_external_control_ur_cap=True)
+   from rtde_control import RTDEControlInterface as RTDEControl
+   rtde_c = RTDEControl("127.0.0.1", RTDEControl.FLAG_USE_EXT_UR_CAP)
    rtde_c.moveL([-0.143, -0.435, 0.20, -0.001, 3.12, 0.04], 0.5, 0.3)
 
 for C++:
 
 .. code-block:: c++
 
-
-   bool upload_script = false;
-   bool use_external_control_ur_cap = true;
-   RTDEControlInterface rtde_control("127.0.0.1", upload_script, use_external_control_ur_cap);
+   RTDEControlInterface rtde_control("127.0.0.1", RTDEControlInterface::FLAG_USE_EXT_UR_CAP);
    rtde_control.moveL({-0.143, -0.435, 0.20, -0.001, 3.12, 0.04}, 0.5, 0.2);
 
 When you execute your ur_rtde application it will simply wait for you to press play on the controller in order
-to start. Notice! you must have the ExternalControl node as a part of the program and it must be setup with the correct
-IP of the computer that you want to control the robot from (This can be changed under
+to start, unless you use the FLAG_EXT_CAP_NO_WAIT, in which case the interface will be initialized, but cannot be
+used before the program is running on the controller. Notice! you must have the ExternalControl node as a part of the
+program and it must be setup with the correct IP of the computer that you want to control the robot from (This can be changed under
 Installation tab -> URCaps -> ExternalControl).
 
 Use with custom script
@@ -166,22 +164,21 @@ reg_offset_int either 0 or 24.
 
 The benefit of the approach is that you have access to any functionality installed on the robot such as
 functions from a gripper UR cap etc. (the same is true, when using the ExternalControl UR Cap). You must simply specify
-that you do not want a script to be uploaded in the RTDEControlInterface constructor:
+that you want to use a custom script in the RTDEControlInterface constructor with the FLAG_CUSTOM_SCRIPT:
 
 for Python:
 
 .. code-block:: python
 
-   import rtde_control
-   rtde_c = rtde_control.RTDEControlInterface("127.0.0.1", upload_script=False)
+   from rtde_control import RTDEControlInterface as RTDEControl
+   rtde_c = RTDEControl("127.0.0.1", RTDEControl.FLAG_CUSTOM_SCRIPT)
    rtde_c.moveL([-0.143, -0.435, 0.20, -0.001, 3.12, 0.04], 0.5, 0.3)
 
 for C++:
 
 .. code-block:: c++
 
-   bool upload_script = false;
-   RTDEControlInterface rtde_control("127.0.0.1", upload_script);
+   RTDEControlInterface rtde_control("127.0.0.1", RTDEControlInterface::FLAG_CUSTOM_SCRIPT);
    rtde_control.moveL({-0.143, -0.435, 0.20, -0.001, 3.12, 0.04}, 0.5, 0.2);
 
 Then before running your ur_rtde application, make sure the program is running on the controller
@@ -593,15 +590,15 @@ Intended movement:
 
 .. image:: ../_static/speedj_example.gif
 
-MoveJ Path With Blending Example
+MoveL Path With Blending Example
 ================================
-This example will use the **moveJ** command with a path, where each joint pose in the path has a defined velocity,
+This example will use the **moveL** command with a path, where each joint pose in the path has a defined velocity,
 acceleration and blend. The joint poses in the path are defined by a 9-dimensional vector, where the first six
 values constitutes the joint pose, followed by the last three values *velocity*, *acceleration* and *blend*.
 
-You can find the source code of this example under :file:`examples/cpp/movej_path_with_blend_example.cpp`, if you compiled
+You can find the source code of this example under :file:`examples/cpp/movel_path_with_blend_example.cpp`, if you compiled
 ur_rtde with examples you can run this example from the *bin* folder. If you want to run the python example
-navigate to :file:`examples/py/` and run :bash:`python3 movej_path_with_blend_example.py`.
+navigate to :file:`examples/py/` and run :bash:`python3 movel_path_with_blend_example.py`.
 
 C++:
 
@@ -661,7 +658,7 @@ Python:
 
 Intended movement:
 
-.. image:: ../_static/movej_path_blend.gif
+.. image:: ../_static/movel_path_blend.gif
 
 IO Example
 ==========

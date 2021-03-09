@@ -35,13 +35,14 @@ static void verifyValueIsWithin(const double &value, const double &min, const do
   }
 }
 
-RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_script, bool use_external_control_ur_cap,
-                                           bool verbose, bool use_upper_range_registers)
+RTDEControlInterface::RTDEControlInterface(std::string hostname, uint16_t flags)
     : hostname_(std::move(hostname)),
-      upload_script_(upload_script),
-      use_external_control_ur_cap_(use_external_control_ur_cap),
-      verbose_(verbose),
-      use_upper_range_registers_(use_upper_range_registers)
+      upload_script_(flags & FLAG_UPLOAD_SCRIPT),
+      use_external_control_ur_cap_(flags & FLAG_USE_EXT_UR_CAP),
+      verbose_(flags & FLAG_VERBOSE),
+      use_upper_range_registers_(flags & FLAG_UPPER_RANGE_REGISTERS),
+      external_control_no_wait_(flags & FLAG_EXT_CAP_NO_WAIT),
+      custom_script_(flags & FLAG_CUSTOM_SCRIPT)
 {
   // Create a connection to the dashboard server
   db_client_ = std::make_shared<DashboardClient>(hostname_);
@@ -181,27 +182,30 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
     urcl_script_sender_.reset(new urcl::comm::ScriptSender(UR_CAP_SCRIPT_PORT, script_client_->getScript(), false));
     urcl_script_sender_->start();
 
-    if (!isProgramRunning())
+    if (!external_control_no_wait_)
     {
-      start_time = std::chrono::high_resolution_clock::now();
-      std::cout << "Waiting for RTDE control program to be running on the controller" << std::endl;
-      while (!isProgramRunning())
-      {
-        std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-        if (duration > WAIT_FOR_PROGRAM_RUNNING_TIMEOUT)
-        {
-          break;
-        }
-        // Wait for program to be running
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      }
-
       if (!isProgramRunning())
       {
-        disconnect();
-        throw std::logic_error("RTDE control program is not running on controller, before timeout of " +
-                               std::to_string(WAIT_FOR_PROGRAM_RUNNING_TIMEOUT) + " seconds");
+        start_time = std::chrono::high_resolution_clock::now();
+        std::cout << "Waiting for RTDE control program to be running on the controller" << std::endl;
+        while (!isProgramRunning())
+        {
+          std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+          auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+          if (duration > WAIT_FOR_PROGRAM_RUNNING_TIMEOUT)
+          {
+            break;
+          }
+          // Wait for program to be running
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+
+        if (!isProgramRunning())
+        {
+          disconnect();
+          throw std::logic_error("RTDE control program is not running on controller, before timeout of " +
+                                 std::to_string(WAIT_FOR_PROGRAM_RUNNING_TIMEOUT) + " seconds");
+        }
       }
     }
   }

@@ -1,9 +1,9 @@
-import rtde_io
-import rtde_receive
+from rtde_io import RTDEIOInterface as RTDEIO
+from rtde_receive import RTDEReceiveInterface as RTDEReceive
 import time
 
-rtde_io_ = rtde_io.RTDEIOInterface("127.0.0.1")
-rtde_receive_ = rtde_receive.RTDEReceiveInterface("127.0.0.1")
+rtde_io_ = RTDEIO("127.0.0.1")
+rtde_receive_ = RTDEReceive("127.0.0.1")
 
 # How-to set and get standard and tool digital outputs. Notice that we need the
 # RTDEIOInterface for setting an output and RTDEReceiveInterface for getting the state

@@ -18,122 +18,132 @@ namespace rtde_control
 PYBIND11_MODULE(rtde_control, m)
 {
   m.doc() = "RTDE Control Interface";
-  py::class_<RTDEControlInterface>(m, "RTDEControlInterface")
-      .def(py::init<std::string, bool, bool, bool, bool>(), py::arg("hostname"), py::arg("upload_script") = true,
-           py::arg("use_external_control_ur_cap") = false, py::arg("verbose") = false, py::arg("use_upper_range_registers") = false)
-      .def("disconnect", &RTDEControlInterface::disconnect, py::call_guard<py::gil_scoped_release>())
-      .def("reconnect", &RTDEControlInterface::reconnect, DOC(ur_rtde, RTDEControlInterface, reconnect),
-           py::call_guard<py::gil_scoped_release>())
-      .def("isConnected", &RTDEControlInterface::isConnected, DOC(ur_rtde, RTDEControlInterface, isConnected),
-           py::call_guard<py::gil_scoped_release>())
-      .def("sendCustomScriptFunction", &RTDEControlInterface::sendCustomScriptFunction,
-           DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFunction), py::call_guard<py::gil_scoped_release>())
-      .def("sendCustomScript", &RTDEControlInterface::sendCustomScript,
-           DOC(ur_rtde, RTDEControlInterface, sendCustomScript), py::call_guard<py::gil_scoped_release>())
-      .def("sendCustomScriptFile", &RTDEControlInterface::sendCustomScriptFile,
-           DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFile), py::call_guard<py::gil_scoped_release>())
-      .def("setCustomScriptFile", &RTDEControlInterface::setCustomScriptFile,
-           DOC(ur_rtde, RTDEControlInterface, setCustomScriptFile), py::call_guard<py::gil_scoped_release>())
-      .def("stopScript", &RTDEControlInterface::stopScript, DOC(ur_rtde, RTDEControlInterface, stopScript),
-           py::call_guard<py::gil_scoped_release>())
-      .def("reuploadScript", &RTDEControlInterface::reuploadScript, DOC(ur_rtde, RTDEControlInterface, reuploadScript),
-           py::call_guard<py::gil_scoped_release>())
-      .def("moveJ",
+
+  py::class_<RTDEControlInterface> control(m, "RTDEControlInterface");
+  py::enum_<RTDEControlInterface::Flags>(control, "Flags", py::arithmetic())
+      .value("FLAG_UPLOAD_SCRIPT", RTDEControlInterface::Flags::FLAG_UPLOAD_SCRIPT)
+      .value("FLAG_USE_EXT_UR_CAP", RTDEControlInterface::Flags::FLAG_USE_EXT_UR_CAP)
+      .value("FLAG_VERBOSE", RTDEControlInterface::Flags::FLAG_VERBOSE)
+      .value("FLAG_UPPER_RANGE_REGISTERS", RTDEControlInterface::Flags::FLAG_UPPER_RANGE_REGISTERS)
+      .value("FLAG_EXT_CAP_NO_WAIT", RTDEControlInterface::Flags::FLAG_EXT_CAP_NO_WAIT)
+      .value("FLAG_CUSTOM_SCRIPT", RTDEControlInterface::Flags::FLAG_CUSTOM_SCRIPT)
+      .value("FLAGS_DEFAULT", RTDEControlInterface::Flags::FLAGS_DEFAULT)
+      .export_values();
+
+  control.def(py::init<std::string, uint16_t>(), py::arg("hostname"), py::arg("flags") = RTDEControlInterface::Flags::FLAGS_DEFAULT);
+  control.def("disconnect", &RTDEControlInterface::disconnect, py::call_guard<py::gil_scoped_release>());
+  control.def("reconnect", &RTDEControlInterface::reconnect, DOC(ur_rtde, RTDEControlInterface, reconnect),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("isConnected", &RTDEControlInterface::isConnected, DOC(ur_rtde, RTDEControlInterface, isConnected),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("sendCustomScriptFunction", &RTDEControlInterface::sendCustomScriptFunction,
+           DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFunction), py::call_guard<py::gil_scoped_release>());
+  control.def("sendCustomScript", &RTDEControlInterface::sendCustomScript,
+           DOC(ur_rtde, RTDEControlInterface, sendCustomScript), py::call_guard<py::gil_scoped_release>());
+  control.def("sendCustomScriptFile", &RTDEControlInterface::sendCustomScriptFile,
+           DOC(ur_rtde, RTDEControlInterface, sendCustomScriptFile), py::call_guard<py::gil_scoped_release>());
+  control.def("setCustomScriptFile", &RTDEControlInterface::setCustomScriptFile,
+           DOC(ur_rtde, RTDEControlInterface, setCustomScriptFile), py::call_guard<py::gil_scoped_release>());
+  control.def("stopScript", &RTDEControlInterface::stopScript, DOC(ur_rtde, RTDEControlInterface, stopScript),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("reuploadScript", &RTDEControlInterface::reuploadScript, DOC(ur_rtde, RTDEControlInterface, reuploadScript),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path, bool async)) & RTDEControlInterface::moveJ,
-           DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
-      .def("moveJ",
+           DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
+  control.def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration, bool async)) &
                RTDEControlInterface::moveJ,
            DOC(ur_rtde, RTDEControlInterface, moveJ), py::arg("q"), py::arg("speed") = 1.05,
-           py::arg("acceleration") = 1.4, py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
-      .def("moveJ_IK", &RTDEControlInterface::moveJ_IK, DOC(ur_rtde, RTDEControlInterface, moveJ_IK), py::arg("pose"),
-           py::arg("speed") = 1.05, py::arg("acceleration") = 1.4, py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
-      .def("moveL",
+           py::arg("acceleration") = 1.4, py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
+  control.def("moveJ_IK", &RTDEControlInterface::moveJ_IK, DOC(ur_rtde, RTDEControlInterface, moveJ_IK), py::arg("pose"),
+           py::arg("speed") = 1.05, py::arg("acceleration") = 1.4, py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
+  control.def("moveL",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path, bool async)) & RTDEControlInterface::moveL,
-           DOC(ur_rtde, RTDEControlInterface, moveL_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
-      .def("moveL",
+           DOC(ur_rtde, RTDEControlInterface, moveL_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
+  control.def("moveL",
            (bool (RTDEControlInterface::*)(const std::vector<double> &pose, double speed, double acceleration, bool async)) &
                RTDEControlInterface::moveL,
            DOC(ur_rtde, RTDEControlInterface, moveL), py::arg("pose"), py::arg("speed") = 0.25,
-           py::arg("acceleration") = 1.2, py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
-      .def("moveL_FK", &RTDEControlInterface::moveL_FK, DOC(ur_rtde, RTDEControlInterface, moveL_FK), py::arg("q"),
-           py::arg("speed") = 0.25, py::arg("acceleration") = 1.2, py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
-      .def("moveC", &RTDEControlInterface::moveC, DOC(ur_rtde, RTDEControlInterface, moveC),
-           py::call_guard<py::gil_scoped_release>())
-      .def("moveP", &RTDEControlInterface::moveP, DOC(ur_rtde, RTDEControlInterface, moveC),
-           py::call_guard<py::gil_scoped_release>())
-      .def("speedJ", &RTDEControlInterface::speedJ, DOC(ur_rtde, RTDEControlInterface, speedJ), py::arg("qd"),
-           py::arg("acceleration") = 0.5, py::arg("time") = 0.0, py::call_guard<py::gil_scoped_release>())
-      .def("speedL", &RTDEControlInterface::speedL, DOC(ur_rtde, RTDEControlInterface, speedL), py::arg("xd"),
-           py::arg("acceleration") = 0.25, py::arg("time") = 0.0, py::call_guard<py::gil_scoped_release>())
-      .def("speedStop", &RTDEControlInterface::speedStop, DOC(ur_rtde, RTDEControlInterface, speedStop),
-           py::call_guard<py::gil_scoped_release>())
-      .def("servoJ", &RTDEControlInterface::servoJ, DOC(ur_rtde, RTDEControlInterface, servoJ),
-           py::call_guard<py::gil_scoped_release>())
-      .def("servoL", &RTDEControlInterface::servoL, DOC(ur_rtde, RTDEControlInterface, servoL),
-           py::call_guard<py::gil_scoped_release>())
-      .def("servoC", &RTDEControlInterface::servoC, DOC(ur_rtde, RTDEControlInterface, servoC), py::arg("pose"),
+           py::arg("acceleration") = 1.2, py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
+  control.def("moveL_FK", &RTDEControlInterface::moveL_FK, DOC(ur_rtde, RTDEControlInterface, moveL_FK), py::arg("q"),
+           py::arg("speed") = 0.25, py::arg("acceleration") = 1.2, py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
+  control.def("moveC", &RTDEControlInterface::moveC, DOC(ur_rtde, RTDEControlInterface, moveC),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("moveP", &RTDEControlInterface::moveP, DOC(ur_rtde, RTDEControlInterface, moveC),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("speedJ", &RTDEControlInterface::speedJ, DOC(ur_rtde, RTDEControlInterface, speedJ), py::arg("qd"),
+           py::arg("acceleration") = 0.5, py::arg("time") = 0.0, py::call_guard<py::gil_scoped_release>());
+  control.def("speedL", &RTDEControlInterface::speedL, DOC(ur_rtde, RTDEControlInterface, speedL), py::arg("xd"),
+           py::arg("acceleration") = 0.25, py::arg("time") = 0.0, py::call_guard<py::gil_scoped_release>());
+  control.def("speedStop", &RTDEControlInterface::speedStop, DOC(ur_rtde, RTDEControlInterface, speedStop),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("servoJ", &RTDEControlInterface::servoJ, DOC(ur_rtde, RTDEControlInterface, servoJ),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("servoL", &RTDEControlInterface::servoL, DOC(ur_rtde, RTDEControlInterface, servoL),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("servoC", &RTDEControlInterface::servoC, DOC(ur_rtde, RTDEControlInterface, servoC), py::arg("pose"),
            py::arg("speed") = 0.25, py::arg("acceleration") = 1.2, py::arg("blend") = 0.0,
-           py::call_guard<py::gil_scoped_release>())
-      .def("servoStop", &RTDEControlInterface::servoStop, DOC(ur_rtde, RTDEControlInterface, servoStop),
-           py::call_guard<py::gil_scoped_release>())
-      .def("forceMode", &RTDEControlInterface::forceMode, DOC(ur_rtde, RTDEControlInterface, forceMode),
-           py::call_guard<py::gil_scoped_release>())
-      .def("forceModeStop", &RTDEControlInterface::forceModeStop, DOC(ur_rtde, RTDEControlInterface, forceModeStop),
-           py::call_guard<py::gil_scoped_release>())
-      .def("forceModeSetDamping", &RTDEControlInterface::forceModeSetDamping,
-           DOC(ur_rtde, RTDEControlInterface, forceModeSetDamping), py::call_guard<py::gil_scoped_release>())
-      .def("toolContact", &RTDEControlInterface::toolContact, DOC(ur_rtde, RTDEControlInterface, toolContact),
-           py::call_guard<py::gil_scoped_release>())
-      .def("getTargetWaypoint", &RTDEControlInterface::getTargetWaypoint,
-           DOC(ur_rtde, RTDEControlInterface, getTargetWaypoint), py::call_guard<py::gil_scoped_release>())
-      .def("getActualJointPositionsHistory", &RTDEControlInterface::getActualJointPositionsHistory,
-           DOC(ur_rtde, RTDEControlInterface, getActualJointPositionsHistory), py::call_guard<py::gil_scoped_release>())
-      .def("getStepTime", &RTDEControlInterface::getStepTime, DOC(ur_rtde, RTDEControlInterface, getStepTime),
-           py::call_guard<py::gil_scoped_release>())
-      .def("teachMode", &RTDEControlInterface::teachMode, DOC(ur_rtde, RTDEControlInterface, teachMode),
-           py::call_guard<py::gil_scoped_release>())
-      .def("endTeachMode", &RTDEControlInterface::endTeachMode, DOC(ur_rtde, RTDEControlInterface, endTeachMode),
-           py::call_guard<py::gil_scoped_release>())
-      .def("isProgramRunning", &RTDEControlInterface::isProgramRunning, DOC(ur_rtde, RTDEControlInterface, isProgramRunning),
-           py::call_guard<py::gil_scoped_release>())
-      .def("forceModeSetGainScaling", &RTDEControlInterface::forceModeSetGainScaling,
-           DOC(ur_rtde, RTDEControlInterface, forceModeSetGainScaling), py::call_guard<py::gil_scoped_release>())
-      .def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor, DOC(ur_rtde, RTDEControlInterface, zeroFtSensor),
-           py::call_guard<py::gil_scoped_release>())
-      .def("setPayload", &RTDEControlInterface::setPayload, DOC(ur_rtde, RTDEControlInterface, setPayload),
-           py::call_guard<py::gil_scoped_release>())
-      .def("setTcp", &RTDEControlInterface::setTcp, DOC(ur_rtde, RTDEControlInterface, setTcp),
-           py::call_guard<py::gil_scoped_release>())
-      .def("getInverseKinematics", &RTDEControlInterface::getInverseKinematics,
+           py::call_guard<py::gil_scoped_release>());
+  control.def("servoStop", &RTDEControlInterface::servoStop, DOC(ur_rtde, RTDEControlInterface, servoStop),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("forceMode", &RTDEControlInterface::forceMode, DOC(ur_rtde, RTDEControlInterface, forceMode),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("forceModeStop", &RTDEControlInterface::forceModeStop, DOC(ur_rtde, RTDEControlInterface, forceModeStop),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("forceModeSetDamping", &RTDEControlInterface::forceModeSetDamping,
+           DOC(ur_rtde, RTDEControlInterface, forceModeSetDamping), py::call_guard<py::gil_scoped_release>());
+  control.def("toolContact", &RTDEControlInterface::toolContact, DOC(ur_rtde, RTDEControlInterface, toolContact),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("getTargetWaypoint", &RTDEControlInterface::getTargetWaypoint,
+           DOC(ur_rtde, RTDEControlInterface, getTargetWaypoint), py::call_guard<py::gil_scoped_release>());
+  control.def("getActualJointPositionsHistory", &RTDEControlInterface::getActualJointPositionsHistory,
+           DOC(ur_rtde, RTDEControlInterface, getActualJointPositionsHistory), py::call_guard<py::gil_scoped_release>());
+  control.def("getStepTime", &RTDEControlInterface::getStepTime, DOC(ur_rtde, RTDEControlInterface, getStepTime),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("teachMode", &RTDEControlInterface::teachMode, DOC(ur_rtde, RTDEControlInterface, teachMode),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("endTeachMode", &RTDEControlInterface::endTeachMode, DOC(ur_rtde, RTDEControlInterface, endTeachMode),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("isProgramRunning", &RTDEControlInterface::isProgramRunning, DOC(ur_rtde, RTDEControlInterface, isProgramRunning),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("forceModeSetGainScaling", &RTDEControlInterface::forceModeSetGainScaling,
+           DOC(ur_rtde, RTDEControlInterface, forceModeSetGainScaling), py::call_guard<py::gil_scoped_release>());
+  control.def("zeroFtSensor", &RTDEControlInterface::zeroFtSensor, DOC(ur_rtde, RTDEControlInterface, zeroFtSensor),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("setPayload", &RTDEControlInterface::setPayload, DOC(ur_rtde, RTDEControlInterface, setPayload),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("setTcp", &RTDEControlInterface::setTcp, DOC(ur_rtde, RTDEControlInterface, setTcp),
+           py::call_guard<py::gil_scoped_release>());
+  control.def("getInverseKinematics", &RTDEControlInterface::getInverseKinematics,
            DOC(ur_rtde, RTDEControlInterface, getInverseKinematics), py::arg("x"), py::arg("qnear") = std::vector<double>(),
            py::arg("max_position_error") = 1e-10, py::arg("max_orientation_error") = 1e-10,
-           py::call_guard<py::gil_scoped_release>())
-      .def("poseTrans", &RTDEControlInterface::poseTrans,
+           py::call_guard<py::gil_scoped_release>());
+  control.def("poseTrans", &RTDEControlInterface::poseTrans,
            DOC(ur_rtde, RTDEControlInterface, poseTrans), py::arg("p_from"), py::arg("p_from_to"),
-           py::call_guard<py::gil_scoped_release>())
-      .def("triggerProtectiveStop", &RTDEControlInterface::triggerProtectiveStop,
-           DOC(ur_rtde, RTDEControlInterface, triggerProtectiveStop), py::call_guard<py::gil_scoped_release>())
-      .def("stopL", &RTDEControlInterface::stopL,
-           DOC(ur_rtde, RTDEControlInterface, stopL), py::call_guard<py::gil_scoped_release>())
-      .def("stopJ", &RTDEControlInterface::stopJ,
-           DOC(ur_rtde, RTDEControlInterface, stopJ), py::call_guard<py::gil_scoped_release>())
-      .def("setWatchdog", &RTDEControlInterface::setWatchdog,
+           py::call_guard<py::gil_scoped_release>());
+  control.def("triggerProtectiveStop", &RTDEControlInterface::triggerProtectiveStop,
+           DOC(ur_rtde, RTDEControlInterface, triggerProtectiveStop), py::call_guard<py::gil_scoped_release>());
+  control.def("stopL", &RTDEControlInterface::stopL,
+           DOC(ur_rtde, RTDEControlInterface, stopL), py::call_guard<py::gil_scoped_release>());
+  control.def("stopJ", &RTDEControlInterface::stopJ,
+           DOC(ur_rtde, RTDEControlInterface, stopJ), py::call_guard<py::gil_scoped_release>());
+  control.def("setWatchdog", &RTDEControlInterface::setWatchdog,
            DOC(ur_rtde, RTDEControlInterface, setWatchdog), py::arg("min_frequency") = 10.0,
-           py::call_guard<py::gil_scoped_release>())
-      .def("kickWatchdog", &RTDEControlInterface::kickWatchdog,
-           DOC(ur_rtde, RTDEControlInterface, kickWatchdog), py::call_guard<py::gil_scoped_release>())
-      .def("isPoseWithinSafetyLimits", &RTDEControlInterface::isPoseWithinSafetyLimits,
-           DOC(ur_rtde, RTDEControlInterface, isPoseWithinSafetyLimits), py::call_guard<py::gil_scoped_release>())
-      .def("isJointsWithinSafetyLimits", &RTDEControlInterface::isJointsWithinSafetyLimits,
-           DOC(ur_rtde, RTDEControlInterface, isJointsWithinSafetyLimits), py::call_guard<py::gil_scoped_release>())
-      .def("getJointTorques", &RTDEControlInterface::getJointTorques,
-           DOC(ur_rtde, RTDEControlInterface, getJointTorques), py::call_guard<py::gil_scoped_release>())
-      .def("getTCPOffset", &RTDEControlInterface::getTCPOffset, py::call_guard<py::gil_scoped_release>())
-      .def("getForwardKinematics", &RTDEControlInterface::getForwardKinematics, py::arg("q") = std::vector<double>(),
-          py::arg("tcp_offset") = std::vector<double>(), py::call_guard<py::gil_scoped_release>())
-      .def("isSteady", &RTDEControlInterface::isSteady, py::call_guard<py::gil_scoped_release>())
-      .def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
+           py::call_guard<py::gil_scoped_release>());
+  control.def("kickWatchdog", &RTDEControlInterface::kickWatchdog,
+           DOC(ur_rtde, RTDEControlInterface, kickWatchdog), py::call_guard<py::gil_scoped_release>());
+  control.def("isPoseWithinSafetyLimits", &RTDEControlInterface::isPoseWithinSafetyLimits,
+           DOC(ur_rtde, RTDEControlInterface, isPoseWithinSafetyLimits), py::call_guard<py::gil_scoped_release>());
+  control.def("isJointsWithinSafetyLimits", &RTDEControlInterface::isJointsWithinSafetyLimits,
+           DOC(ur_rtde, RTDEControlInterface, isJointsWithinSafetyLimits), py::call_guard<py::gil_scoped_release>());
+  control.def("getJointTorques", &RTDEControlInterface::getJointTorques,
+           DOC(ur_rtde, RTDEControlInterface, getJointTorques), py::call_guard<py::gil_scoped_release>());
+  control.def("getTCPOffset", &RTDEControlInterface::getTCPOffset, py::call_guard<py::gil_scoped_release>());
+  control.def("getForwardKinematics", &RTDEControlInterface::getForwardKinematics, py::arg("q") = std::vector<double>(),
+          py::arg("tcp_offset") = std::vector<double>(), py::call_guard<py::gil_scoped_release>());
+  control.def("isSteady", &RTDEControlInterface::isSteady, py::call_guard<py::gil_scoped_release>());
+  control.def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control
 
