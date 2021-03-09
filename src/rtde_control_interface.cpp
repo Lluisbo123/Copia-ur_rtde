@@ -50,7 +50,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
   // Only check if in remote on real robot or when not using the ExternalControl UR Cap.
   if (!use_external_control_ur_cap_)
   {
-    if(hostname_ != "localhost" && hostname_ != "127.0.0.1")
+    if (hostname_ != "localhost" && hostname_ != "127.0.0.1")
     {
       PolyScopeVersion polyscope_version(db_client_->polyscopeVersion());
       if (polyscope_version.major == 5 && polyscope_version.minor > 5)
@@ -144,7 +144,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
     {
       // Send script to the UR Controller
       script_client_->sendScript();
-      waitForProgrammRunning();
+      waitForProgramRunning();
     }
     else
     {
@@ -170,7 +170,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
 
 #ifndef _WIN32
   // When the user wants to use ur_rtde with the ExternalControl UR Cap
-  if(!upload_script_ && use_external_control_ur_cap_)
+  if (!upload_script_ && use_external_control_ur_cap_)
   {
     // Create a connection to the ExternalControl UR cap for sending scripts to the cap
     urcl_script_sender_.reset(new urcl::comm::ScriptSender(UR_CAP_SCRIPT_PORT, script_client_->getScript(), false));
@@ -201,14 +201,14 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, bool upload_scr
     }
   }
 #else
-  if(!upload_script_ && use_external_control_ur_cap_)
+  if (!upload_script_ && use_external_control_ur_cap_)
   {
     throw std::logic_error("The use of ExternalControl UR Cap is not supported on Windows yet. Please contact author");
   }
 #endif
 
   // When the user wants to a custom script / program on the controller interacting with ur_rtde.
-  if(!upload_script_ && !use_external_control_ur_cap_)
+  if (!upload_script_ && !use_external_control_ur_cap_)
   {
     if (!isProgramRunning())
     {
@@ -241,30 +241,29 @@ RTDEControlInterface::~RTDEControlInterface()
   disconnect();
 }
 
-
-void RTDEControlInterface::waitForProgrammRunning()
+void RTDEControlInterface::waitForProgramRunning()
 {
-	int ms_count = 0;
-	int ms_retry_count = 0;
-	while (!isProgramRunning())
-	{
-		// Wait for program to be running
-		static const int sleep_ms = 10;
-		std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
-		ms_count += sleep_ms;
-		ms_retry_count += sleep_ms;
-		if (ms_retry_count >= 400)
-		{
-			ms_retry_count = 0;
-			if (verbose_)
-				std::cout << "ur_rtde: Programm not running - resend script" << std::endl;
-			script_client_->sendScript();
-		}
-		if (ms_count > 5000)
-		{
-			throw std::logic_error("ur_rtde: Failed to start control script, before timeout");
-		}
-	}
+  int ms_count = 0;
+  int ms_retry_count = 0;
+  while (!isProgramRunning())
+  {
+    // Wait for program to be running
+    static const int sleep_ms = 10;
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
+    ms_count += sleep_ms;
+    ms_retry_count += sleep_ms;
+    if (ms_retry_count >= 400)
+    {
+      ms_retry_count = 0;
+      if (verbose_)
+        std::cout << "ur_rtde: Program not running - resending script" << std::endl;
+      script_client_->sendScript();
+    }
+    if (ms_count > 5000)
+    {
+      throw std::logic_error("ur_rtde: Failed to start control script, before timeout");
+    }
+  }
 }
 
 void RTDEControlInterface::disconnect()
@@ -782,7 +781,7 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
   std::string line;
   std::stringstream ss(script);
   cmd_str += "def " + function_name + "():\n";
-  cmd_str += "\twrite_output_integer_register(0 +"+std::to_string(register_offset_)+", 1)\n";
+  cmd_str += "\twrite_output_integer_register(0 +" + std::to_string(register_offset_) + ", 1)\n";
 
   while (std::getline(ss, line))
   {
@@ -790,7 +789,7 @@ bool RTDEControlInterface::sendCustomScriptFunction(const std::string &function_
   }
 
   // Signal when motions are finished
-  cmd_str += "\twrite_output_integer_register(0 +"+std::to_string(register_offset_)+", 2)\n";
+  cmd_str += "\twrite_output_integer_register(0 +" + std::to_string(register_offset_) + ", 2)\n";
   cmd_str += "end\n";
 
   return sendCustomScript(cmd_str);
@@ -1427,9 +1426,8 @@ std::vector<double> RTDEControlInterface::getTargetWaypointValue()
 {
   if (robot_state_ != nullptr)
   {
-    std::vector<double> target_waypoint = {
-        getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2), getOutputDoubleReg(3),
-        getOutputDoubleReg(4), getOutputDoubleReg(5)};
+    std::vector<double> target_waypoint = {getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2),
+                                           getOutputDoubleReg(3), getOutputDoubleReg(4), getOutputDoubleReg(5)};
     return target_waypoint;
   }
   else
@@ -1442,9 +1440,9 @@ std::vector<double> RTDEControlInterface::getActualJointPositionsHistoryValue()
 {
   if (robot_state_ != nullptr)
   {
-    std::vector<double> actual_joint_positions_history = {
-        getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2), getOutputDoubleReg(3),
-        getOutputDoubleReg(4), getOutputDoubleReg(5)};
+    std::vector<double> actual_joint_positions_history = {getOutputDoubleReg(0), getOutputDoubleReg(1),
+                                                          getOutputDoubleReg(2), getOutputDoubleReg(3),
+                                                          getOutputDoubleReg(4), getOutputDoubleReg(5)};
     return actual_joint_positions_history;
   }
   else
@@ -1457,9 +1455,8 @@ std::vector<double> RTDEControlInterface::getInverseKinematicsValue()
 {
   if (robot_state_ != nullptr)
   {
-    std::vector<double> q = {
-        getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2), getOutputDoubleReg(3),
-        getOutputDoubleReg(4), getOutputDoubleReg(5)};
+    std::vector<double> q = {getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2),
+                             getOutputDoubleReg(3), getOutputDoubleReg(4), getOutputDoubleReg(5)};
     return q;
   }
   else
@@ -1472,9 +1469,8 @@ std::vector<double> RTDEControlInterface::poseTransValue()
 {
   if (robot_state_ != nullptr)
   {
-    std::vector<double> pose = {
-        getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2), getOutputDoubleReg(3),
-        getOutputDoubleReg(4), getOutputDoubleReg(5)};
+    std::vector<double> pose = {getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2),
+                                getOutputDoubleReg(3), getOutputDoubleReg(4), getOutputDoubleReg(5)};
     return pose;
   }
   else
@@ -1662,9 +1658,8 @@ std::vector<double> RTDEControlInterface::getJointTorques()
   {
     if (robot_state_ != nullptr)
     {
-      std::vector<double> torques = {
-          getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2), getOutputDoubleReg(3),
-          getOutputDoubleReg(4), getOutputDoubleReg(5)};
+      std::vector<double> torques = {getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2),
+                                     getOutputDoubleReg(3), getOutputDoubleReg(4), getOutputDoubleReg(5)};
       return torques;
     }
     else
@@ -1688,9 +1683,8 @@ std::vector<double> RTDEControlInterface::getTCPOffset()
   {
     if (robot_state_ != nullptr)
     {
-      std::vector<double> tcp_offset = {
-          getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2), getOutputDoubleReg(3),
-          getOutputDoubleReg(4), getOutputDoubleReg(5)};
+      std::vector<double> tcp_offset = {getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2),
+                                        getOutputDoubleReg(3), getOutputDoubleReg(4), getOutputDoubleReg(5)};
       return tcp_offset;
     }
     else
@@ -1731,9 +1725,8 @@ std::vector<double> RTDEControlInterface::getForwardKinematics(const std::vector
   {
     if (robot_state_ != nullptr)
     {
-      std::vector<double> forward_kin = {
-          getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2), getOutputDoubleReg(3),
-          getOutputDoubleReg(4), getOutputDoubleReg(5)};
+      std::vector<double> forward_kin = {getOutputDoubleReg(0), getOutputDoubleReg(1), getOutputDoubleReg(2),
+                                         getOutputDoubleReg(3), getOutputDoubleReg(4), getOutputDoubleReg(5)};
       return forward_kin;
     }
     else
@@ -1822,15 +1815,15 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
           start_time = std::chrono::high_resolution_clock::now();
           while (getControlScriptState() != UR_CONTROLLER_DONE_WITH_CMD)
           {
-        	// if the script causes an error, for example because of inverse
-        	// kinematics calculation failed, then it may be that the script no
-        	// longer runs an we will never receive the UR_CONTROLLER_DONE_WITH_CMD
-        	// signal
-        	if (!isProgramRunning())
-        	{
-        		std::cerr << "RTDEControlInterface: RTDE control script is not running!" << std::endl;
-        		return false;
-        	}
+            // if the script causes an error, for example because of inverse
+            // kinematics calculation failed, then it may be that the script no
+            // longer runs an we will never receive the UR_CONTROLLER_DONE_WITH_CMD
+            // signal
+            if (!isProgramRunning())
+            {
+              std::cerr << "RTDEControlInterface: RTDE control script is not running!" << std::endl;
+              return false;
+            }
 
             // If robot is in an emergency or protective stop return false
             if (isProtectiveStopped() || isEmergencyStopped())
@@ -1925,10 +1918,10 @@ struct VelocityAccLimits
 
 std::string PathEntry::toScriptCode() const
 {
-  static const VelocityAccLimits joint_limits = {UR_JOINT_VELOCITY_MIN, UR_JOINT_VELOCITY_MAX, UR_JOINT_ACCELERATION_MIN,
-                                                UR_JOINT_ACCELERATION_MAX};
+  static const VelocityAccLimits joint_limits = {UR_JOINT_VELOCITY_MIN, UR_JOINT_VELOCITY_MAX,
+                                                 UR_JOINT_ACCELERATION_MIN, UR_JOINT_ACCELERATION_MAX};
   static const VelocityAccLimits tool_limits = {UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX, UR_TOOL_ACCELERATION_MIN,
-                                               UR_TOOL_ACCELERATION_MAX};
+                                                UR_TOOL_ACCELERATION_MAX};
 
   const VelocityAccLimits &limits = (PositionJoints == pos_type_) ? joint_limits : tool_limits;
   switch (move_type_)

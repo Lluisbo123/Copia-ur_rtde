@@ -653,9 +653,9 @@ class RTDEControlInterface
    * This function waits until the script program is running.
    * If the program is not running after a certain amount of time, the function
    * tries to resend the script. If the script is not running after the timeout
-   * time, the an exception is thrown
+   * time, an exception is thrown.
    */
-  void waitForProgrammRunning();
+  void waitForProgramRunning();
 
   std::string outDoubleReg(int reg) const
   {
