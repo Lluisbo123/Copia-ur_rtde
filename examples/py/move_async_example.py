@@ -1,9 +1,9 @@
-import rtde_control
-import rtde_receive
+from rtde_control import RTDEControlInterface as RTDEControl
+from rtde_receive import RTDEReceiveInterface as RTDEReceive
 import time
 
-rtde_c = rtde_control.RTDEControlInterface("127.0.0.1")
-rtde_r = rtde_receive.RTDEReceiveInterface("127.0.0.1")
+rtde_c = RTDEControl("127.0.0.1")
+rtde_r = RTDEReceive("127.0.0.1")
 init_q = rtde_r.getActualQ()
 
 # Target in the robot base

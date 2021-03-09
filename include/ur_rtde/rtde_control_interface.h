@@ -56,11 +56,12 @@ class RTDEControlInterface
 	  FLAG_USE_EXT_UR_CAP = 0x02,
 	  FLAG_VERBOSE = 0x04,
 	  FLAG_UPPER_RANGE_REGISTERS = 0x08,
+          FLAG_EXT_CAP_NO_WAIT = 0x10,
+          FLAG_CUSTOM_SCRIPT = 0x20,
 	  FLAGS_DEFAULT = FLAG_UPLOAD_SCRIPT
   };
 
-
-  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, uint8_t flags = FLAGS_DEFAULT);
+  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, uint16_t flags = FLAGS_DEFAULT);
 
   RTDE_EXPORT virtual ~RTDEControlInterface();
 
@@ -694,6 +695,8 @@ class RTDEControlInterface
   bool use_external_control_ur_cap_;
   bool verbose_;
   bool use_upper_range_registers_;
+  bool external_control_no_wait_;
+  bool custom_script_;
   bool custom_script_running_;
   double frequency_;
   double delta_time_;

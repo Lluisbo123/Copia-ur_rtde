@@ -1,7 +1,7 @@
-import rtde_control
+from rtde_control import RTDEControlInterface as RTDEControl
 import time
 
-rtde_c = rtde_control.RTDEControlInterface("127.0.0.1")
+rtde_c = RTDEControl("127.0.0.1")
 
 task_frame = [0, 0, 0, 0, 0, 0]
 selection_vector = [0, 0, 1, 0, 0, 0]
