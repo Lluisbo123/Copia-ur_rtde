@@ -77,7 +77,7 @@ PYBIND11_MODULE(rtde_control, m)
            py::call_guard<py::gil_scoped_release>());
   control.def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path, bool async)) & RTDEControlInterface::moveJ,
-           DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>())
+           DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
   control.def("movePath",
            (bool (RTDEControlInterface::*)(const Path &path, bool async)) & RTDEControlInterface::movePath,
            "", py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
