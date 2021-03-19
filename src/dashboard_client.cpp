@@ -88,28 +88,44 @@ void DashboardClient::loadURP(const std::string &urp_name)
 {
   std::string load_urp = "load " + urp_name + "\n";
   send(load_urp);
-  receive();
+  auto result = receive();
+  if (strstr(result.c_str(), "Loading program:") == nullptr)
+  {
+	  throw std::runtime_error(result);
+  }
 }
 
 void DashboardClient::play()
 {
   std::string play = "play\n";
   send(play);
-  receive();
+  auto result = receive();
+  if (result != "Starting program")
+  {
+	  throw std::runtime_error(result);
+  }
 }
 
 void DashboardClient::stop()
 {
   std::string stop = "stop\n";
   send(stop);
-  receive();
+  auto result = receive();
+  if (result != "Stopped")
+  {
+	  throw std::runtime_error(result);
+  }
 }
 
 void DashboardClient::pause()
 {
   std::string pause = "pause\n";
   send(pause);
-  receive();
+  auto result = receive();
+  if (result != "Pausing program")
+  {
+	  throw std::runtime_error(result);
+  }
 }
 
 void DashboardClient::quit()
@@ -197,7 +213,11 @@ void DashboardClient::unlockProtectiveStop()
 {
   std::string unlock_p_stop = "unlock protective stop\n";
   send(unlock_p_stop);
-  receive();
+  auto result = receive();
+  if (result != "Protective stop releasing")
+  {
+	  throw std::logic_error("Unlock protective stop failure: " + result);
+  }
 }
 
 std::string DashboardClient::receive()
@@ -205,6 +225,10 @@ std::string DashboardClient::receive()
   boost::array<char, 1024> recv_buffer_;
   boost::system::error_code error_;
   size_t buflen = socket_->read_some(boost::asio::buffer(recv_buffer_), error_);
+  if (error_.value() != 0)
+  {
+	  throw std::runtime_error("Dashboard client receive function failed with error: " + error_.message());
+  }
   return std::string(recv_buffer_.elems, buflen - 1);  // -1 is removing newline
 }
 

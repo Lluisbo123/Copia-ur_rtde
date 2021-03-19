@@ -12,6 +12,9 @@
 
 namespace ur_rtde
 {
+/**
+ * This class provides the interface for access to the UR dashboard server.
+ */
 class DashboardClient
 {
  public:
@@ -28,37 +31,140 @@ class DashboardClient
 
  public:
   /**
-   * Connects to the dashboard server with the given timeout value
+   * Connects to the dashboard server with the given timeout value.
    */
   RTDE_EXPORT void connect(uint32_t timeout_ms = 2000);
+
+  /**
+   * @brief Returns true if the dashboard client is connected to the server.
+   */
   RTDE_EXPORT bool isConnected();
   RTDE_EXPORT void disconnect();
   RTDE_EXPORT void send(const std::string &str);
   RTDE_EXPORT std::string receive();
+
+  /**
+   * Returns when both program and associated installation has loaded..
+   * The load command fails if the associated installation requires confirmation
+   * of safety. In this case an exception with an error message is thrown.
+   */
   RTDE_EXPORT void loadURP(const std::string &urp_name);
+
+  /**
+   * Throws exception if program fails to start.
+   */
   RTDE_EXPORT void play();
+
+  /**
+   * Throws exception if the program fails to stop.
+   */
   RTDE_EXPORT void stop();
+
+  /**
+   * Throws exception if the program fails to pause.
+   */
   RTDE_EXPORT void pause();
+
+  /**
+   * Closes connection
+   */
   RTDE_EXPORT void quit();
+
+  /**
+   * Shuts down and turns off robot and controller
+   */
   RTDE_EXPORT void shutdown();
+
+  /**
+   * Execution state enquiry.
+   * @return Returns true if program is running.
+   */
   RTDE_EXPORT bool running();
+
+  /**
+   * The popup-text will be translated to the selected language, if the text
+   * exists in the language file
+   */
   RTDE_EXPORT void popup(const std::string &message);
+
+  /**
+   * Closes the popup
+   */
   RTDE_EXPORT void closePopup();
+
+  /**
+   * Closes a safety popup
+   */
   RTDE_EXPORT void closeSafetyPopup();
+
+  /**
+   * Powers on the robot arm
+   */
   RTDE_EXPORT void powerOn();
+
+  /**
+   * Powers off the robot arm
+   */
   RTDE_EXPORT void powerOff();
+
+  /**
+   * Powers off the robot arm
+   */
   RTDE_EXPORT void brakeRelease();
+
+  /**
+   * @brief Closes the current popup and unlocks protective stop.
+   * The unlock protective stop command fails with an exception if less than 5
+   * seconds has passed since the protective stop occurred.
+   */
   RTDE_EXPORT void unlockProtectiveStop();
+
+  /**
+   * @brief Use this when robot gets a safety fault or violation to restart the safety.
+   * After safety has been rebooted the robot will be in Power Off.
+   * \attention You should always ensure it is okay to restart the system.
+   * It is highly recommended to check the error log before using this
+   * command (either via PolyScope or e.g. ssh connection).
+   */
   RTDE_EXPORT void restartSafety();
   RTDE_EXPORT std::string polyscopeVersion();
   RTDE_EXPORT std::string programState();
   RTDE_EXPORT std::string robotmode();
   RTDE_EXPORT std::string getRobotModel();
   RTDE_EXPORT std::string getLoadedProgram();
+
+  /**
+   * @brief Safety mode inquiry.
+   * A Safeguard Stop resulting from any type of safeguard I/O or a
+   * configurable I/O three position enabling device result in SAFEGUARD_STOP.
+   * This function is deprecated. Instead, use safetystatus().
+   */
   RTDE_EXPORT std::string safetymode();
+
+  /**
+   * @brief Safety status inquiry.
+   * This differs from 'safetymode' by specifying if a given Safeguard Stop
+   * was caused by the permanent safeguard I/O stop, a configurable I/O
+   * automatic mode safeguard stop or a configurable I/O three position
+   * enabling device stop. Thus, this is strictly more detailed than safetymode()..
+   */
   RTDE_EXPORT std::string safetystatus();
+
+  /**
+   * Adds log-message to the Log history
+   */
   RTDE_EXPORT void addToLog(const std::string &message);
+
+  /**
+   * Returns the save state of the active program.
+   */
   RTDE_EXPORT bool isProgramSaved();
+
+  /**
+   * @brief Returns the remote control status of the robot.
+   * If the robot is in remote control it returns false and if remote control
+   * is disabled or robot is in local control it returns false.
+   */
   RTDE_EXPORT bool isInRemoteControl();
   RTDE_EXPORT void setUserRole(const UserRole &role);
 
