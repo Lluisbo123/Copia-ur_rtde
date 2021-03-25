@@ -47,6 +47,14 @@ namespace ur_rtde
 {
 class Path;
 
+/**
+ * This class provides the interface to control the robot and to execute robot
+ * movements.
+ * \note Currently the RTDEControlInterface, should not be considered thread
+ * safe, since no measures (mutexes) are taken to ensure that a function is
+ * done, before another would be executed. It is up to the caller to
+ * provide protection using mutexes.
+ */
 class RTDEControlInterface
 {
  public:
