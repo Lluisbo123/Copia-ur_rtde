@@ -153,10 +153,13 @@ else()
 			include/ur_rtde/rtde_receive_interface_doc.h
 			include/ur_rtde/rtde_io_interface.h
 			include/ur_rtde/rtde_io_interface_doc.h
-			include/ur_rtde/robotiq_gripper.h
+			include/ur_rtde/robotiq_gripper.h)
+
+	set(LIB_URCL_HEADER_FILES
 			include/urcl/script_sender.h
 			include/urcl/server.h
 			include/urcl/tcp_socket.h)
+
 endif()
 
 if(NOT DOC STREQUAL "OFF")
@@ -174,7 +177,7 @@ if(${CODE})
 	set(end "\";")
 	file(WRITE include/ur_rtde/rtde_control_script.h "${header}${FILEVAR}${end}")
 
-	add_library(rtde ${BUILD_TYPE} ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES})
+	add_library(rtde ${BUILD_TYPE} ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES} ${LIB_URCL_HEADER_FILES})
 	target_include_directories(rtde
 			PUBLIC ${Boost_INCLUDE_DIRS}
 			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -189,7 +192,7 @@ if(${CODE})
 			SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR})
 
 	if(${PYTHON_BINDINGS})
-		pybind11_add_module(rtde_control SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES}	src/rtde_python_bindings.cpp)
+		pybind11_add_module(rtde_control SHARED ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES} ${LIB_URCL_HEADER_FILES} src/rtde_python_bindings.cpp)
 		target_include_directories(rtde_control
 				PUBLIC ${Boost_INCLUDE_DIRS}
 				$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -366,11 +369,20 @@ if(${CODE})
 				COMPONENT ur_rtde-python)
 	endif()
 
+	# Install ur_rtde headers
 	install(
 			FILES
 			${LIB_HEADER_FILES}
 			"${CMAKE_CURRENT_SOURCE_DIR}/include/ur_rtde/rtde_export.h"
 			DESTINATION ${INCLUDE_INSTALL_DIR}/ur_rtde
+			COMPONENT ur_rtde_dev
+	)
+
+	# Install urcl specific headers
+	install(
+			FILES
+			${LIB_URCL_HEADER_FILES}
+			DESTINATION ${INCLUDE_INSTALL_DIR}/urcl
 			COMPONENT ur_rtde_dev
 	)
 
