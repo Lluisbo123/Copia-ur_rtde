@@ -387,12 +387,7 @@ bool RTDEControlInterface::reconnect()
     {
       // Send script to the UR Controller
       script_client_->sendScript();
-
-      while (!isProgramRunning())
-      {
-        // Wait for program to be running
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      }
+      waitForProgramRunning();
     }
     else
     {
@@ -411,33 +406,80 @@ bool RTDEControlInterface::reconnect()
       while (!isProgramRunning())
       {
         // Wait for program to be running
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
       }
     }
   }
-  else
-  {
-    if (!isProgramRunning())
-    {
-      start_time = std::chrono::high_resolution_clock::now();
-      std::cout << "Waiting for RTDE control program to be running on the controller" << std::endl;
-      while (!isProgramRunning())
-      {
-        std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-        if (duration > WAIT_FOR_PROGRAM_RUNNING_TIMEOUT)
-        {
-          break;
-        }
-        // Wait for program to be running
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      }
 
+#ifndef _WIN32
+  // When the user wants to use ur_rtde with the ExternalControl UR Cap
+  if (!upload_script_ && use_external_control_ur_cap_)
+  {
+    // Create a connection to the ExternalControl UR cap for sending scripts to the cap
+    urcl_script_sender_.reset(new urcl::comm::ScriptSender(UR_CAP_SCRIPT_PORT, script_client_->getScript(), false));
+    urcl_script_sender_->start();
+
+    if (!no_wait_)
+    {
       if (!isProgramRunning())
       {
-        disconnect();
-        throw std::logic_error("RTDE control program is not running on controller, before timeout of " +
-                               std::to_string(WAIT_FOR_PROGRAM_RUNNING_TIMEOUT) + " seconds");
+        start_time = std::chrono::high_resolution_clock::now();
+        std::cout << "Waiting for RTDE control program to be running on the controller" << std::endl;
+        while (!isProgramRunning())
+        {
+          std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+          auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+          if (duration > WAIT_FOR_PROGRAM_RUNNING_TIMEOUT)
+          {
+            break;
+          }
+          // Wait for program to be running
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+
+        if (!isProgramRunning())
+        {
+          disconnect();
+          throw std::logic_error("RTDE control program is not running on controller, before timeout of " +
+                                 std::to_string(WAIT_FOR_PROGRAM_RUNNING_TIMEOUT) + " seconds");
+        }
+      }
+    }
+  }
+#else
+  if (!upload_script_ && use_external_control_ur_cap_)
+  {
+    throw std::logic_error("The use of ExternalControl UR Cap is not supported on Windows yet. Please contact author");
+  }
+#endif
+
+  // When the user wants to a custom script / program on the controller interacting with ur_rtde.
+  if (!upload_script_ && !use_external_control_ur_cap_)
+  {
+    if (!no_wait_)
+    {
+      if (!isProgramRunning())
+      {
+        start_time = std::chrono::high_resolution_clock::now();
+        std::cout << "Waiting for RTDE control program to be running on the controller" << std::endl;
+        while (!isProgramRunning())
+        {
+          std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+          auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+          if (duration > WAIT_FOR_PROGRAM_RUNNING_TIMEOUT)
+          {
+            break;
+          }
+          // Wait for program to be running
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+
+        if (!isProgramRunning())
+        {
+          disconnect();
+          throw std::logic_error("RTDE control program is not running on controller, before timeout of " +
+                                 std::to_string(WAIT_FOR_PROGRAM_RUNNING_TIMEOUT) + " seconds");
+        }
       }
     }
   }
