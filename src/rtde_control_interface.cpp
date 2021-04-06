@@ -6,6 +6,8 @@
 #include <urcl/script_sender.h>
 #endif
 
+#include <ur_rtde/rtde_utility.h>
+
 #include <bitset>
 #include <boost/thread/thread.hpp>
 #include <chrono>
@@ -41,7 +43,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, uint16_t flags)
       use_external_control_ur_cap_(flags & FLAG_USE_EXT_UR_CAP),
       verbose_(flags & FLAG_VERBOSE),
       use_upper_range_registers_(flags & FLAG_UPPER_RANGE_REGISTERS),
-      external_control_no_wait_(flags & FLAG_EXT_CAP_NO_WAIT),
+      no_wait_(flags & FLAG_NO_WAIT),
       custom_script_(flags & FLAG_CUSTOM_SCRIPT)
 {
   // Create a connection to the dashboard server
@@ -177,7 +179,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, uint16_t flags)
     urcl_script_sender_.reset(new urcl::comm::ScriptSender(UR_CAP_SCRIPT_PORT, script_client_->getScript(), false));
     urcl_script_sender_->start();
 
-    if (!external_control_no_wait_)
+    if (!no_wait_)
     {
       if (!isProgramRunning())
       {
@@ -214,27 +216,30 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, uint16_t flags)
   // When the user wants to a custom script / program on the controller interacting with ur_rtde.
   if (!upload_script_ && !use_external_control_ur_cap_)
   {
-    if (!isProgramRunning())
+    if (!no_wait_)
     {
-      start_time = std::chrono::high_resolution_clock::now();
-      std::cout << "Waiting for RTDE control program to be running on the controller" << std::endl;
-      while (!isProgramRunning())
-      {
-        std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-        if (duration > WAIT_FOR_PROGRAM_RUNNING_TIMEOUT)
-        {
-          break;
-        }
-        // Wait for program to be running
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      }
-
       if (!isProgramRunning())
       {
-        disconnect();
-        throw std::logic_error("RTDE control program is not running on controller, before timeout of " +
-                               std::to_string(WAIT_FOR_PROGRAM_RUNNING_TIMEOUT) + " seconds");
+        start_time = std::chrono::high_resolution_clock::now();
+        std::cout << "Waiting for RTDE control program to be running on the controller" << std::endl;
+        while (!isProgramRunning())
+        {
+          std::chrono::high_resolution_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+          auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+          if (duration > WAIT_FOR_PROGRAM_RUNNING_TIMEOUT)
+          {
+            break;
+          }
+          // Wait for program to be running
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+
+        if (!isProgramRunning())
+        {
+          disconnect();
+          throw std::logic_error("RTDE control program is not running on controller, before timeout of " +
+                                 std::to_string(WAIT_FOR_PROGRAM_RUNNING_TIMEOUT) + " seconds");
+        }
       }
     }
   }
@@ -535,6 +540,46 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   // Recipe 16
   std::vector<std::string> async_path_input = {inIntReg(0), inIntReg(1)};
   rtde_->sendInputSetup(async_path_input);
+
+  // Recipe 17
+  std::vector<std::string> set_input_int_reg_0_input = {inIntReg(0), inIntReg(18)};
+  rtde_->sendInputSetup(set_input_int_reg_0_input);
+
+  // Recipe 18
+  std::vector<std::string> set_input_int_reg_1_input = {inIntReg(0), inIntReg(19)};
+  rtde_->sendInputSetup(set_input_int_reg_1_input);
+
+  // Recipe 19
+  std::vector<std::string> set_input_int_reg_2_input = {inIntReg(0), inIntReg(20)};
+  rtde_->sendInputSetup(set_input_int_reg_2_input);
+
+  // Recipe 20
+  std::vector<std::string> set_input_int_reg_3_input = {inIntReg(0), inIntReg(21)};
+  rtde_->sendInputSetup(set_input_int_reg_3_input);
+
+  // Recipe 21
+  std::vector<std::string> set_input_int_reg_4_input = {inIntReg(0), inIntReg(22)};
+  rtde_->sendInputSetup(set_input_int_reg_4_input);
+
+  // Recipe 22
+  std::vector<std::string> set_input_double_reg_0_input = {inIntReg(0), inDoubleReg(18)};
+  rtde_->sendInputSetup(set_input_double_reg_0_input);
+
+  // Recipe 23
+  std::vector<std::string> set_input_double_reg_1_input = {inIntReg(0), inDoubleReg(19)};
+  rtde_->sendInputSetup(set_input_double_reg_1_input);
+
+  // Recipe 24
+  std::vector<std::string> set_input_double_reg_2_input = {inIntReg(0), inDoubleReg(20)};
+  rtde_->sendInputSetup(set_input_double_reg_2_input);
+
+  // Recipe 25
+  std::vector<std::string> set_input_double_reg_3_input = {inIntReg(0), inDoubleReg(21)};
+  rtde_->sendInputSetup(set_input_double_reg_3_input);
+
+  // Recipe 26
+  std::vector<std::string> set_input_double_reg_4_input = {inIntReg(0), inDoubleReg(22)};
+  rtde_->sendInputSetup(set_input_double_reg_4_input);
 
   return true;
 }
@@ -1767,13 +1812,113 @@ bool RTDEControlInterface::isSteady()
   }
 }
 
+bool RTDEControlInterface::setInputIntRegister(int input_id, int value)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SET_INPUT_INT_REGISTER;
+  if (use_upper_range_registers_)
+  {
+    if (input_id == 42)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_17;
+    else if (input_id == 43)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_18;
+    else if (input_id == 44)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_19;
+    else if (input_id == 45)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_20;
+    else if (input_id == 46)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_21;
+    else
+      throw std::range_error(
+          "The supported range of setInputIntRegister() is [42-46], when using upper range, you specified: " +
+          std::to_string(input_id));
+
+    robot_cmd.reg_int_val_ = value;
+    // Notice we do not use sendCommand() as we want this function to be available even when the script is not running.
+    rtde_->send(robot_cmd);
+    return true;
+  }
+  else
+  {
+    if (input_id == 18)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_17;
+    else if (input_id == 19)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_18;
+    else if (input_id == 20)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_19;
+    else if (input_id == 21)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_20;
+    else if (input_id == 22)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_21;
+    else
+      throw std::range_error(
+          "The supported range of setInputIntRegister() is [18-22], when using lower range, you specified: " +
+          std::to_string(input_id));
+
+    robot_cmd.reg_int_val_ = value;
+    // Notice we do not use sendCommand() as we want this function to be available even when the script is not running.
+    rtde_->send(robot_cmd);
+    return true;
+  }
+}
+
+bool RTDEControlInterface::setInputDoubleRegister(int input_id, double value)
+{
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::SET_INPUT_DOUBLE_REGISTER;
+  if (use_upper_range_registers_)
+  {
+    if (input_id == 42)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_22;
+    else if (input_id == 43)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_23;
+    else if (input_id == 44)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_24;
+    else if (input_id == 45)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_25;
+    else if (input_id == 46)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_26;
+    else
+      throw std::range_error(
+          "The supported range of setInputDoubleRegister() is [42-46], when using upper range, you specified: " +
+          std::to_string(input_id));
+
+    robot_cmd.reg_double_val_ = value;
+    // Notice we do not use sendCommand() as we want this function to be available even when the script is not running.
+    rtde_->send(robot_cmd);
+    return true;
+  }
+  else
+  {
+    if (input_id == 18)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_22;
+    else if (input_id == 19)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_23;
+    else if (input_id == 20)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_24;
+    else if (input_id == 21)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_25;
+    else if (input_id == 22)
+      robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_26;
+    else
+      throw std::range_error(
+          "The supported range of setInputDoubleRegister() is [18-22], when using lower range, you specified: " +
+          std::to_string(input_id));
+
+    robot_cmd.reg_double_val_ = value;
+    // Notice we do not use sendCommand() as we want this function to be available even when the script is not running.
+    rtde_->send(robot_cmd);
+    return true;
+  }
+}
+
 bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 {
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 
   try
   {
-    if (isProgramRunning() || custom_script_running_ || use_external_control_ur_cap_)
+    if (isProgramRunning() || custom_script_ || custom_script_running_ || use_external_control_ur_cap_)
     {
       while (getControlScriptState() != UR_CONTROLLER_RDY_FOR_CMD)
       {

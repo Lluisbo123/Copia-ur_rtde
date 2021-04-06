@@ -347,8 +347,8 @@ class RTDEReceiveInterface
   RTDE_EXPORT bool isEmergencyStopped();
 
   /**
-   * @brief Get the specified output integer register in either lower range [12-19] or upper range [36-43].
-   * @param output_id the id of the register to read, current supported range is: [12-19] or [36-43], this can
+   * @brief Get the specified output integer register in either lower range [18-22] or upper range [42-46].
+   * @param output_id the id of the register to read, current supported range is: [18-22] or [42-46], this can
    * be adjusted by changing the RTDEReceiveInterface output recipes and by using the use_upper_range_registers
    * constructor flag to switch between lower and upper range.
    * @returns an integer from the specified output register
@@ -356,8 +356,8 @@ class RTDEReceiveInterface
   RTDE_EXPORT int getOutputIntRegister(int output_id);
 
   /**
-   * @brief Get the specified output double register in either lower range [12-19] or upper range [36-43].
-   * @param output_id the id of the register to read, current supported range is: [12-19] or [36-43], this can
+   * @brief Get the specified output double register in either lower range [18-22] or upper range [42-46].
+   * @param output_id the id of the register to read, current supported range is: [18-22] or [42-46], this can
    * be adjusted by changing the RTDEReceiveInterface output recipes and by using the use_upper_range_registers
    * constructor flag to switch between lower and upper range.
    * @returns a double from the specified output register

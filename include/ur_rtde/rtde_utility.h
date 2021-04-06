@@ -256,6 +256,12 @@ class RTDEUtility
     }
     return tokens;
   }
+
+  template <typename T>
+  bool isWithinBounds(const T& value, const T& low, const T& high)
+  {
+    return (low <= value && value <= high);
+  }
 };
 
 }  // namespace ur_rtde

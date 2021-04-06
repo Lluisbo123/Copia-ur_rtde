@@ -50,9 +50,9 @@ bool RTDEIOInterface::setupRecipes()
 {
   std::string cmd_reg = "";
   if(use_upper_range_registers_)
-    cmd_reg = "input_int_register_44";
+    cmd_reg = "input_int_register_47";
   else
-    cmd_reg = "input_int_register_20";
+    cmd_reg = "input_int_register_23";
 
   // Recipe 1
   std::vector<std::string> no_cmd_input = {cmd_reg};

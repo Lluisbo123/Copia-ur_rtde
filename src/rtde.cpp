@@ -150,6 +150,21 @@ void RTDE::send(const RobotCommand &robot_cmd)
   std::uint8_t command = RTDE_DATA_PACKAGE;
   std::vector<char> cmd_packed;
   cmd_packed = RTDEUtility::packInt32(robot_cmd.type_);
+
+  if (robot_cmd.type_ == RobotCommand::SET_INPUT_INT_REGISTER)
+  {
+    std::vector<char> reg_int_packed = RTDEUtility::packInt32(robot_cmd.reg_int_val_);
+    cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(reg_int_packed.begin()),
+                      std::make_move_iterator(reg_int_packed.end()));
+  }
+
+  if (robot_cmd.type_ == RobotCommand::SET_INPUT_DOUBLE_REGISTER)
+  {
+    std::vector<char> reg_double_packed = RTDEUtility::packInt32(robot_cmd.reg_double_val_);
+    cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(reg_double_packed.begin()),
+                      std::make_move_iterator(reg_double_packed.end()));
+  }
+
   if (robot_cmd.type_ == RobotCommand::WATCHDOG)
   {
     cmd_packed = RTDEUtility::packInt32(RobotCommand::NO_CMD);

@@ -52,7 +52,7 @@ PYBIND11_MODULE(rtde_control, m)
       .value("FLAG_USE_EXT_UR_CAP", RTDEControlInterface::Flags::FLAG_USE_EXT_UR_CAP)
       .value("FLAG_VERBOSE", RTDEControlInterface::Flags::FLAG_VERBOSE)
       .value("FLAG_UPPER_RANGE_REGISTERS", RTDEControlInterface::Flags::FLAG_UPPER_RANGE_REGISTERS)
-      .value("FLAG_EXT_CAP_NO_WAIT", RTDEControlInterface::Flags::FLAG_EXT_CAP_NO_WAIT)
+      .value("FLAG_NO_WAIT", RTDEControlInterface::Flags::FLAG_NO_WAIT)
       .value("FLAG_CUSTOM_SCRIPT", RTDEControlInterface::Flags::FLAG_CUSTOM_SCRIPT)
       .value("FLAGS_DEFAULT", RTDEControlInterface::Flags::FLAGS_DEFAULT)
       .export_values();
@@ -173,6 +173,8 @@ PYBIND11_MODULE(rtde_control, m)
   control.def("getForwardKinematics", &RTDEControlInterface::getForwardKinematics, py::arg("q") = std::vector<double>(),
           py::arg("tcp_offset") = std::vector<double>(), py::call_guard<py::gil_scoped_release>());
   control.def("isSteady", &RTDEControlInterface::isSteady, py::call_guard<py::gil_scoped_release>());
+  control.def("setInputIntRegister", &RTDEControlInterface::setInputIntRegister, py::call_guard<py::gil_scoped_release>());
+  control.def("setInputDoubleRegister", &RTDEControlInterface::setInputDoubleRegister, py::call_guard<py::gil_scoped_release>());
   control.def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control

@@ -138,7 +138,7 @@ for C++:
    rtde_control.moveL({-0.143, -0.435, 0.20, -0.001, 3.12, 0.04}, 0.5, 0.2);
 
 When you execute your ur_rtde application it will simply wait for you to press play on the controller in order
-to start, unless you use the FLAG_EXT_CAP_NO_WAIT, in which case the interface will be initialized, but cannot be
+to start, unless you use the FLAG_NO_WAIT, in which case the interface will be initialized, but cannot be
 used before the program is running on the controller. Notice! you must have the ExternalControl node as a part of the
 program and it must be setup with the correct IP of the computer that you want to control the robot from (This can be changed under
 Installation tab -> URCaps -> ExternalControl).
@@ -181,8 +181,9 @@ for C++:
    RTDEControlInterface rtde_control("127.0.0.1", RTDEControlInterface::FLAG_CUSTOM_SCRIPT);
    rtde_control.moveL({-0.143, -0.435, 0.20, -0.001, 3.12, 0.04}, 0.5, 0.2);
 
-Then before running your ur_rtde application, make sure the program is running on the controller
-and that the robot is in remote control.
+When you execute your ur_rtde application it will simply wait for you to press play on the controller in order
+to start, unless you use the FLAG_NO_WAIT, in which case the interface will be initialized, but cannot be
+used before the program is running on the controller. Finally make sure the robot is in remote control.
 
 .. _move-asynchronous-example:
 
