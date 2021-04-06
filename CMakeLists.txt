@@ -43,11 +43,11 @@ if(${CODE})
 
 endif()
 
-project(ur_rtde VERSION 1.4.0 LANGUAGES ${PROJECT_LANGUAGES})
+project(ur_rtde VERSION 1.4.1 LANGUAGES ${PROJECT_LANGUAGES})
 set(PROJECT_VERSION_SUFFIX "") # alpha/beta/rc, e.g. "-rc0"
 set(PROJECT_VERSION "${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX}")
 set(PROJECT_AUTHOR "Anders Prier Lindvig")
-set(PROJECT_COPYRIGHT "2019")
+set(PROJECT_COPYRIGHT "2021")
 set(PROJECT_MAIL "anpl@mmmi.sdu.dk")
 
 if(${CODE})
