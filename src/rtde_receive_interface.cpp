@@ -39,6 +39,10 @@ RTDEReceiveInterface::RTDEReceiveInterface(std::string hostname, std::vector<std
   // Map the output registers to functions
   initOutputRegFuncMap();
 
+  // Init pausing state
+  pausing_state_ = PausingState::RUNNING;
+  pausing_ramp_up_increment_ = 0.01;
+
   if (use_upper_range_registers_)
     register_offset_ = 24;
   else
@@ -632,6 +636,42 @@ double RTDEReceiveInterface::getOutputDoubleRegister(int output_id)
 int RTDEReceiveInterface::getAsyncOperationProgress()
 {
   return getOutputIntReg(2+register_offset_);
+}
+
+double RTDEReceiveInterface::getSpeedScalingCombined()
+{
+  int runtime_state = getRuntimeState();
+
+  if (runtime_state == RuntimeState::PAUSED)
+  {
+    pausing_state_ = PausingState::PAUSED;
+  }
+  else if (runtime_state == RuntimeState::PLAYING && pausing_state_ == PausingState::PAUSED)
+  {
+    speed_scaling_combined_ = 0.0;
+    pausing_state_ = PausingState::RAMPUP;
+  }
+
+  if (pausing_state_ == PausingState::RAMPUP)
+  {
+    double speed_scaling_ramp = speed_scaling_combined_ + pausing_ramp_up_increment_;
+    speed_scaling_combined_ = std::min(speed_scaling_ramp, getSpeedScaling() * getTargetSpeedFraction());
+
+    if (speed_scaling_ramp > getSpeedScaling() * getTargetSpeedFraction())
+    {
+      pausing_state_ = PausingState::RUNNING;
+    }
+  }
+  else if (runtime_state == RuntimeState::RESUMING)
+  {
+    speed_scaling_combined_ = 0.0;
+  }
+  else
+  {
+    speed_scaling_combined_ = getSpeedScaling() * getTargetSpeedFraction();
+  }
+
+  return speed_scaling_combined_;
 }
 
 }  // namespace ur_rtde

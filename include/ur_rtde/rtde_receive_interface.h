@@ -113,6 +113,23 @@ class RTDEReceiveInterface
     OUTPUT_DOUBLE_REGISTER_23
   };
 
+  enum RuntimeState
+  {
+    STOPPING = 0,
+    STOPPED = 1,
+    PLAYING = 2,
+    PAUSING = 3,
+    PAUSED = 4,
+    RESUMING = 5
+  };
+
+  enum class PausingState
+  {
+    PAUSED,
+    RUNNING,
+    RAMPUP
+  };
+
   /**
    * @returns Can be used to disconnect from the robot. To reconnect you have to call the reconnect() function.
    */
@@ -384,6 +401,19 @@ class RTDEReceiveInterface
    */
   RTDE_EXPORT int getAsyncOperationProgress();
 
+  /**
+   * @brief Get the combined speed scaling
+   * The combined speed scaling is the speed scaling resulting from multiplying the speed scaling
+   * with the target speed fraction. The combined speed scaling takes the runtime_state of the
+   * controller into account. If eg. a motion is paused on the teach pendant, and later
+   * continued, the speed scaling will be ramped up from zero and return to
+   * speed_scaling * target_speed_fraction when the runtime_state is RUNNING again.
+   *
+   * This is useful for scaling trajectories with the slider speed scaling currently set on the teach pendant.
+   * @returns the actual combined speed scaling
+   */
+  RTDE_EXPORT double getSpeedScalingCombined();
+
   RTDE_EXPORT void receiveCallback();
 
  private:
@@ -433,6 +463,9 @@ class RTDEReceiveInterface
   std::shared_ptr<boost::thread> th_;
   std::shared_ptr<RobotState> robot_state_;
   std::map<std::string, std::function<double()>> output_reg_func_map_;
+  PausingState pausing_state_;
+  double speed_scaling_combined_;
+  double pausing_ramp_up_increment_;
 };
 
 }  // namespace ur_rtde

@@ -490,7 +490,7 @@ bool RTDEControlInterface::reconnect()
 bool RTDEControlInterface::setupRecipes(const double &frequency)
 {
   // Setup output
-  std::vector<std::string> state_names = {"robot_status_bits", "safety_status_bits", outIntReg(0),    outIntReg(1),
+  std::vector<std::string> state_names = {"robot_status_bits", "safety_status_bits", "runtime_state", outIntReg(0),    outIntReg(1),
                                           outDoubleReg(0),     outDoubleReg(1),      outDoubleReg(2), outDoubleReg(3),
                                           outDoubleReg(4),     outDoubleReg(5)};
   rtde_->sendOutputSetup(state_names, frequency);
@@ -1960,6 +1960,16 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 
   try
   {
+    int runtime_state = robot_state_->getRuntime_state();
+    if(runtime_state == RuntimeState::STOPPED)
+    {
+      if (!custom_script_running_)
+      {
+        sendClearCommand();
+        return false;
+      }
+    }
+
     if (isProgramRunning() || custom_script_ || custom_script_running_ || use_external_control_ur_cap_)
     {
       while (getControlScriptState() != UR_CONTROLLER_RDY_FOR_CMD)
@@ -2067,6 +2077,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
     else
     {
       std::cerr << "RTDEControlInterface: RTDE control script is not running!" << std::endl;
+      sendClearCommand();
       return false;
     }
   }

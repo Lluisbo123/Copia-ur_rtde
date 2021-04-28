@@ -96,6 +96,16 @@ class RTDEControlInterface
     IS_STOPPED_DUE_TO_SAFETY = 10
   };
 
+  enum RuntimeState
+  {
+    STOPPING = 0,
+    STOPPED = 1,
+    PLAYING = 2,
+    PAUSING = 3,
+    PAUSED = 4,
+    RESUMING = 5
+  };
+
   enum Feature
   {
     FEATURE_BASE,

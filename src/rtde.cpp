@@ -160,7 +160,7 @@ void RTDE::send(const RobotCommand &robot_cmd)
 
   if (robot_cmd.type_ == RobotCommand::SET_INPUT_DOUBLE_REGISTER)
   {
-    std::vector<char> reg_double_packed = RTDEUtility::packInt32(robot_cmd.reg_double_val_);
+    std::vector<char> reg_double_packed = RTDEUtility::packDouble(robot_cmd.reg_double_val_);
     cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(reg_double_packed.begin()),
                       std::make_move_iterator(reg_double_packed.end()));
   }

@@ -274,6 +274,7 @@ PYBIND11_MODULE(rtde_receive, m)
            DOC(ur_rtde, RTDEReceiveInterface, isEmergencyStopped), py::call_guard<py::gil_scoped_release>())
       .def("getOutputIntRegister", &RTDEReceiveInterface::getOutputIntRegister, py::call_guard<py::gil_scoped_release>())
       .def("getOutputDoubleRegister", &RTDEReceiveInterface::getOutputDoubleRegister, py::call_guard<py::gil_scoped_release>())
+      .def("getSpeedScalingCombined", &RTDEReceiveInterface::getSpeedScalingCombined, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEReceiveInterface &a) { return "<rtde_receive.RTDEReceiveInterface>"; });
 }
 };  // namespace rtde_receive
