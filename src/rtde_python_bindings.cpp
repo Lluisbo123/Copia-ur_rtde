@@ -173,8 +173,6 @@ PYBIND11_MODULE(rtde_control, m)
   control.def("getForwardKinematics", &RTDEControlInterface::getForwardKinematics, py::arg("q") = std::vector<double>(),
           py::arg("tcp_offset") = std::vector<double>(), py::call_guard<py::gil_scoped_release>());
   control.def("isSteady", &RTDEControlInterface::isSteady, py::call_guard<py::gil_scoped_release>());
-  control.def("setInputIntRegister", &RTDEControlInterface::setInputIntRegister, py::call_guard<py::gil_scoped_release>());
-  control.def("setInputDoubleRegister", &RTDEControlInterface::setInputDoubleRegister, py::call_guard<py::gil_scoped_release>());
   control.def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control
@@ -299,6 +297,8 @@ PYBIND11_MODULE(rtde_io, m)
       .def("setAnalogOutputCurrent", &RTDEIOInterface::setAnalogOutputCurrent,
            DOC(ur_rtde, RTDEIOInterface, setAnalogOutputCurrent), py::call_guard<py::gil_scoped_release>())
       .def("setConfigurableDigitalOut", &RTDEIOInterface::setConfigurableDigitalOut, py::call_guard<py::gil_scoped_release>())
+      .def("setInputIntRegister", &RTDEIOInterface::setInputIntRegister, py::call_guard<py::gil_scoped_release>())
+      .def("setInputDoubleRegister", &RTDEIOInterface::setInputDoubleRegister, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEIOInterface &a) { return "<rtde_io.RTDEIOInterface>"; });
 }
 };  // namespace rtde_io

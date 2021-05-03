@@ -641,30 +641,6 @@ class RTDEControlInterface
    */
   RTDE_EXPORT bool isSteady();
 
-  /**
-   * @brief Set the specified input integer register in either lower range [18-22] or upper range [42-46].
-   *
-   * @param input_id the id of the register to set, current supported range is: [18-22] or [42-46], this can
-   * be adjusted by changing the RTDEControlInterface input recipes and by using the use_upper_range_registers
-   * constructor flag to switch between lower and upper range.
-   * @param value the desired integer value
-   *
-   * @returns true if the register is successfully set, false otherwise.
-   */
-   RTDE_EXPORT bool setInputIntRegister(int input_id, int value);
-
-  /**
-   * @brief Set the specified input double register in either lower range [18-22] or upper range [42-46].
-   *
-   * @param input_id the id of the register to set, current supported range is: [18-22] or [42-46], this can
-   * be adjusted by changing the RTDEControlInterface input recipes and by using the use_upper_range_registers
-   * constructor flag to switch between lower and upper range.
-   * @param value the desired double value
-   *
-   * @returns true if the register is successfully set, false otherwise.
-   */
-  RTDE_EXPORT bool setInputDoubleRegister(int input_id, double value);
-
 
 
  private:
