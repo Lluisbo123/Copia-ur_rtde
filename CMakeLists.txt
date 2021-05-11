@@ -304,6 +304,10 @@ if(${CODE})
 		target_include_directories(robotiq_gripper_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 		target_link_libraries(robotiq_gripper_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
 
+		add_executable(move_until_contact_example examples/cpp/move_until_contact.cpp)
+		target_include_directories(move_until_contact_example PUBLIC ${Boost_INCLUDE_DIRS} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+		target_link_libraries(move_until_contact_example PRIVATE rtde ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+
 		if (UNIX)
 			find_package(Curses)
 			if(Curses_FOUND)
@@ -314,11 +318,11 @@ if(${CODE})
 					PROPERTIES
 					RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 					)
-				add_executable(ur_rtde::jog_example.cpp ALIAS jog_example)
+				add_executable(ur_rtde::jog_example ALIAS jog_example)
 			endif()
 		endif (UNIX)
 
-		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example move_async_example move_path_async_example robotiq_gripper_example
+		set_target_properties(servoj_example forcemode_example speedj_example movej_path_with_blend_example io_example move_async_example move_path_async_example robotiq_gripper_example move_until_contact_example
 				PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 				)
@@ -336,7 +340,8 @@ if(${CODE})
 		add_executable(ur_rtde::io_example ALIAS io_example)
 		add_executable(ur_rtde::move_async_example ALIAS move_async_example)
 		add_executable(ur_rtde::move_path_async_example ALIAS move_path_async_example)
-		add_executable(ur_rtde::robotiq_gripper_example.cpp ALIAS robotiq_gripper_example)
+		add_executable(ur_rtde::robotiq_gripper_example ALIAS robotiq_gripper_example)
+		add_executable(ur_rtde::move_until_contact_example ALIAS move_until_contact_example)
 	endif()
 
 	if (CMAKE_COMPILER_IS_GNUCXX)

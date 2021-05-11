@@ -93,6 +93,7 @@ class RTDE
       SET_CONF_DIGITAL_OUT = 48,
       SET_INPUT_INT_REGISTER = 49,
       SET_INPUT_DOUBLE_REGISTER = 50,
+      MOVE_UNTIL_CONTACT = 51,
       WATCHDOG = 99,
       STOP_SCRIPT = 255
     };
@@ -115,16 +116,7 @@ class RTDE
       RECIPE_14 = 14,
       RECIPE_15 = 15,
       RECIPE_16 = 16,
-      RECIPE_17 = 17,
-      RECIPE_18 = 18,
-      RECIPE_19 = 19,
-      RECIPE_20 = 20,
-      RECIPE_21 = 21,
-      RECIPE_22 = 22,
-      RECIPE_23 = 23,
-      RECIPE_24 = 24,
-      RECIPE_25 = 25,
-      RECIPE_26 = 26
+      RECIPE_17 = 17
     };
 
     RobotCommand() : type_(NO_CMD), recipe_id_(1)

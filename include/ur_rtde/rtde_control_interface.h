@@ -2,8 +2,8 @@
 #ifndef RTDE_CONTROL_INTERFACE_H
 #define RTDE_CONTROL_INTERFACE_H
 
-#include <ur_rtde/rtde_export.h>
 #include <ur_rtde/rtde.h>
+#include <ur_rtde/rtde_export.h>
 #ifndef _WIN32
 #include <urcl/script_sender.h>
 #endif
@@ -37,11 +37,26 @@
 #define UR_BLEND_MIN 0.0
 
 // forward declarations
-namespace boost { class thread; }
-namespace ur_rtde { class DashboardClient; }
-namespace ur_rtde { class ScriptClient; }
-namespace ur_rtde { class RobotState; }
-namespace ur_rtde { class RTDE; }
+namespace boost
+{
+class thread;
+}
+namespace ur_rtde
+{
+class DashboardClient;
+}
+namespace ur_rtde
+{
+class ScriptClient;
+}
+namespace ur_rtde
+{
+class RobotState;
+}
+namespace ur_rtde
+{
+class RTDE;
+}
 
 namespace ur_rtde
 {
@@ -60,13 +75,13 @@ class RTDEControlInterface
  public:
   enum Flags
   {
-	  FLAG_UPLOAD_SCRIPT = 0x01,
-	  FLAG_USE_EXT_UR_CAP = 0x02,
-	  FLAG_VERBOSE = 0x04,
-	  FLAG_UPPER_RANGE_REGISTERS = 0x08,
-          FLAG_NO_WAIT = 0x10,
-          FLAG_CUSTOM_SCRIPT = 0x20,
-	  FLAGS_DEFAULT = FLAG_UPLOAD_SCRIPT
+    FLAG_UPLOAD_SCRIPT = 0x01,
+    FLAG_USE_EXT_UR_CAP = 0x02,
+    FLAG_VERBOSE = 0x04,
+    FLAG_UPPER_RANGE_REGISTERS = 0x08,
+    FLAG_NO_WAIT = 0x10,
+    FLAG_CUSTOM_SCRIPT = 0x20,
+    FLAGS_DEFAULT = FLAG_UPLOAD_SCRIPT
   };
 
   RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, uint16_t flags = FLAGS_DEFAULT);
@@ -385,7 +400,6 @@ class RTDEControlInterface
    */
   RTDE_EXPORT bool forceModeStop();
 
-
   /**
    * @brief Starts jogging with the given speed vector with respect to the given
    * feature.
@@ -409,7 +423,6 @@ class RTDEControlInterface
    * Stops jogging that has been started start_jog
    */
   RTDE_EXPORT bool jogStop();
-
 
   /**
    * @brief Zeroes the TCP force/torque measurement from the builtin force/torque sensor by subtracting the current
@@ -612,7 +625,6 @@ class RTDEControlInterface
    */
   RTDE_EXPORT std::vector<double> getTCPOffset();
 
-
   /**
    * @brief Calculate the forward kinematic transformation (joint space -> tool
    * space) using the calibrated robot kinematics. If no joint position vector
@@ -641,7 +653,22 @@ class RTDEControlInterface
    */
   RTDE_EXPORT bool isSteady();
 
-
+  /**
+   * @brief Move the robot until contact, with specified speed and contact detection direction.
+   *
+   * The robot will automatically retract to the initial point of contact.
+   *
+   * @param xd tool speed [m/s] (spatial vector)
+   * @param direction List of six floats. The first three elements are interpreted as a 3D vector
+   * (in the robot base coordinate system) giving the direction in which contacts should be detected. If all elements
+   * of the list are zero, contacts from all directions are considered. You can also set
+   * direction=get_target_tcp_speed() in which case it will detect contacts in the direction of the TCP movement.
+   * @param acceleration tool position acceleration [m/s^2]
+   * @returns True once the robot is in contact.
+   */
+  RTDE_EXPORT bool moveUntilContact(const std::vector<double> &xd,
+                                    const std::vector<double> &direction = {0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0},
+                                    double acceleration = 0.5);
 
  private:
   bool setupRecipes(const double &frequency);
@@ -686,33 +713,33 @@ class RTDEControlInterface
 
   std::string outDoubleReg(int reg) const
   {
-    return "output_double_register_" + std::to_string(register_offset_+reg);
+    return "output_double_register_" + std::to_string(register_offset_ + reg);
   };
 
   std::string outIntReg(int reg) const
   {
-    return "output_int_register_" + std::to_string(register_offset_+reg);
+    return "output_int_register_" + std::to_string(register_offset_ + reg);
   };
 
   std::string inDoubleReg(int reg) const
   {
-    return "input_double_register_" + std::to_string(register_offset_+reg);
+    return "input_double_register_" + std::to_string(register_offset_ + reg);
   };
 
   std::string inIntReg(int reg) const
   {
-    return "input_int_register_" + std::to_string(register_offset_+reg);
+    return "input_int_register_" + std::to_string(register_offset_ + reg);
   };
 
   double getOutputDoubleReg(int reg)
   {
-    std::string func_name = "getOutput_double_register_"+std::to_string(register_offset_+reg);
+    std::string func_name = "getOutput_double_register_" + std::to_string(register_offset_ + reg);
     return output_reg_func_map_[func_name]();
   };
 
   int getOutputIntReg(int reg)
   {
-    std::string func_name = "getOutput_int_register_"+std::to_string(register_offset_+reg);
+    std::string func_name = "getOutput_int_register_" + std::to_string(register_offset_ + reg);
     return output_reg_func_map_[func_name]();
   };
 

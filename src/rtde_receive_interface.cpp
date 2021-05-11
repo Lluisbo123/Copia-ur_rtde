@@ -589,19 +589,19 @@ int RTDEReceiveInterface::getOutputIntRegister(int output_id)
 {
   if (use_upper_range_registers_)
   {
-    if (!isWithinBounds(output_id, 42, 46))
+    if (!isWithinBounds(output_id, 36, 43))
     {
       throw std::range_error(
-          "The supported range of getOutputIntRegister() is [42-46], when using upper range, you specified: " +
+          "The supported range of getOutputIntRegister() is [36-43], when using upper range, you specified: " +
           std::to_string(output_id));
     }
   }
   else
   {
-    if (!isWithinBounds(output_id, 18, 22))
+    if (!isWithinBounds(output_id, 12, 19))
     {
       throw std::range_error(
-          "The supported range of getOutputIntRegister() is [18-22], when using lower range you specified: " +
+          "The supported range of getOutputIntRegister() is [12-19], when using lower range you specified: " +
           std::to_string(output_id));
     }
   }
@@ -622,10 +622,10 @@ double RTDEReceiveInterface::getOutputDoubleRegister(int output_id)
   }
   else
   {
-    if (!isWithinBounds(output_id, 18, 22))
+    if (!isWithinBounds(output_id, 12, 19))
     {
       throw std::range_error(
-          "The supported range of getOutputDoubleRegister() is [18-22], when using lower range you specified: " +
+          "The supported range of getOutputDoubleRegister() is [12-19], when using lower range you specified: " +
           std::to_string(output_id));
     }
   }

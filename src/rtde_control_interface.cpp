@@ -490,9 +490,9 @@ bool RTDEControlInterface::reconnect()
 bool RTDEControlInterface::setupRecipes(const double &frequency)
 {
   // Setup output
-  std::vector<std::string> state_names = {"robot_status_bits", "safety_status_bits", "runtime_state", outIntReg(0),    outIntReg(1),
-                                          outDoubleReg(0),     outDoubleReg(1),      outDoubleReg(2), outDoubleReg(3),
-                                          outDoubleReg(4),     outDoubleReg(5)};
+  std::vector<std::string> state_names = {"robot_status_bits", "safety_status_bits", "runtime_state", outIntReg(0),
+                                          outIntReg(1),        outDoubleReg(0),      outDoubleReg(1), outDoubleReg(2),
+                                          outDoubleReg(3),     outDoubleReg(4),      outDoubleReg(5)};
   rtde_->sendOutputSetup(state_names, frequency);
 
   // Setup input recipes
@@ -582,6 +582,13 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   // Recipe 16
   std::vector<std::string> async_path_input = {inIntReg(0), inIntReg(1)};
   rtde_->sendInputSetup(async_path_input);
+
+  // Recipe 17
+  std::vector<std::string> move_until_contact_input = {inIntReg(0),     inDoubleReg(0), inDoubleReg(1), inDoubleReg(2),
+                                                       inDoubleReg(3),  inDoubleReg(4), inDoubleReg(5), inDoubleReg(6),
+                                                       inDoubleReg(7),  inDoubleReg(8), inDoubleReg(9), inDoubleReg(10),
+                                                       inDoubleReg(11), inDoubleReg(12)};
+  rtde_->sendInputSetup(move_until_contact_input);
 
   return true;
 }
@@ -1814,6 +1821,22 @@ bool RTDEControlInterface::isSteady()
   }
 }
 
+bool RTDEControlInterface::moveUntilContact(const std::vector<double> &xd, const std::vector<double> &direction,
+                                            double acceleration)
+{
+  verifyValueIsWithin(acceleration, UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
+
+  RTDE::RobotCommand robot_cmd;
+  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVE_UNTIL_CONTACT;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_17;
+  robot_cmd.val_ = xd;
+  for (const auto &val : direction)
+    robot_cmd.val_.push_back(val);
+
+  robot_cmd.val_.push_back(acceleration);
+  return sendCommand(robot_cmd);
+}
+
 bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
 {
   std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
@@ -1821,7 +1844,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
   try
   {
     int runtime_state = robot_state_->getRuntime_state();
-    if(runtime_state == RuntimeState::STOPPED)
+    if (runtime_state == RuntimeState::STOPPED)
     {
       if (!custom_script_running_)
       {
@@ -1854,15 +1877,14 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
       if (cmd.type_ == RTDE::RobotCommand::Type::SERVOJ || cmd.type_ == RTDE::RobotCommand::Type::SERVOL ||
           cmd.type_ == RTDE::RobotCommand::Type::SERVOC || cmd.type_ == RTDE::RobotCommand::Type::SPEEDJ ||
           cmd.type_ == RTDE::RobotCommand::Type::SPEEDL || cmd.type_ == RTDE::RobotCommand::Type::FORCE_MODE ||
-          cmd.type_ == RTDE::RobotCommand::Type::WATCHDOG)
+          cmd.type_ == RTDE::RobotCommand::Type::WATCHDOG || cmd.type_ == RTDE::RobotCommand::Type::GET_JOINT_TORQUES ||
+        cmd.type_ == RTDE::RobotCommand::Type::TOOL_CONTACT || cmd.type_ == RTDE::RobotCommand::Type::GET_STEPTIME ||
+          cmd.type_ == RTDE::RobotCommand::Type::GET_ACTUAL_JOINT_POSITIONS_HISTORY)
       {
         // Send command to the controller
         rtde_->send(cmd);
 
-        // We do not wait for 'continuous' commands to finish.
-
-        // Make controller ready for next command
-        // sendClearCommand();
+        // We do not wait for 'continuous' / RT commands to finish.
 
         return true;
       }

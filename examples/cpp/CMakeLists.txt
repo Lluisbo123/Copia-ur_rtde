@@ -8,6 +8,9 @@ find_package(ur_rtde REQUIRED PATHS "${DIR}/../../Build/ur_rtde" "${DIR}/../../b
 add_executable(forcemode_example forcemode_example.cpp)
 target_link_libraries(forcemode_example PUBLIC ur_rtde::rtde)
 
+add_executable(move_until_contact move_until_contact.cpp)
+target_link_libraries(move_until_contact PUBLIC ur_rtde::rtde)
+
 add_executable(io io_example.cpp)
 target_link_libraries(io PUBLIC ur_rtde::rtde)
 

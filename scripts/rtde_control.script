@@ -579,28 +579,19 @@ $V50        force_mode_set_gain_scaling(scaling)
                 end
             end
         elif cmd == 25:
-            textmsg("tool_contact")
+            # tool_contact
             direction = pose_from_input_float_registers(0)
 $V54        time_steps = tool_contact(direction)
 $V54        write_output_integer_reg(1, time_steps)
-$V54        textmsg("tool_contact timesteps:")
-$V54        textmsg(time_steps)
-            textmsg("tool_contact done")
         elif cmd == 26:
-            textmsg("get_steptime")
+            # get_steptime
 $V54        step_time = get_steptime()
 $V54        write_output_float_reg(0, step_time)
-$V54        textmsg("get_steptime step_time:")
-$V54        textmsg(step_time)
-            textmsg("get_steptime done")
         elif cmd == 27:
-            textmsg("get_actual_joint_positions_history")
+            # get_actual_joint_positions_history
             steps = read_input_integer_reg(1)
-$V54        textmsg(steps)
 $V54        joint_positions_history = get_actual_joint_positions_history(steps)
-$V54        textmsg(joint_positions_history)
 $V54        q_to_output_float_registers(0, joint_positions_history)
-            textmsg("get_actual_joint_positions_history done")
         elif cmd == 28:
             textmsg("get_target_waypoint")
 $V53        target_waypoint = get_target_waypoint()
@@ -678,10 +669,9 @@ $V38        protective_stop()
             end
             textmsg("is_joints_within_safety_limits done")
         elif cmd == 38:
-            textmsg("get_joint_torques")
+            # get_joint_torques
             torques = get_joint_torques()
-            q_to_output_float_registers(0, torques)
-            textmsg("get_joint_torques done")
+            #q_to_output_float_registers(0, torques)
         elif cmd == 39:
             textmsg("pose_trans")
             p_from = pose_from_input_float_registers(0)
@@ -764,6 +754,28 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
                  write_output_integer_reg(1, 0)
               end
               textmsg("is_steady done")
+        elif cmd == 51:
+              textmsg("move_until_contact")
+              xd = q_from_input_float_registers(0)
+              contact_dir = pose_from_input_float_registers(6)
+              acc = read_input_float_reg(12)
+              while True:
+                 step_back = tool_contact(direction=contact_dir)
+                 if step_back <= 0:
+                    # Continue moving with specified speed vector
+                    speedl(xd, acc, t=get_steptime())
+                 else:
+                    # Contact detected!
+                    # Get q for when the contact was first seen
+                    q = get_actual_joint_positions_history(step_back)
+                    # Stop the movement
+                    stopl(3)
+                    # Move to the initial contact point
+                    movel(q)
+                    break
+                 end
+              end
+              textmsg("move_until_contact done")
 
         elif cmd == 255:
             textmsg("Received stop script!")
@@ -784,7 +796,7 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
     # RTDE Control script - Main loop
     #
 
-    textmsg("RTDE Control Script Loaded (16.02.2021-14:53)")
+    textmsg("RTDE Control Script Loaded (11.05.2021-15:29)")
 
     # Initialize gain and damping for force mode to a more stable default
 $V50force_mode_set_gain_scaling(0.5)
@@ -797,8 +809,8 @@ $V35force_mode_set_damping(0.025)
 
     while keep_running:
         cmd = rtde_cmd()
-        if cmd == 24 or cmd == 11 or cmd == 9 or cmd == 10 or cmd == 6:
-            # servo or speed or force mode, simply process and signal ready.
+        if cmd == 24 or cmd == 11 or cmd == 9 or cmd == 10 or cmd == 6 or cmd == 25 or cmd == 26 or cmd == 27 or cmd == 38:
+            # for realtime commands simply process and signal ready.
             keep_running = process_cmd()
             signal_ready()
         else:
@@ -813,7 +825,7 @@ $V35force_mode_set_damping(0.025)
                 executing_cmd = True
             end
         end
-        
+
         sync()
     end
     textmsg("RTDE Control Script Terminated")
