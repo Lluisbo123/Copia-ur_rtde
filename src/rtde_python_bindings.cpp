@@ -57,6 +57,12 @@ PYBIND11_MODULE(rtde_control, m)
       .value("FLAGS_DEFAULT", RTDEControlInterface::Flags::FLAGS_DEFAULT)
       .export_values();
 
+  py::enum_<RTDEControlInterface::Feature>(control, "Feature")
+      .value("FEATURE_BASE", RTDEControlInterface::Feature::FEATURE_BASE)
+      .value("FEATURE_TOOL", RTDEControlInterface::Feature::FEATURE_TOOL)
+      .value("FEATURE_CUSTOM", RTDEControlInterface::Feature::FEATURE_CUSTOM)
+      .export_values();
+
   control.def(py::init<std::string, uint16_t>(), py::arg("hostname"), py::arg("flags") = RTDEControlInterface::Flags::FLAGS_DEFAULT);
   control.def("disconnect", &RTDEControlInterface::disconnect, py::call_guard<py::gil_scoped_release>());
   control.def("reconnect", &RTDEControlInterface::reconnect, DOC(ur_rtde, RTDEControlInterface, reconnect),
@@ -176,6 +182,10 @@ PYBIND11_MODULE(rtde_control, m)
   control.def("moveUntilContact", &RTDEControlInterface::moveUntilContact, py::arg("xd"),
               py::arg("direction") = std::vector<double>{0, 0, 0, 0, 0, 0}, py::arg("acceleration") = 1.2,
               py::call_guard<py::gil_scoped_release>());
+  control.def("jogStart", &RTDEControlInterface::jogStart, py::arg("speeds"),
+              py::arg("feature") = RTDEControlInterface::Feature::FEATURE_BASE,
+              py::call_guard<py::gil_scoped_release>());
+  control.def("jogStop", &RTDEControlInterface::jogStop, py::call_guard<py::gil_scoped_release>());
   control.def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control

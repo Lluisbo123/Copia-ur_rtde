@@ -1905,6 +1905,7 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
             if (!isProgramRunning())
             {
               std::cerr << "RTDEControlInterface: RTDE control script is not running!" << std::endl;
+              sendClearCommand();
               return false;
             }
 
