@@ -2,7 +2,7 @@
 #include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/script_client.h>
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
 #include <urcl/script_sender.h>
 #endif
 
@@ -171,7 +171,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, uint16_t flags)
     }
   }
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
   // When the user wants to use ur_rtde with the ExternalControl UR Cap
   if (!upload_script_ && use_external_control_ur_cap_)
   {
@@ -209,7 +209,8 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, uint16_t flags)
 #else
   if (!upload_script_ && use_external_control_ur_cap_)
   {
-    throw std::logic_error("The use of ExternalControl UR Cap is not supported on Windows yet. Please contact author");
+    throw std::logic_error("The use of ExternalControl UR Cap is not supported on Windows and Apple yet."
+        " Please contact author");
   }
 #endif
 
@@ -411,7 +412,7 @@ bool RTDEControlInterface::reconnect()
     }
   }
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
   // When the user wants to use ur_rtde with the ExternalControl UR Cap
   if (!upload_script_ && use_external_control_ur_cap_)
   {
@@ -449,7 +450,8 @@ bool RTDEControlInterface::reconnect()
 #else
   if (!upload_script_ && use_external_control_ur_cap_)
   {
-    throw std::logic_error("The use of ExternalControl UR Cap is not supported on Windows yet. Please contact author");
+    throw std::logic_error("The use of ExternalControl UR Cap is not supported on Windows and Apple yet. "
+        "Please contact author");
   }
 #endif
 

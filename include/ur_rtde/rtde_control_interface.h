@@ -4,7 +4,7 @@
 
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/rtde_export.h>
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
 #include <urcl/script_sender.h>
 #endif
 #include <map>
@@ -763,7 +763,7 @@ class RTDEControlInterface
   std::shared_ptr<ScriptClient> script_client_;
   std::shared_ptr<RobotState> robot_state_;
   std::map<std::string, std::function<double()>> output_reg_func_map_;
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
   std::unique_ptr<urcl::comm::ScriptSender> urcl_script_sender_;
 #endif
 };
