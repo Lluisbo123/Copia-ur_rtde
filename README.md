@@ -31,21 +31,28 @@ A C++ interface for controlling and receiving data from a UR robot using the
 Documentation with installation and build instructions, examples and API resides at <https://sdurobotics.gitlab.io/ur_rtde/>
 
 ### Quick Install ##
+
+#### From PPA: ####
 If you are on Ubuntu, you can install ur_rtde with:
 
     sudo add-apt-repository ppa:sdurobotics/ur-rtde
     sudo apt-get update
     sudo apt install librtde librtde-dev
 
+#### From PyPi: ####
 If you only want to the use the Python interface, you can install ur_rtde through pip:
 
     pip install --user ur_rtde
 
-Notice! Make sure your pip version >=**19.3**, otherwise the install might fail. 
+Notice! Make sure your pip version >=**19.3**, otherwise the install might fail.
 
-If you are on Windows you can install ur_rtde from the installer found here:
-                     
-[ur_rtde-install](https://sdurobotics.gitlab.io/ur_rtde/installation/installation.html)
+#### Prebuilt python wheels support matrix: ####
+|   | Linux x86_64 | Windows 64bit | Windows 32bit | macOS Intel | macOS Apple Silicon |
+---------------|:----:|:----:|:-----:|:-----:|:----:|
+| Python 3.6   | ✅ | ✅ | :x: | :x: | :x: |
+| Python 3.7   | ✅ | ✅ | :x: | :x: | :x: |
+| Python 3.8   | ✅ | ✅ | :x: | :x: | :x: | 
+| Python 3.9   | ✅ | ✅ | :x: | :x: | :x: |
 
 ### Dependencies ###
 *  [Boost](https://www.boost.org/)
