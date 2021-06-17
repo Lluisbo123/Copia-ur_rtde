@@ -356,14 +356,17 @@ class RTDEControlInterface
   RTDE_EXPORT bool movePath(const Path &path, bool async = false);
 
   /**
-   * @brief Stop servos
+   * @brief Stop servo mode and decelerate the robot.
+   * @param a rate of deceleration of the tool [m/s^2]
    */
-  RTDE_EXPORT bool servoStop();
+  RTDE_EXPORT bool servoStop(double a = 10.0);
 
   /**
-   * @brief Stop speeding
+   * @brief Stop speed mode and decelerate the robot.
+   * @param a rate of deceleration of the tool [m/s^2] if using speedL, for speedJ its [rad/s^2]
+   * and rate of deceleration of leading axis.
    */
-  RTDE_EXPORT bool speedStop();
+  RTDE_EXPORT bool speedStop(double a = 10.0);
 
   /**
    * @brief Servo to position (circular in tool-space). Accelerates to and moves with constant tool speed v.

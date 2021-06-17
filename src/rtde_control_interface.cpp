@@ -1296,19 +1296,21 @@ bool RTDEControlInterface::servoL(const std::vector<double> &pose, double speed,
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::speedStop()
+bool RTDEControlInterface::speedStop(double a)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SPEED_STOP;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.val_.push_back(a);
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::servoStop()
+bool RTDEControlInterface::servoStop(double a)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SERVO_STOP;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.val_.push_back(a);
   return sendCommand(robot_cmd);
 }
 

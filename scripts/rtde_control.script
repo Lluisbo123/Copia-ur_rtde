@@ -504,19 +504,21 @@
 
         elif cmd == 15:
             textmsg("speed_stop")
+            deceleration_rate = read_input_float_reg(0)
             enter_critical
             is_speeding = 0
             kill speed_thrd
             speed_thrd = 0
             if speed_type == 0:
-                stopl(10)
+                stopl(deceleration_rate)
             else:
-                stopj(10)
+                stopj(deceleration_rate)
             end
             exit_critical
             textmsg("speed_stop done")
         elif cmd == 16:
             textmsg("servo_stop")
+            deceleration_rate = read_input_float_reg(0)
             enter_critical
             is_servoing = 0
             kill servo_thrd
@@ -524,7 +526,7 @@
             servo_thrd = 0
             servoc_thrd = 0
             exit_critical
-            stopl(20)
+            stopl(deceleration_rate)
             textmsg("servo_stop done")
         elif cmd == 17:
             textmsg("set_payload")
