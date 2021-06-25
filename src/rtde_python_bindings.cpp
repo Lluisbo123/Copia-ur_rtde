@@ -112,7 +112,7 @@ PYBIND11_MODULE(rtde_control, m)
            py::arg("acceleration") = 0.5, py::arg("time") = 0.0, py::call_guard<py::gil_scoped_release>());
   control.def("speedL", &RTDEControlInterface::speedL, DOC(ur_rtde, RTDEControlInterface, speedL), py::arg("xd"),
            py::arg("acceleration") = 0.25, py::arg("time") = 0.0, py::call_guard<py::gil_scoped_release>());
-  control.def("speedStop", &RTDEControlInterface::speedStop, DOC(ur_rtde, RTDEControlInterface, speedStop),
+  control.def("speedStop", &RTDEControlInterface::speedStop, py::arg("a") = 10.0, DOC(ur_rtde, RTDEControlInterface, speedStop),
            py::call_guard<py::gil_scoped_release>());
   control.def("servoJ", &RTDEControlInterface::servoJ, DOC(ur_rtde, RTDEControlInterface, servoJ),
            py::call_guard<py::gil_scoped_release>());
@@ -121,7 +121,7 @@ PYBIND11_MODULE(rtde_control, m)
   control.def("servoC", &RTDEControlInterface::servoC, DOC(ur_rtde, RTDEControlInterface, servoC), py::arg("pose"),
            py::arg("speed") = 0.25, py::arg("acceleration") = 1.2, py::arg("blend") = 0.0,
            py::call_guard<py::gil_scoped_release>());
-  control.def("servoStop", &RTDEControlInterface::servoStop, DOC(ur_rtde, RTDEControlInterface, servoStop),
+  control.def("servoStop", &RTDEControlInterface::servoStop, py::arg("a") = 10.0, DOC(ur_rtde, RTDEControlInterface, servoStop),
            py::call_guard<py::gil_scoped_release>());
   control.def("forceMode", &RTDEControlInterface::forceMode, DOC(ur_rtde, RTDEControlInterface, forceMode),
            py::call_guard<py::gil_scoped_release>());
