@@ -12,7 +12,6 @@
 #define MAJOR_VERSION 0
 #define MINOR_VERSION 1
 #define CB3_MAJOR_VERSION 3
-#define UR_CAP_SCRIPT_PORT 50002
 #define UR_CONTROLLER_RDY_FOR_CMD 1
 #define UR_CONTROLLER_DONE_WITH_CMD 2
 #define UR_EXECUTION_TIMEOUT 300
@@ -84,7 +83,8 @@ class RTDEControlInterface
     FLAGS_DEFAULT = FLAG_UPLOAD_SCRIPT
   };
 
-  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, uint16_t flags = FLAGS_DEFAULT);
+  RTDE_EXPORT explicit RTDEControlInterface(std::string hostname, uint16_t flags = FLAGS_DEFAULT,
+                                            int ur_cap_port = 50002);
 
   RTDE_EXPORT virtual ~RTDEControlInterface();
 
@@ -756,6 +756,7 @@ class RTDEControlInterface
   bool no_wait_;
   bool custom_script_;
   bool custom_script_running_;
+  int ur_cap_port_;
   double frequency_;
   double delta_time_;
   int register_offset_;

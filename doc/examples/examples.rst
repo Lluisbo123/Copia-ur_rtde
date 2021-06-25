@@ -139,9 +139,15 @@ for C++:
 
 When you execute your ur_rtde application it will simply wait for you to press play on the controller in order
 to start, unless you use the FLAG_NO_WAIT, in which case the interface will be initialized, but cannot be
-used before the program is running on the controller. Notice! you must have the ExternalControl node as a part of the
-program and it must be setup with the correct IP of the computer that you want to control the robot from (This can be changed under
-Installation tab -> URCaps -> ExternalControl).
+used before the program is running on the controller. The port used for communicating with the UR Cap defaults to
+50002 if this does not suit your application it can be changed in the constructor of the RTDEControlInterface right
+after the flags. eg. RTDEControl("127.0.0.1", RTDEControl.FLAG_USE_EXT_UR_CAP, <SOME PORT>).
+
+.. note::
+   You must have the ExternalControl node as a part of the program and it must be setup with the correct IP of the
+   computer that you want to control the robot from. This can be changed under:
+   (Installation tab -> URCaps -> ExternalControl).
+
 
 Use with custom script
 ======================

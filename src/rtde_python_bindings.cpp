@@ -63,7 +63,8 @@ PYBIND11_MODULE(rtde_control, m)
       .value("FEATURE_CUSTOM", RTDEControlInterface::Feature::FEATURE_CUSTOM)
       .export_values();
 
-  control.def(py::init<std::string, uint16_t>(), py::arg("hostname"), py::arg("flags") = RTDEControlInterface::Flags::FLAGS_DEFAULT);
+  control.def(py::init<std::string, uint16_t, int>(), py::arg("hostname"),
+              py::arg("flags") = RTDEControlInterface::Flags::FLAGS_DEFAULT, py::arg("ur_cap_port") = 50002);
   control.def("disconnect", &RTDEControlInterface::disconnect, DOC(ur_rtde, RTDEControlInterface, disconnect),py::call_guard<py::gil_scoped_release>());
   control.def("reconnect", &RTDEControlInterface::reconnect, DOC(ur_rtde, RTDEControlInterface, reconnect),
            py::call_guard<py::gil_scoped_release>());

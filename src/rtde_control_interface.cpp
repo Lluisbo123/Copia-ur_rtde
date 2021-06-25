@@ -37,14 +37,15 @@ static void verifyValueIsWithin(const double &value, const double &min, const do
   }
 }
 
-RTDEControlInterface::RTDEControlInterface(std::string hostname, uint16_t flags)
+RTDEControlInterface::RTDEControlInterface(std::string hostname, uint16_t flags, int ur_cap_port)
     : hostname_(std::move(hostname)),
       upload_script_(flags & FLAG_UPLOAD_SCRIPT),
       use_external_control_ur_cap_(flags & FLAG_USE_EXT_UR_CAP),
       verbose_(flags & FLAG_VERBOSE),
       use_upper_range_registers_(flags & FLAG_UPPER_RANGE_REGISTERS),
       no_wait_(flags & FLAG_NO_WAIT),
-      custom_script_(flags & FLAG_CUSTOM_SCRIPT)
+      custom_script_(flags & FLAG_CUSTOM_SCRIPT),
+      ur_cap_port_(ur_cap_port)
 {
   // Create a connection to the dashboard server
   db_client_ = std::make_shared<DashboardClient>(hostname_);
@@ -176,7 +177,7 @@ RTDEControlInterface::RTDEControlInterface(std::string hostname, uint16_t flags)
   if (!upload_script_ && use_external_control_ur_cap_)
   {
     // Create a connection to the ExternalControl UR cap for sending scripts to the cap
-    urcl_script_sender_.reset(new urcl::comm::ScriptSender(UR_CAP_SCRIPT_PORT, script_client_->getScript(), false));
+    urcl_script_sender_.reset(new urcl::comm::ScriptSender(ur_cap_port_, script_client_->getScript(), false));
     urcl_script_sender_->start();
 
     if (!no_wait_)
@@ -417,7 +418,7 @@ bool RTDEControlInterface::reconnect()
   if (!upload_script_ && use_external_control_ur_cap_)
   {
     // Create a connection to the ExternalControl UR cap for sending scripts to the cap
-    urcl_script_sender_.reset(new urcl::comm::ScriptSender(UR_CAP_SCRIPT_PORT, script_client_->getScript(), false));
+    urcl_script_sender_.reset(new urcl::comm::ScriptSender(ur_cap_port_, script_client_->getScript(), false));
     urcl_script_sender_->start();
 
     if (!no_wait_)
