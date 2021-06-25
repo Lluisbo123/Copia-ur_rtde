@@ -64,7 +64,7 @@ PYBIND11_MODULE(rtde_control, m)
       .export_values();
 
   control.def(py::init<std::string, uint16_t>(), py::arg("hostname"), py::arg("flags") = RTDEControlInterface::Flags::FLAGS_DEFAULT);
-  control.def("disconnect", &RTDEControlInterface::disconnect, py::call_guard<py::gil_scoped_release>());
+  control.def("disconnect", &RTDEControlInterface::disconnect, DOC(ur_rtde, RTDEControlInterface, disconnect),py::call_guard<py::gil_scoped_release>());
   control.def("reconnect", &RTDEControlInterface::reconnect, DOC(ur_rtde, RTDEControlInterface, reconnect),
            py::call_guard<py::gil_scoped_release>());
   control.def("isConnected", &RTDEControlInterface::isConnected, DOC(ur_rtde, RTDEControlInterface, isConnected),
@@ -85,7 +85,7 @@ PYBIND11_MODULE(rtde_control, m)
            (bool (RTDEControlInterface::*)(const std::vector<std::vector<double>> &path, bool async)) & RTDEControlInterface::moveJ,
            DOC(ur_rtde, RTDEControlInterface, moveJ_2), py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
   control.def("movePath",
-           (bool (RTDEControlInterface::*)(const Path &path, bool async)) & RTDEControlInterface::movePath,
+           (bool (RTDEControlInterface::*)(const Path &path, bool async)) & RTDEControlInterface::movePath, DOC(ur_rtde, RTDEControlInterface, movePath),
            "", py::arg("path"), py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
   control.def("moveJ",
            (bool (RTDEControlInterface::*)(const std::vector<double> &q, double speed, double acceleration, bool async)) &
@@ -152,7 +152,8 @@ PYBIND11_MODULE(rtde_control, m)
   control.def("setTcp", &RTDEControlInterface::setTcp, DOC(ur_rtde, RTDEControlInterface, setTcp),
            py::call_guard<py::gil_scoped_release>());
   control.def("getInverseKinematics", &RTDEControlInterface::getInverseKinematics,
-           DOC(ur_rtde, RTDEControlInterface, getInverseKinematics), py::arg("x"), py::arg("qnear") = std::vector<double>(),
+           DOC(ur_rtde, RTDEControlInterface, getInverseKinematics),
+              py::arg("x"), py::arg("qnear") = std::vector<double>(),
            py::arg("max_position_error") = 1e-10, py::arg("max_orientation_error") = 1e-10,
            py::call_guard<py::gil_scoped_release>());
   control.def("poseTrans", &RTDEControlInterface::poseTrans,
@@ -175,17 +176,19 @@ PYBIND11_MODULE(rtde_control, m)
            DOC(ur_rtde, RTDEControlInterface, isJointsWithinSafetyLimits), py::call_guard<py::gil_scoped_release>());
   control.def("getJointTorques", &RTDEControlInterface::getJointTorques,
            DOC(ur_rtde, RTDEControlInterface, getJointTorques), py::call_guard<py::gil_scoped_release>());
-  control.def("getTCPOffset", &RTDEControlInterface::getTCPOffset, py::call_guard<py::gil_scoped_release>());
-  control.def("getForwardKinematics", &RTDEControlInterface::getForwardKinematics, py::arg("q") = std::vector<double>(),
-          py::arg("tcp_offset") = std::vector<double>(), py::call_guard<py::gil_scoped_release>());
-  control.def("isSteady", &RTDEControlInterface::isSteady, py::call_guard<py::gil_scoped_release>());
-  control.def("moveUntilContact", &RTDEControlInterface::moveUntilContact, py::arg("xd"),
+  control.def("getTCPOffset", &RTDEControlInterface::getTCPOffset, DOC(ur_rtde, RTDEControlInterface, getTCPOffset),
+              py::call_guard<py::gil_scoped_release>());
+  control.def("getForwardKinematics", &RTDEControlInterface::getForwardKinematics, DOC(ur_rtde, RTDEControlInterface, getForwardKinematics),
+              py::arg("q") = std::vector<double>(),py::arg("tcp_offset") = std::vector<double>(),
+                  py::call_guard<py::gil_scoped_release>());
+  control.def("isSteady", &RTDEControlInterface::isSteady, DOC(ur_rtde, RTDEControlInterface, isSteady), py::call_guard<py::gil_scoped_release>());
+  control.def("moveUntilContact", &RTDEControlInterface::moveUntilContact, DOC(ur_rtde, RTDEControlInterface, moveUntilContact), py::arg("xd"),
               py::arg("direction") = std::vector<double>{0, 0, 0, 0, 0, 0}, py::arg("acceleration") = 1.2,
               py::call_guard<py::gil_scoped_release>());
-  control.def("jogStart", &RTDEControlInterface::jogStart, py::arg("speeds"),
+  control.def("jogStart", &RTDEControlInterface::jogStart, DOC(ur_rtde, RTDEControlInterface, jogStart), py::arg("speeds"),
               py::arg("feature") = RTDEControlInterface::Feature::FEATURE_BASE,
               py::call_guard<py::gil_scoped_release>());
-  control.def("jogStop", &RTDEControlInterface::jogStop, py::call_guard<py::gil_scoped_release>());
+  control.def("jogStop", &RTDEControlInterface::jogStop, DOC(ur_rtde, RTDEControlInterface, jogStop), py::call_guard<py::gil_scoped_release>());
   control.def("__repr__", [](const RTDEControlInterface &a) { return "<rtde_control.RTDEControlInterface>"; });
 }
 };  // namespace rtde_control
@@ -246,7 +249,8 @@ PYBIND11_MODULE(rtde_receive, m)
            py::call_guard<py::gil_scoped_release>())
       .def("getSafetyMode", &RTDEReceiveInterface::getSafetyMode, DOC(ur_rtde, RTDEReceiveInterface, getSafetyMode),
            py::call_guard<py::gil_scoped_release>())
-      .def("getSafetyStatusBits", &RTDEReceiveInterface::getSafetyStatusBits, DOC(ur_rtde, RTDEReceiveInterface, getSafetyStatusBits),
+      .def("getSafetyStatusBits", &RTDEReceiveInterface::getSafetyStatusBits,
+           DOC(ur_rtde, RTDEReceiveInterface, getSafetyStatusBits),
            py::call_guard<py::gil_scoped_release>())
       .def("getActualToolAccelerometer", &RTDEReceiveInterface::getActualToolAccelerometer,
            DOC(ur_rtde, RTDEReceiveInterface, getActualToolAccelerometer), py::call_guard<py::gil_scoped_release>())
@@ -283,9 +287,15 @@ PYBIND11_MODULE(rtde_receive, m)
            DOC(ur_rtde, RTDEReceiveInterface, isProtectiveStopped), py::call_guard<py::gil_scoped_release>())
       .def("isEmergencyStopped", &RTDEReceiveInterface::isEmergencyStopped,
            DOC(ur_rtde, RTDEReceiveInterface, isEmergencyStopped), py::call_guard<py::gil_scoped_release>())
-      .def("getOutputIntRegister", &RTDEReceiveInterface::getOutputIntRegister, py::call_guard<py::gil_scoped_release>())
-      .def("getOutputDoubleRegister", &RTDEReceiveInterface::getOutputDoubleRegister, py::call_guard<py::gil_scoped_release>())
-      .def("getSpeedScalingCombined", &RTDEReceiveInterface::getSpeedScalingCombined, py::call_guard<py::gil_scoped_release>())
+      .def("getOutputIntRegister", &RTDEReceiveInterface::getOutputIntRegister,
+           DOC(ur_rtde, RTDEReceiveInterface, getOutputIntRegister),
+           py::call_guard<py::gil_scoped_release>())
+      .def("getOutputDoubleRegister", &RTDEReceiveInterface::getOutputDoubleRegister,
+           DOC(ur_rtde, RTDEReceiveInterface, getOutputDoubleRegister),
+           py::call_guard<py::gil_scoped_release>())
+      .def("getSpeedScalingCombined", &RTDEReceiveInterface::getSpeedScalingCombined,
+           DOC(ur_rtde, RTDEReceiveInterface, getSpeedScalingCombined),
+           py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEReceiveInterface &a) { return "<rtde_receive.RTDEReceiveInterface>"; });
 }
 };  // namespace rtde_receive
@@ -298,7 +308,8 @@ PYBIND11_MODULE(rtde_io, m)
   py::class_<RTDEIOInterface>(m, "RTDEIOInterface")
       .def(py::init<std::string, bool, bool>(), py::arg("hostname"), py::arg("verbose") = false,
            py::arg("use_upper_range_registers") = false)
-      .def("reconnect", &RTDEIOInterface::reconnect)
+      .def("reconnect", &RTDEIOInterface::reconnect, DOC(ur_rtde, RTDEIOInterface, reconnect),
+           py::call_guard<py::gil_scoped_release>())
       .def("setStandardDigitalOut", &RTDEIOInterface::setStandardDigitalOut,
            DOC(ur_rtde, RTDEIOInterface, setStandardDigitalOut), py::call_guard<py::gil_scoped_release>())
       .def("setToolDigitalOut", &RTDEIOInterface::setToolDigitalOut, DOC(ur_rtde, RTDEIOInterface, setToolDigitalOut),
@@ -309,9 +320,15 @@ PYBIND11_MODULE(rtde_io, m)
            DOC(ur_rtde, RTDEIOInterface, setAnalogOutputVoltage), py::call_guard<py::gil_scoped_release>())
       .def("setAnalogOutputCurrent", &RTDEIOInterface::setAnalogOutputCurrent,
            DOC(ur_rtde, RTDEIOInterface, setAnalogOutputCurrent), py::call_guard<py::gil_scoped_release>())
-      .def("setConfigurableDigitalOut", &RTDEIOInterface::setConfigurableDigitalOut, py::call_guard<py::gil_scoped_release>())
-      .def("setInputIntRegister", &RTDEIOInterface::setInputIntRegister, py::call_guard<py::gil_scoped_release>())
-      .def("setInputDoubleRegister", &RTDEIOInterface::setInputDoubleRegister, py::call_guard<py::gil_scoped_release>())
+      .def("setConfigurableDigitalOut", &RTDEIOInterface::setConfigurableDigitalOut,
+           DOC(ur_rtde, RTDEIOInterface, setConfigurableDigitalOut),
+           py::call_guard<py::gil_scoped_release>())
+      .def("setInputIntRegister", &RTDEIOInterface::setInputIntRegister,
+           DOC(ur_rtde, RTDEIOInterface, setInputIntRegister),
+           py::call_guard<py::gil_scoped_release>())
+      .def("setInputDoubleRegister", &RTDEIOInterface::setInputDoubleRegister,
+           DOC(ur_rtde, RTDEIOInterface, setInputDoubleRegister),
+           py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const RTDEIOInterface &a) { return "<rtde_io.RTDEIOInterface>"; });
 }
 };  // namespace rtde_io

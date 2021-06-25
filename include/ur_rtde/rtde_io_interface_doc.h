@@ -1,6 +1,6 @@
 /*
-  This file contains docstrings for the Python bindings.
-  Do not edit! These were automatically extracted by mkdoc.py
+  This file contains docstrings for use in the Python bindings.
+  Do not edit! They were automatically extracted by pybind11_mkdoc.
  */
 
 #define __EXPAND(x)                                      x
@@ -23,42 +23,99 @@
 #endif
 
 
-static const char *__doc_ur_rtde_RTDEIOInterface_RTDEIOInterface = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEIOInterface = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_reconnect =
-R"doc(@returns Can be used to reconnect to the robot after a lost
-connection.)doc";
-
-static const char *__doc_ur_rtde_RTDEIOInterface_sendCommand = R"doc()doc";
+R"doc(Returns:
+    Can be used to reconnect to the robot after a lost connection.)doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_setAnalogOutputCurrent =
-R"doc(@brief Set Analog output current @param output_id The number (id) of
-the output, integer: [0:1] @param current_ratio current set as a
-(ratio) of the current span [0..1], 1 means full current.)doc";
+R"doc(Set Analog output current
+
+Parameter ``output_id``:
+    The number (id) of the output, integer: [0:1]
+
+Parameter ``current_ratio``:
+    current set as a (ratio) of the current span [0..1], 1 means full
+    current.)doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_setAnalogOutputVoltage =
-R"doc(@brief Set Analog output voltage @param output_id The number (id) of
-the output, integer: [0:1] @param voltage_ratio voltage set as a
-(ratio) of the voltage span [0..1], 1 means full voltage.)doc";
+R"doc(Set Analog output voltage
+
+Parameter ``output_id``:
+    The number (id) of the output, integer: [0:1]
+
+Parameter ``voltage_ratio``:
+    voltage set as a (ratio) of the voltage span [0..1], 1 means full
+    voltage.)doc";
+
+static const char *__doc_ur_rtde_RTDEIOInterface_setConfigurableDigitalOut =
+R"doc(Set configurable digital output signal level
+
+Parameter ``output_id``:
+    The number (id) of the output, integer: [0:7]
+
+Parameter ``signal_level``:
+    The signal level. (boolean))doc";
+
+static const char *__doc_ur_rtde_RTDEIOInterface_setInputDoubleRegister =
+R"doc(Set the specified input double register in either lower range [18-22]
+or upper range [42-46].
+
+Parameter ``input_id``:
+    the id of the register to set, current supported range is: [18-22]
+    or [42-46], this can be adjusted by changing the
+    RTDEControlInterface input recipes and by using the
+    use_upper_range_registers constructor flag to switch between lower
+    and upper range.
+
+Parameter ``value``:
+    the desired double value
+
+Returns:
+    true if the register is successfully set, false otherwise.)doc";
+
+static const char *__doc_ur_rtde_RTDEIOInterface_setInputIntRegister =
+R"doc(Set the specified input integer register in either lower range [18-22]
+or upper range [42-46].
+
+Parameter ``input_id``:
+    the id of the register to set, current supported range is: [18-22]
+    or [42-46], this can be adjusted by changing the
+    RTDEControlInterface input recipes and by using the
+    use_upper_range_registers constructor flag to switch between lower
+    and upper range.
+
+Parameter ``value``:
+    the desired integer value
+
+Returns:
+    true if the register is successfully set, false otherwise.)doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_setSpeedSlider =
-R"doc(@brief Set the speed slider on the controller @param speed set the
-speed slider on the controller as a fraction value between 0 and 1 (1
-is 100%))doc";
+R"doc(Set the speed slider on the controller
+
+Parameter ``speed``:
+    set the speed slider on the controller as a fraction value between
+    0 and 1 (1 is 100%))doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_setStandardDigitalOut =
-R"doc(@brief Set standard digital output signal level @param output_id The
-number (id) of the output, integer: [0:7] @param signal_level The
-signal level. (boolean))doc";
+R"doc(Set standard digital output signal level
+
+Parameter ``output_id``:
+    The number (id) of the output, integer: [0:7]
+
+Parameter ``signal_level``:
+    The signal level. (boolean))doc";
 
 static const char *__doc_ur_rtde_RTDEIOInterface_setToolDigitalOut =
-R"doc(@brief Set tool digital output signal level @param output_id The
-number (id) of the output, integer: [0:1] @param signal_level The
-signal level. (boolean))doc";
+R"doc(Set tool digital output signal level
 
-static const char *__doc_ur_rtde_RTDEIOInterface_setupRecipes = R"doc()doc";
+Parameter ``output_id``:
+    The number (id) of the output, integer: [0:1]
 
-static const char *__doc_ur_rtde_RTDEIOInterface_verifyValueIsWithin = R"doc()doc";
+Parameter ``signal_level``:
+    The signal level. (boolean))doc";
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop

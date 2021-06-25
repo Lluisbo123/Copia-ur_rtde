@@ -1,6 +1,6 @@
 /*
-  This file contains docstrings for the Python bindings.
-  Do not edit! These were automatically extracted by mkdoc.py
+  This file contains docstrings for use in the Python bindings.
+  Do not edit! They were automatically extracted by pybind11_mkdoc.
  */
 
 #define __EXPAND(x)                                      x
@@ -23,128 +23,262 @@
 #endif
 
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_RTDEReceiveInterface = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface = R"doc()doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_disconnect =
-R"doc(@returns Can be used to disconnect from the robot. To reconnect you
-have to call the reconnect() function.)doc";
+R"doc(Returns:
+    Can be used to disconnect from the robot. To reconnect you have to
+    call the reconnect() function.)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualCurrent = R"doc(@returns Actual joint currents)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualCurrent =
+R"doc(Returns:
+    Actual joint currents)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualDigitalInputBits =
-R"doc(@returns Current state of the digital inputs. 0-7: Standard, 8-15:
-Configurable, 16-17: Tool)doc";
+R"doc(Returns:
+    Current state of the digital inputs. 0-7: Standard, 8-15:
+    Configurable, 16-17: Tool)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualDigitalOutputBits =
-R"doc(@returns Current state of the digital outputs. 0-7: Standard, 8-15:
-Configurable, 16-17: Tool)doc";
+R"doc(Returns:
+    Current state of the digital outputs. 0-7: Standard, 8-15:
+    Configurable, 16-17: Tool)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualExecutionTime = R"doc(@returns Controller real-time thread execution time)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualExecutionTime =
+R"doc(Returns:
+    Controller real-time thread execution time)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualJointVoltage = R"doc(@returns Actual joint voltages)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualJointVoltage =
+R"doc(Returns:
+    Actual joint voltages)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualMainVoltage = R"doc(@returns Safety Control Board: Main voltage)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualMainVoltage =
+R"doc(Returns:
+    Safety Control Board: Main voltage)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualMomentum = R"doc(@returns Norm of Cartesian linear momentum)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualMomentum =
+R"doc(Returns:
+    Norm of Cartesian linear momentum)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualQ = R"doc(@returns Actual joint positions)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualQ =
+R"doc(Returns:
+    Actual joint positions)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualQd = R"doc(@returns Actual joint velocities)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualQd =
+R"doc(Returns:
+    Actual joint velocities)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualRobotCurrent = R"doc(@returns Safety Control Board: Robot current)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualRobotCurrent =
+R"doc(Returns:
+    Safety Control Board: Robot current)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualRobotVoltage = R"doc(@returns Safety Control Board: Robot voltage (48V))doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualRobotVoltage =
+R"doc(Returns:
+    Safety Control Board: Robot voltage (48V))doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPForce = R"doc(@returns Generalized forces in the TCP)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPForce =
+R"doc(Returns:
+    Generalized forces in the TCP)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPPose =
-R"doc(@returns Actual Cartesian coordinates of the tool: (x,y,z,rx,ry,rz),
-where rx, ry and rz is a rotation vector representation of the tool
-orientation)doc";
+R"doc(Returns:
+    Actual Cartesian coordinates of the tool: (x,y,z,rx,ry,rz), where
+    rx, ry and rz is a rotation vector representation of the tool
+    orientation)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPSpeed = R"doc(@returns Actual speed of the tool given in Cartesian coordinates)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualTCPSpeed =
+R"doc(Returns:
+    Actual speed of the tool given in Cartesian coordinates)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualToolAccelerometer = R"doc(@returns Tool x, y and z accelerometer values)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getActualToolAccelerometer =
+R"doc(Returns:
+    Tool x, y and z accelerometer values)doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getAsyncOperationProgress =
+R"doc(Reads progress information for asynchronous operations that supports
+progress feedback (such as movePath). @retval <0 Indicates that no
+async operation is running or that an async operation has finished.
+The returned values of two consecutive async operations is never
+equal. Normally the returned values are toggled between -1 and -2.
+This allows the application to clearly detect the end of an operation
+even if it is too short to see its start. That means, if the value
+returned by this function is less than 0 and is different from that
+last value returned by this function, then a new async operation has
+finished. @retval 0 Indicates that an async operation has started -
+progress 0 @retval >= 0 Indicates the progress of an async operation.
+For example, if an operation has 3 steps, the progress ranges from 0 -
+2. The progress value is updated, before a step is executed. When the
+last step has been executed, the value will change to -1 to indicate
+the end of the async operation.)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getDigitalOutState =
-R"doc(@brief Test if a digital output is set 'high' or 'low' the range is
-0-7: Standard, 8-15: Configurable, 16-17: Tool @param output_id the id
-of the digital output to test @returns a bool indicating the state of
-the digital output)doc";
+R"doc(Test if a digital output is set 'high' or 'low' the range is 0-7:
+Standard, 8-15: Configurable, 16-17: Tool
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointControlOutput = R"doc(@returns Joint control currents)doc";
+Parameter ``output_id``:
+    the id of the digital output to test
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointMode = R"doc(@returns Joint control modes)doc";
+Returns:
+    a bool indicating the state of the digital output)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointTemperatures = R"doc(@returns Temperature of each joint in degrees Celsius)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointControlOutput =
+R"doc(Returns:
+    Joint control currents)doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointMode =
+R"doc(Returns:
+    Joint control modes)doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getJointTemperatures =
+R"doc(Returns:
+    Temperature of each joint in degrees Celsius)doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getOutputDoubleRegister =
+R"doc(Get the specified output double register in either lower range [18-22]
+or upper range [42-46].
+
+Parameter ``output_id``:
+    the id of the register to read, current supported range is:
+    [18-22] or [42-46], this can be adjusted by changing the
+    RTDEReceiveInterface output recipes and by using the
+    use_upper_range_registers constructor flag to switch between lower
+    and upper range.
+
+Returns:
+    a double from the specified output register)doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getOutputIntRegister =
+R"doc(Get the specified output integer register in either lower range
+[18-22] or upper range [42-46].
+
+Parameter ``output_id``:
+    the id of the register to read, current supported range is:
+    [18-22] or [42-46], this can be adjusted by changing the
+    RTDEReceiveInterface output recipes and by using the
+    use_upper_range_registers constructor flag to switch between lower
+    and upper range.
+
+Returns:
+    an integer from the specified output register)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getRobotMode =
-R"doc(@returns Robot mode -1 = ROBOT_MODE_NO_CONTROLLER 0 =
-ROBOT_MODE_DISCONNECTED 1 = ROBOT_MODE_CONFIRM_SAFETY 2 =
-ROBOT_MODE_BOOTING 3 = ROBOT_MODE_POWER_OFF 4 = ROBOT_MODE_POWER_ON 5
-= ROBOT_MODE_IDLE 6 = ROBOT_MODE_BACKDRIVE 7 = ROBOT_MODE_RUNNING 8 =
-ROBOT_MODE_UPDATING_FIRMWARE)doc";
+R"doc(Returns:
+    Robot mode -1 = ROBOT_MODE_NO_CONTROLLER 0 =
+    ROBOT_MODE_DISCONNECTED 1 = ROBOT_MODE_CONFIRM_SAFETY 2 =
+    ROBOT_MODE_BOOTING 3 = ROBOT_MODE_POWER_OFF 4 =
+    ROBOT_MODE_POWER_ON 5 = ROBOT_MODE_IDLE 6 = ROBOT_MODE_BACKDRIVE 7
+    = ROBOT_MODE_RUNNING 8 = ROBOT_MODE_UPDATING_FIRMWARE)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getRobotStatus =
-R"doc(@returns Robot status Bits 0-3: Is power on | Is program running | Is
-teach button pressed | Is power button pressed)doc";
+R"doc(Returns:
+    Robot status Bits 0-3: Is power on | Is program running | Is teach
+    button pressed | Is power button pressed)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getRuntimeState = R"doc(@returns Program state)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getRuntimeState =
+R"doc(Returns:
+    Program state)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getSafetyMode = R"doc(@returns Safety mode)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getSafetyMode =
+R"doc(Returns:
+    Safety mode)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getSafetyStatusBits =
-R"doc(@returns Safety status bits Bits 0-10: Is normal mode | Is reduced
-mode | Is protective stopped | Is recovery mode | Is safeguard stopped
-| Is system emergency stopped | Is robot emergency stopped | Is
-emergency stopped | Is violation | Is fault | Is stopped due to safety)doc";
+R"doc(Returns:
+    Safety status bits Bits 0-10: Is normal mode | Is reduced mode |
+    Is protective stopped | Is recovery mode | Is safeguard stopped |
+    Is system emergency stopped | Is robot emergency stopped | Is
+    emergency stopped | Is violation | Is fault | Is stopped due to
+    safety)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getSpeedScaling = R"doc(@returns Speed scaling of the trajectory limiter)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getSpeedScaling =
+R"doc(Returns:
+    Speed scaling of the trajectory limiter)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogInput0 = R"doc(@returns Standard analog input 0 [A or V])doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getSpeedScalingCombined =
+R"doc(Get the combined speed scaling The combined speed scaling is the speed
+scaling resulting from multiplying the speed scaling with the target
+speed fraction. The combined speed scaling takes the runtime_state of
+the controller into account. If eg. a motion is paused on the teach
+pendant, and later continued, the speed scaling will be ramped up from
+zero and return to speed_scaling * target_speed_fraction when the
+runtime_state is RUNNING again.
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogInput1 = R"doc(@returns Standard analog input 1 [A or V])doc";
+This is useful for scaling trajectories with the slider speed scaling
+currently set on the teach pendant.
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogOutput0 = R"doc(@returns Standard analog output 0 [A or V])doc";
+Returns:
+    the actual combined speed scaling)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogOutput1 = R"doc(@returns Standard analog output 1 [A or V])doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogInput0 =
+R"doc(Returns:
+    Standard analog input 0 [A or V])doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetCurrent = R"doc(@returns Target joint currents)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogInput1 =
+R"doc(Returns:
+    Standard analog input 1 [A or V])doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetMoment = R"doc(@returns Target joint moments (torques))doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogOutput0 =
+R"doc(Returns:
+    Standard analog output 0 [A or V])doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetQ = R"doc(@returns Target joint positions)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getStandardAnalogOutput1 =
+R"doc(Returns:
+    Standard analog output 1 [A or V])doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetQd = R"doc(@returns Target joint velocities)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetCurrent =
+R"doc(Returns:
+    Target joint currents)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetQdd = R"doc(@returns Target joint accelerations)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetMoment =
+R"doc(Returns:
+    Target joint moments (torques))doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetSpeedFraction = R"doc(@returns Target speed fraction)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetQ =
+R"doc(Returns:
+    Target joint positions)doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetQd =
+R"doc(Returns:
+    Target joint velocities)doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetQdd =
+R"doc(Returns:
+    Target joint accelerations)doc";
+
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetSpeedFraction =
+R"doc(Returns:
+    Target speed fraction)doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetTCPPose =
-R"doc(@returns Target Cartesian coordinates of the tool: (x,y,z,rx,ry,rz),
-where rx, ry and rz is a rotation vector representation of the tool
-orientation)doc";
+R"doc(Returns:
+    Target Cartesian coordinates of the tool: (x,y,z,rx,ry,rz), where
+    rx, ry and rz is a rotation vector representation of the tool
+    orientation)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetTCPSpeed = R"doc(@returns Target speed of the tool given in Cartesian coordinates)doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTargetTCPSpeed =
+R"doc(Returns:
+    Target speed of the tool given in Cartesian coordinates)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_getTimestamp = R"doc(@returns Time elapsed since the controller was started [s])doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_getTimestamp =
+R"doc(Returns:
+    Time elapsed since the controller was started [s])doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_isConnected =
-R"doc(@returns Connection status for RTDE, useful for checking for lost
-connection.)doc";
+R"doc(Returns:
+    Connection status for RTDE, useful for checking for lost
+    connection.)doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_isEmergencyStopped = R"doc(@returns a bool indicating if the robot is in 'Emergency stop')doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_isEmergencyStopped =
+R"doc(Returns:
+    a bool indicating if the robot is in 'Emergency stop')doc";
 
-static const char *__doc_ur_rtde_RTDEReceiveInterface_isProtectiveStopped = R"doc(@returns a bool indicating if the robot is in 'Protective stop')doc";
-
-static const char *__doc_ur_rtde_RTDEReceiveInterface_receiveCallback = R"doc()doc";
+static const char *__doc_ur_rtde_RTDEReceiveInterface_isProtectiveStopped =
+R"doc(Returns:
+    a bool indicating if the robot is in 'Protective stop')doc";
 
 static const char *__doc_ur_rtde_RTDEReceiveInterface_reconnect =
-R"doc(@returns Can be used to reconnect to the robot after a lost
-connection.)doc";
-
-static const char *__doc_ur_rtde_RTDEReceiveInterface_setupRecipes = R"doc()doc";
+R"doc(Returns:
+    Can be used to reconnect to the robot after a lost connection.)doc";
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop
