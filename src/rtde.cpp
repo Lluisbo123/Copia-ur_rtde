@@ -204,13 +204,6 @@ void RTDE::send(const RobotCommand &robot_cmd)
                       std::make_move_iterator(async_packed.end()));
   }
 
-  if (robot_cmd.type_ == RobotCommand::MOVEC)
-  {
-    std::vector<char> movec_mode_packed = RTDEUtility::packInt32(robot_cmd.movec_mode_);
-    cmd_packed.insert(cmd_packed.end(), std::make_move_iterator(movec_mode_packed.begin()),
-                      std::make_move_iterator(movec_mode_packed.end()));
-  }
-
   if (robot_cmd.type_ == RobotCommand::SET_STD_DIGITAL_OUT)
   {
     cmd_packed.push_back(robot_cmd.std_digital_out_mask_);

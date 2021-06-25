@@ -127,7 +127,6 @@ class RTDE
     double reg_double_val_;
     std::vector<double> val_;
     std::vector<int> selection_vector_;
-    std::int32_t movec_mode_;
     std::int32_t force_mode_type_;
     std::uint8_t std_digital_out_;
     std::uint8_t std_digital_out_mask_;
