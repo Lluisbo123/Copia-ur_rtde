@@ -376,20 +376,6 @@
                 movel(q, a=acceleration, v=velocity)
                 textmsg("movel_fk done")
             end
-        elif cmd == 5:
-            textmsg("movec")
-            pose_via = pose_from_input_float_registers(0)
-            pose_to = pose_from_input_float_registers(6)
-            velocity = read_input_float_reg(12)
-            acceleration = read_input_float_reg(13)
-            blend = read_input_float_reg(14)
-            movec_mode = read_input_integer_reg(1)
-            textmsg("pose_via:")
-            textmsg(pose_via)
-            textmsg("pose_to:")
-            textmsg(pose_to)
-            movec(pose_via, pose_to, a=acceleration, v=velocity, r=blend, mode=movec_mode)
-            textmsg("movec done")
         elif cmd == 6:
             # force_mode
             enter_critical
@@ -618,14 +604,6 @@ $V53        pose_to_output_float_registers(0, target_waypoint)
             textmsg("protective_stop")
 $V38        protective_stop()
             textmsg("protective_stop done")
-        elif cmd == 32:
-            textmsg("movep")
-            pose = pose_from_input_float_registers(0)
-            velocity = read_input_float_reg(6)
-            acceleration = read_input_float_reg(7)
-            blend = read_input_float_reg(8)
-            movep(pose, a=acceleration, v=velocity, r=blend)
-            textmsg("movep done")
         elif cmd == 33:
             textmsg("stopl")
             deceleration_rate = read_input_float_reg(0)

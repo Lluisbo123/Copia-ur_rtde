@@ -506,19 +506,12 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
   rtde_->sendInputSetup(async_setp_input);
 
   // Recipe 2
-  std::vector<std::string> movec_input = {
-      inIntReg(0),     inDoubleReg(0),  inDoubleReg(1),  inDoubleReg(2),  inDoubleReg(3), inDoubleReg(4),
-      inDoubleReg(5),  inDoubleReg(6),  inDoubleReg(7),  inDoubleReg(8),  inDoubleReg(9), inDoubleReg(10),
-      inDoubleReg(11), inDoubleReg(12), inDoubleReg(13), inDoubleReg(14), inIntReg(1)};
-  rtde_->sendInputSetup(movec_input);
-
-  // Recipe 3
   std::vector<std::string> servoj_input = {inIntReg(0),    inDoubleReg(0), inDoubleReg(1), inDoubleReg(2),
                                            inDoubleReg(3), inDoubleReg(4), inDoubleReg(5), inDoubleReg(6),
                                            inDoubleReg(7), inDoubleReg(8), inDoubleReg(9), inDoubleReg(10)};
   rtde_->sendInputSetup(servoj_input);
 
-  // Recipe 4
+  // Recipe 3
   std::vector<std::string> force_mode_input = {
       inIntReg(0),     inIntReg(1),     inIntReg(2),     inIntReg(3),     inIntReg(4),     inIntReg(5),
       inIntReg(6),     inIntReg(7),     inDoubleReg(0),  inDoubleReg(1),  inDoubleReg(2),  inDoubleReg(3),
@@ -527,66 +520,66 @@ bool RTDEControlInterface::setupRecipes(const double &frequency)
       inDoubleReg(16), inDoubleReg(17)};
   rtde_->sendInputSetup(force_mode_input);
 
-  // Recipe 5
+  // Recipe 4
   std::vector<std::string> no_cmd_input = {inIntReg(0)};
   rtde_->sendInputSetup(no_cmd_input);
 
-  // Recipe 6
+  // Recipe 5
   std::vector<std::string> servoc_input = {inIntReg(0),    inDoubleReg(0), inDoubleReg(1), inDoubleReg(2),
                                            inDoubleReg(3), inDoubleReg(4), inDoubleReg(5), inDoubleReg(6),
                                            inDoubleReg(7), inDoubleReg(8)};
   rtde_->sendInputSetup(servoc_input);
 
-  // Recipe 7
+  // Recipe 6
   std::vector<std::string> wrench_input = {inIntReg(0),    inDoubleReg(0), inDoubleReg(1), inDoubleReg(2),
                                            inDoubleReg(3), inDoubleReg(4), inDoubleReg(5)};
   rtde_->sendInputSetup(wrench_input);
 
-  // Recipe 8
+  // Recipe 7
   std::vector<std::string> set_payload_input = {inIntReg(0), inDoubleReg(0), inDoubleReg(1), inDoubleReg(2),
                                                 inDoubleReg(3)};
   rtde_->sendInputSetup(set_payload_input);
 
-  // Recipe 9
+  // Recipe 8
   std::vector<std::string> force_mode_parameters_input = {inIntReg(0), inDoubleReg(0)};
   rtde_->sendInputSetup(force_mode_parameters_input);
 
-  // Recipe 10
+  // Recipe 9
   std::vector<std::string> get_actual_joint_positions_history_input = {inIntReg(0), inIntReg(1)};
   rtde_->sendInputSetup(get_actual_joint_positions_history_input);
 
-  // Recipe 11
+  // Recipe 10
   std::vector<std::string> get_inverse_kin_input = {inIntReg(0),     inDoubleReg(0),  inDoubleReg(1), inDoubleReg(2),
                                                     inDoubleReg(3),  inDoubleReg(4),  inDoubleReg(5), inDoubleReg(6),
                                                     inDoubleReg(7),  inDoubleReg(8),  inDoubleReg(9), inDoubleReg(10),
                                                     inDoubleReg(11), inDoubleReg(12), inDoubleReg(13)};
   rtde_->sendInputSetup(get_inverse_kin_input);
 
-  // Recipe 12
+  // Recipe 11
   std::vector<std::string> watchdog_input = {inIntReg(0)};
   rtde_->sendInputSetup(watchdog_input);
 
-  // Recipe 13
+  // Recipe 12
   std::vector<std::string> pose_trans_input = {
       inIntReg(0),    inDoubleReg(0), inDoubleReg(1), inDoubleReg(2), inDoubleReg(3),  inDoubleReg(4), inDoubleReg(5),
       inDoubleReg(6), inDoubleReg(7), inDoubleReg(8), inDoubleReg(9), inDoubleReg(10), inDoubleReg(11)};
   rtde_->sendInputSetup(pose_trans_input);
 
-  // Recipe 14
+  // Recipe 13
   std::vector<std::string> setp_input = {inIntReg(0),    inDoubleReg(0), inDoubleReg(1), inDoubleReg(2), inDoubleReg(3),
                                          inDoubleReg(4), inDoubleReg(5), inDoubleReg(6), inDoubleReg(7)};
   rtde_->sendInputSetup(setp_input);
 
-  // Recipe 15
+  // Recipe 14
   std::vector<std::string> jog_input = {inIntReg(0),    inDoubleReg(0), inDoubleReg(1), inDoubleReg(2),
                                         inDoubleReg(3), inDoubleReg(4), inDoubleReg(5), inDoubleReg(6)};
   rtde_->sendInputSetup(jog_input);
 
-  // Recipe 16
+  // Recipe 15
   std::vector<std::string> async_path_input = {inIntReg(0), inIntReg(1)};
   rtde_->sendInputSetup(async_path_input);
 
-  // Recipe 17
+  // Recipe 16
   std::vector<std::string> move_until_contact_input = {inIntReg(0),     inDoubleReg(0), inDoubleReg(1), inDoubleReg(2),
                                                        inDoubleReg(3),  inDoubleReg(4), inDoubleReg(5), inDoubleReg(6),
                                                        inDoubleReg(7),  inDoubleReg(8), inDoubleReg(9), inDoubleReg(10),
@@ -786,7 +779,7 @@ void RTDEControlInterface::stopScript()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::STOP_SCRIPT;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   sendCommand(robot_cmd);
 }
 
@@ -794,7 +787,7 @@ void RTDEControlInterface::stopL(double a)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::STOPL;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_8;
   robot_cmd.val_.push_back(a);
   sendCommand(robot_cmd);
 }
@@ -803,7 +796,7 @@ void RTDEControlInterface::stopJ(double a)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::STOPJ;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_8;
   robot_cmd.val_.push_back(a);
   sendCommand(robot_cmd);
 }
@@ -1005,7 +998,7 @@ bool RTDEControlInterface::moveJ(const std::vector<std::vector<double>> &path, b
   // Now send the command
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVE_PATH;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_15;
   robot_cmd.async_ = async ? 1 : 0;
   return sendCommand(robot_cmd);
 }
@@ -1035,7 +1028,7 @@ bool RTDEControlInterface::movePath(const Path &path, bool async)
   // Now send the command
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVE_PATH;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_15;
   robot_cmd.async_ = async ? 1 : 0;
   return sendCommand(robot_cmd);
 }
@@ -1102,7 +1095,7 @@ bool RTDEControlInterface::moveL(const std::vector<std::vector<double>> &path, b
   // Now send the command
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVE_PATH;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_15;
   robot_cmd.async_ = async ? 1 : 0;
   return sendCommand(robot_cmd);
 }
@@ -1129,7 +1122,7 @@ bool RTDEControlInterface::jogStart(const std::vector<double> &speeds, int featu
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::JOG_START;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_15;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_14;
   robot_cmd.val_ = speeds;
   robot_cmd.val_.push_back(feature);
   return sendCommand(robot_cmd);
@@ -1139,7 +1132,7 @@ bool RTDEControlInterface::jogStop()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::JOG_STOP;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   return sendCommand(robot_cmd);
 }
 
@@ -1161,48 +1154,12 @@ bool RTDEControlInterface::moveL_FK(const std::vector<double> &q, double speed, 
   return sendCommand(robot_cmd);
 }
 
-bool RTDEControlInterface::moveC(const std::vector<double> &pose_via, const std::vector<double> &pose_to, double speed,
-                                 double acceleration, double blend, int mode)
-{
-  verifyValueIsWithin(speed, UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX);
-  verifyValueIsWithin(acceleration, UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
-
-  RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEC;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_2;
-  robot_cmd.val_ = pose_via;
-  for (const auto &val : pose_to)
-    robot_cmd.val_.push_back(val);
-
-  robot_cmd.val_.push_back(speed);
-  robot_cmd.val_.push_back(acceleration);
-  robot_cmd.val_.push_back(blend);
-  robot_cmd.movec_mode_ = mode;
-  return sendCommand(robot_cmd);
-}
-
-bool RTDEControlInterface::moveP(const std::vector<double> &pose, double speed, double acceleration, double blend)
-{
-  verifyValueIsWithin(speed, UR_TOOL_VELOCITY_MIN, UR_TOOL_VELOCITY_MAX);
-  verifyValueIsWithin(acceleration, UR_TOOL_ACCELERATION_MIN, UR_TOOL_ACCELERATION_MAX);
-  verifyValueIsWithin(blend, UR_BLEND_MIN, UR_BLEND_MAX);
-
-  RTDE::RobotCommand robot_cmd;
-  robot_cmd.type_ = RTDE::RobotCommand::Type::MOVEP;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
-  robot_cmd.val_ = pose;
-  robot_cmd.val_.push_back(speed);
-  robot_cmd.val_.push_back(acceleration);
-  robot_cmd.val_.push_back(blend);
-  return sendCommand(robot_cmd);
-}
-
 bool RTDEControlInterface::forceMode(const std::vector<double> &task_frame, const std::vector<int> &selection_vector,
                                      const std::vector<double> &wrench, int type, const std::vector<double> &limits)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_3;
   robot_cmd.val_ = task_frame;
   for (const auto &val : wrench)
     robot_cmd.val_.push_back(val);
@@ -1219,7 +1176,7 @@ bool RTDEControlInterface::forceModeStop()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_STOP;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   return sendCommand(robot_cmd);
 }
 
@@ -1227,7 +1184,7 @@ bool RTDEControlInterface::zeroFtSensor()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::ZERO_FT_SENSOR;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   return sendCommand(robot_cmd);
 }
 
@@ -1237,7 +1194,7 @@ bool RTDEControlInterface::speedJ(const std::vector<double> &qd, double accelera
 
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SPEEDJ;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_14;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_13;
   robot_cmd.val_ = qd;
   robot_cmd.val_.push_back(acceleration);
   robot_cmd.val_.push_back(time);
@@ -1250,7 +1207,7 @@ bool RTDEControlInterface::speedL(const std::vector<double> &xd, double accelera
 
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SPEEDL;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_14;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_13;
   robot_cmd.val_ = xd;
   robot_cmd.val_.push_back(acceleration);
   robot_cmd.val_.push_back(time);
@@ -1267,7 +1224,7 @@ bool RTDEControlInterface::servoJ(const std::vector<double> &q, double speed, do
 
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SERVOJ;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_3;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_2;
   robot_cmd.val_ = q;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
@@ -1287,7 +1244,7 @@ bool RTDEControlInterface::servoL(const std::vector<double> &pose, double speed,
 
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SERVOL;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_3;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_2;
   robot_cmd.val_ = pose;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
@@ -1301,7 +1258,7 @@ bool RTDEControlInterface::speedStop(double a)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SPEED_STOP;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_8;
   robot_cmd.val_.push_back(a);
   return sendCommand(robot_cmd);
 }
@@ -1310,7 +1267,7 @@ bool RTDEControlInterface::servoStop(double a)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SERVO_STOP;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_8;
   robot_cmd.val_.push_back(a);
   return sendCommand(robot_cmd);
 }
@@ -1323,7 +1280,7 @@ bool RTDEControlInterface::servoC(const std::vector<double> &pose, double speed,
 
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SERVOC;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
   robot_cmd.val_ = pose;
   robot_cmd.val_.push_back(speed);
   robot_cmd.val_.push_back(acceleration);
@@ -1335,7 +1292,7 @@ bool RTDEControlInterface::setPayload(double mass, const std::vector<double> &co
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SET_PAYLOAD;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_8;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
   robot_cmd.val_.push_back(mass);
   if (!cog.empty())
   {
@@ -1355,7 +1312,7 @@ bool RTDEControlInterface::teachMode()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::TEACH_MODE;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   return sendCommand(robot_cmd);
 }
 
@@ -1363,7 +1320,7 @@ bool RTDEControlInterface::endTeachMode()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::END_TEACH_MODE;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   return sendCommand(robot_cmd);
 }
 
@@ -1371,7 +1328,7 @@ bool RTDEControlInterface::forceModeSetDamping(double damping)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_SET_DAMPING;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_8;
   robot_cmd.val_.push_back(damping);
   return sendCommand(robot_cmd);
 }
@@ -1380,7 +1337,7 @@ bool RTDEControlInterface::forceModeSetGainScaling(double scaling)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::FORCE_MODE_SET_GAIN_SCALING;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_8;
   robot_cmd.val_.push_back(scaling);
   return sendCommand(robot_cmd);
 }
@@ -1389,7 +1346,7 @@ int RTDEControlInterface::toolContact(const std::vector<double> &direction)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::TOOL_CONTACT;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
   robot_cmd.val_ = direction;
   if (sendCommand(robot_cmd))
   {
@@ -1405,7 +1362,7 @@ double RTDEControlInterface::getStepTime()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::GET_STEPTIME;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   if (sendCommand(robot_cmd))
   {
     return getStepTimeValue();
@@ -1420,7 +1377,7 @@ std::vector<double> RTDEControlInterface::getActualJointPositionsHistory(int ste
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::GET_ACTUAL_JOINT_POSITIONS_HISTORY;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_10;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
   robot_cmd.steps_ = steps;
   if (sendCommand(robot_cmd))
   {
@@ -1436,7 +1393,7 @@ std::vector<double> RTDEControlInterface::getTargetWaypoint()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::GET_TARGET_WAYPOINT;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   if (sendCommand(robot_cmd))
   {
     return getTargetWaypointValue();
@@ -1546,7 +1503,7 @@ bool RTDEControlInterface::setTcp(const std::vector<double> &tcp_offset)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SET_TCP;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
   robot_cmd.val_ = tcp_offset;
   return sendCommand(robot_cmd);
 }
@@ -1559,7 +1516,7 @@ std::vector<double> RTDEControlInterface::getInverseKinematics(const std::vector
   if (!qnear.empty())
   {
     robot_cmd.type_ = RTDE::RobotCommand::Type::GET_INVERSE_KINEMATICS_ARGS;
-    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_11;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_10;
     robot_cmd.val_ = x;
     robot_cmd.val_.insert(robot_cmd.val_.end(), qnear.begin(), qnear.end());
     robot_cmd.val_.push_back(max_position_error);
@@ -1568,7 +1525,7 @@ std::vector<double> RTDEControlInterface::getInverseKinematics(const std::vector
   else
   {
     robot_cmd.type_ = RTDE::RobotCommand::Type::GET_INVERSE_KINEMATICS_DEFAULT;
-    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
     robot_cmd.val_ = x;
   }
 
@@ -1587,7 +1544,7 @@ std::vector<double> RTDEControlInterface::poseTrans(const std::vector<double> &p
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::POSE_TRANS;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_13;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_12;
   robot_cmd.val_ = p_from;
   robot_cmd.val_.insert(robot_cmd.val_.end(), p_from_to.begin(), p_from_to.end());
   if (sendCommand(robot_cmd))
@@ -1642,7 +1599,7 @@ bool RTDEControlInterface::triggerProtectiveStop()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::PROTECTIVE_STOP;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   return sendCommand(robot_cmd);
 }
 
@@ -1650,7 +1607,7 @@ bool RTDEControlInterface::setWatchdog(double min_frequency)
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SET_WATCHDOG;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_9;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_8;
   robot_cmd.val_.push_back(min_frequency);
   return sendCommand(robot_cmd);
 }
@@ -1659,7 +1616,7 @@ bool RTDEControlInterface::kickWatchdog()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::WATCHDOG;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_12;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_11;
   return sendCommand(robot_cmd);
 }
 
@@ -1667,7 +1624,7 @@ bool RTDEControlInterface::isPoseWithinSafetyLimits(const std::vector<double> &p
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::IS_POSE_WITHIN_SAFETY_LIMITS;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
   robot_cmd.val_ = pose;
 
   if (sendCommand(robot_cmd))
@@ -1691,7 +1648,7 @@ bool RTDEControlInterface::isJointsWithinSafetyLimits(const std::vector<double> 
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::IS_JOINTS_WITHIN_SAFETY_LIMITS;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
   robot_cmd.val_ = q;
 
   if (sendCommand(robot_cmd))
@@ -1715,7 +1672,7 @@ std::vector<double> RTDEControlInterface::getJointTorques()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::GET_JOINT_TORQUES;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
 
   if (sendCommand(robot_cmd))
   {
@@ -1740,7 +1697,7 @@ std::vector<double> RTDEControlInterface::getTCPOffset()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::GET_TCP_OFFSET;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_2;
 
   if (sendCommand(robot_cmd))
   {
@@ -1768,18 +1725,18 @@ std::vector<double> RTDEControlInterface::getForwardKinematics(const std::vector
   if (q.empty() && tcp_offset.empty())
   {
     robot_cmd.type_ = RTDE::RobotCommand::Type::GET_FORWARD_KINEMATICS_DEFAULT;
-    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   }
   else if (tcp_offset.empty() && !q.empty())
   {
     robot_cmd.type_ = RTDE::RobotCommand::Type::GET_FORWARD_KINEMATICS_ARGS;
-    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_7;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_6;
     robot_cmd.val_ = q;
   }
   else
   {
     robot_cmd.type_ = RTDE::RobotCommand::Type::GET_FORWARD_KINEMATICS_ARGS;
-    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_13;
+    robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_12;
     robot_cmd.val_ = q;
     robot_cmd.val_.insert(robot_cmd.val_.end(), tcp_offset.begin(), tcp_offset.end());
   }
@@ -1807,7 +1764,7 @@ bool RTDEControlInterface::isSteady()
 {
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::IS_STEADY;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
 
   if (sendCommand(robot_cmd))
   {
@@ -1833,7 +1790,7 @@ bool RTDEControlInterface::moveUntilContact(const std::vector<double> &xd, const
 
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::MOVE_UNTIL_CONTACT;
-  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_17;
+  robot_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_16;
   robot_cmd.val_ = xd;
   for (const auto &val : direction)
     robot_cmd.val_.push_back(val);
@@ -1994,7 +1951,7 @@ void RTDEControlInterface::sendClearCommand()
 {
   RTDE::RobotCommand clear_cmd;
   clear_cmd.type_ = RTDE::RobotCommand::Type::NO_CMD;
-  clear_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_5;
+  clear_cmd.recipe_id_ = RTDE::RobotCommand::Recipe::RECIPE_4;
   rtde_->send(clear_cmd);
 }
 

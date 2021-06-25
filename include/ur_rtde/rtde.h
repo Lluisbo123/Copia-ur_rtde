@@ -47,7 +47,6 @@ class RTDE
       MOVEJ_IK = 2,
       MOVEL = 3,
       MOVEL_FK = 4,
-      MOVEC = 5,
       FORCE_MODE = 6,
       FORCE_MODE_STOP = 7,
       ZERO_FT_SENSOR = 8,
@@ -74,7 +73,6 @@ class RTDE
       SET_TCP = 29,
       GET_INVERSE_KINEMATICS_ARGS = 30,
       PROTECTIVE_STOP = 31,
-      MOVEP = 32,
       STOPL = 33,
       STOPJ = 34,
       SET_WATCHDOG = 35,
@@ -115,8 +113,7 @@ class RTDE
       RECIPE_13 = 13,
       RECIPE_14 = 14,
       RECIPE_15 = 15,
-      RECIPE_16 = 16,
-      RECIPE_17 = 17
+      RECIPE_16 = 16
     };
 
     RobotCommand() : type_(NO_CMD), recipe_id_(1)

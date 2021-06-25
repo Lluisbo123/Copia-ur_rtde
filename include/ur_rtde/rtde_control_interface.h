@@ -281,30 +281,6 @@ class RTDEControlInterface
                             bool async = false);
 
   /**
-   * @brief Move Circular: Move to position (circular in tool-space)
-   * @param pose_via path point (note: only position is used)
-   * @param pose_to target pose (note: only position is used in Fixed orientation mode).
-   * @param speed tool speed [m/s]
-   * @param acceleration tool acceleration [m/s^2]
-   * @param blend blend radius [m]
-   * @param mode 0: Unconstrained mode. Interpolate orientation from current pose to target pose (pose_to)
-   * 1: Fixed mode. Keep orientation constant relative to the tangent of the circular arc (starting from current pose)
-   */
-  RTDE_EXPORT bool moveC(const std::vector<double> &pose_via, const std::vector<double> &pose_to, double speed = 0.25,
-                         double acceleration = 1.2, double blend = 0.0, int mode = 0);
-
-  /**
-   * @brief Move Process: Blend circular (in tool-space) and move linear (in tool-space) to position. Accelerates to
-   * and moves with constant tool speed v.
-   * @param pose target pose
-   * @param speed tool speed [m/s]
-   * @param acceleration tool acceleration [m/s^2]
-   * @param blend blend radius [m]
-   */
-  RTDE_EXPORT bool moveP(const std::vector<double> &pose, double speed = 0.25, double acceleration = 1.2,
-                         double blend = 0.0);
-
-  /**
    * @brief Joint speed - Accelerate linearly in joint space and continue with constant joint speed
    * @param qd joint speeds [rad/s]
    * @param acceleration joint acceleration [rad/s^2] (of leading axis)

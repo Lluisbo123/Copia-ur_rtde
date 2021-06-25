@@ -105,10 +105,6 @@ PYBIND11_MODULE(rtde_control, m)
            py::arg("acceleration") = 1.2, py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
   control.def("moveL_FK", &RTDEControlInterface::moveL_FK, DOC(ur_rtde, RTDEControlInterface, moveL_FK), py::arg("q"),
            py::arg("speed") = 0.25, py::arg("acceleration") = 1.2, py::arg("async") = false, py::call_guard<py::gil_scoped_release>());
-  control.def("moveC", &RTDEControlInterface::moveC, DOC(ur_rtde, RTDEControlInterface, moveC),
-           py::call_guard<py::gil_scoped_release>());
-  control.def("moveP", &RTDEControlInterface::moveP, DOC(ur_rtde, RTDEControlInterface, moveC),
-           py::call_guard<py::gil_scoped_release>());
   control.def("speedJ", &RTDEControlInterface::speedJ, DOC(ur_rtde, RTDEControlInterface, speedJ), py::arg("qd"),
            py::arg("acceleration") = 0.5, py::arg("time") = 0.0, py::call_guard<py::gil_scoped_release>());
   control.def("speedL", &RTDEControlInterface::speedL, DOC(ur_rtde, RTDEControlInterface, speedL), py::arg("xd"),
