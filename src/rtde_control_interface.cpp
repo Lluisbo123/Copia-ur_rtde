@@ -1891,31 +1891,41 @@ bool RTDEControlInterface::sendCommand(const RTDE::RobotCommand &cmd)
         }
         else
         {
-          while (isProgramRunning())
+          if (use_external_control_ur_cap_)
           {
-            // If robot is in an emergency or protective stop return false
-            if (isProtectiveStopped() || isEmergencyStopped())
+            // Program is allowed to still be running when using the ExternalControl UR Cap.
+            // So we simply wait a bit for the stop script command to go through and clear the cmd register and return.
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+            sendClearCommand();
+            return true;
+          }
+          else
+          {
+            while (isProgramRunning())
             {
-              sendClearCommand();
-              return false;
-            }
+              // If robot is in an emergency or protective stop return false
+              if (isProtectiveStopped() || isEmergencyStopped())
+              {
+                sendClearCommand();
+                return false;
+              }
 
-            // Wait for program to stop running or timeout
-            auto current_time = std::chrono::high_resolution_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-            if (duration > UR_EXECUTION_TIMEOUT)
-            {
-              sendClearCommand();
-              return false;
+              // Wait for program to stop running or timeout
+              auto current_time = std::chrono::high_resolution_clock::now();
+              auto duration = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+              if (duration > UR_EXECUTION_TIMEOUT)
+              {
+                sendClearCommand();
+                return false;
+              }
+              std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
           }
-          std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
         // Make controller ready for next command
         sendClearCommand();
-
         return true;
       }
     }
