@@ -47,12 +47,13 @@ If you only want to the use the Python interface, you can install ur_rtde throug
 :warning: Notice! Make sure your pip version >=**19.3**, otherwise the install might fail.
 
 #### Prebuilt python wheels support matrix: ####
-|   | Linux x86_64 | Windows 64bit | Windows 32bit | macOS Intel | macOS Apple Silicon |
----------------|:----:|:----:|:-----:|:-----:|:----:|
-| Python 3.6   | ✅ | ✅ | :x: | :x: | :x: |
-| Python 3.7   | ✅ | ✅ | :x: | :x: | :x: |
-| Python 3.8   | ✅ | ✅ | :x: | :x: | :x: | 
-| Python 3.9   | ✅ | ✅ | :x: | :x: | :x: |
+|   | Python 3.6 | Python 3.7 | Python 3.8 | Python 3.9 |
+---------------|:----:|:----:|:-----:|:-----:|
+| **Linux x86_64**        | ✅ | ✅ | ✅ | ✅ |
+| **macOS Intel**         | ✅ | ✅ | ✅ | ✅ |
+| **macOS Apple Silicon** | ✅ | ✅ | ✅ | ✅ | 
+| **Windows 64bit**       | ✅ | ✅ | ✅ | ✅ |
+| **Windows 32bit**       | :x: | :x: | :x: | :x: |
 
 ### Dependencies ###
 *  [Boost](https://www.boost.org/)
