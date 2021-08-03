@@ -65,7 +65,7 @@ build-WINDOWS:
 ############################################
 
 polyscope-5.11.1.108318:
-  image: docker:latest
+  image: ubuntu:latest
   stage: test
   services:
     - docker:dind
