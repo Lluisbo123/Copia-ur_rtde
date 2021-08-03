@@ -76,9 +76,9 @@ polyscope-5.11.1.108318:
     - pip3 install ur_rtde
     - 'export SHARED_PATH="$(dirname ${CI_PROJECT_DIR})/ci/.vol"'
     - echo ${SHARED_PATH}
-    #- docker network create --subnet=192.168.56.0/24 static_test_net
+    - docker network create --subnet=192.168.56.0/24 static_test_net
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker run --rm -it -d --net host -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v ${SHARED_PATH}:/ursim/programs registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim
+    - docker run --rm -it -d --net static_test_net --ip 192.168.56.101 -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v ${SHARED_PATH}:/ursim/programs --privileged registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim
   script:
     - sleep 10
     - echo "Powering and releasing brakes on robot..."
