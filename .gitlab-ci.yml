@@ -80,6 +80,7 @@ polyscope-5.11.1.108318:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker run --rm -it -d --net static_test_net --ip 192.168.56.101 -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v ${SHARED_PATH}:/ursim/programs registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim
   script:
+    - sleep 5
     - echo "Powering and releasing brakes on robot..."
     - ./ci/power-and-brake-release.sh
     - echo "DONE!"
