@@ -62,7 +62,22 @@ build-WINDOWS:
 
 ############################################
 #                  Test                    #
-############################################ 
+############################################
+
+polyscope-5.11.1.108318:
+  stage: test
+  services:
+    - name: docker:dind
+  before_script:
+    - ls
+    - docker run --rm -it -d -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v "$CI_PROJECT_DIR/.vol":/ursim/programs registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim
+  script:
+    - echo "Hello Test"
+    - ls
+  dependencies:
+    - build-ubuntu-2004
+  needs: ["build-ubuntu-2004"]
+
 
 .bash-examples:
   stage: test
