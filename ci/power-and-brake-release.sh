@@ -1,2 +1,3 @@
-#!/usr/bin/sh
-python3 power_and_brake_release.py
+#!/bin/sh
+SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+python3 "$SCRIPTPATH/power_and_brake_release.py"
