@@ -65,12 +65,10 @@ build-WINDOWS:
 ############################################
 
 polyscope-5.11.1.108318:
-  image: docker:latest
+  image: docker:19.03.12
   stage: test
-  variables:
-    DOCKER_HOST: tcp://localhost:2375/
   services:
-    - docker:18.09.7-dind
+    - docker:19.03.12-dind
   before_script:
     - 'export SHARED_PATH="$(dirname ${CI_PROJECT_DIR})/ci/.vol"'
     - echo ${SHARED_PATH}
