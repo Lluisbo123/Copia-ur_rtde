@@ -65,10 +65,10 @@ build-WINDOWS:
 ############################################
 
 polyscope-5.11.1.108318:
-  image: docker:19.03.12
+  image: docker:latest
   stage: test
   services:
-    - docker:19.03.12-dind
+    - docker:dind
   before_script:
     - 'export SHARED_PATH="$(dirname ${CI_PROJECT_DIR})/ci/.vol"'
     - echo ${SHARED_PATH}
@@ -80,6 +80,8 @@ polyscope-5.11.1.108318:
   dependencies:
     - build-ubuntu-2004
   needs: ["build-ubuntu-2004"]
+  tags:
+    - docker
 
 
 .bash-examples:
