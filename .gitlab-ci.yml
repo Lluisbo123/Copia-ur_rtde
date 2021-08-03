@@ -65,7 +65,7 @@ build-WINDOWS:
 ############################################
 
 polyscope-5.11.1.108318:
-  image: canopyiq/python-dind-builder:latest
+  image: cruizba/ubuntu-dind:19.03.11
   stage: test
   services:
     - docker:dind
