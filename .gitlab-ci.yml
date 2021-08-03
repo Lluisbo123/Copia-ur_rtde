@@ -65,12 +65,14 @@ build-WINDOWS:
 ############################################
 
 polyscope-5.11.1.108318:
+  image: docker:latest
   stage: test
   services:
     - name: docker:dind
   before_script:
-    - ls
-    - docker run --rm -it -d -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v "$CI_PROJECT_DIR/.vol":/ursim/programs registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim
+    - 'export SHARED_PATH="$(dirname ${CI_PROJECT_DIR})/ci/.vol"'
+    - echo ${SHARED_PATH}
+    - docker run --rm -it -d -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v ${SHARED_PATH}:/ursim/programs registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim
   script:
     - echo "Hello Test"
     - ls
