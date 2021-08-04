@@ -71,10 +71,12 @@ polyscope-5.11.1.108318:
     - docker:dind
   before_script:
     - apt-get update 2>&1 >/dev/null
-    - apt-get install build-essential -y
-    - apt-get install doctest-dev -y
-    - apt-get install cmake -y
-    - apt-get install libboost-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev -y
+    - echo 'tzdata tzdata/Areas select Europe' | debconf-set-selections;
+    - echo 'tzdata tzdata/Zones/Europe select Copenhagen' | debconf-set-selections
+    - apt-get install build-essential -y --no-install-recommends
+    - apt-get install doctest-dev -y --no-install-recommends
+    - apt-get install cmake -y --no-install-recommends
+    - apt-get install libboost-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev -y --no-install-recommends
     - 'export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"'
     - docker network create --subnet=192.168.56.0/24 static_test_net
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
