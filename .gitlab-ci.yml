@@ -71,22 +71,19 @@ polyscope-5.11.1.108318:
     - docker:dind
   before_script:
     - apt-get update 2>&1 >/dev/null
-    - apt-get install python3 -y
-    - apt-get install python3-pip -y
-    - pip3 install ur_rtde
+    - apt-get install doctest-dev -y
     - 'export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"'
-    #- 'export SHARED_PATH="$(dirname ${CI_PROJECT_DIR})/ci/.vol"'
-    #- echo ${SHARED_PATH}
-    - echo ${DIR}
     - docker network create --subnet=192.168.56.0/24 static_test_net
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker run --rm --net static_test_net --ip 192.168.56.101 -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v "${DIR}/ci/.vol":/ursim/programs --privileged registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim
   script:
     - sleep 60
-    - echo "Powering and releasing brakes on robot..."
-    - ./ci/power-and-brake-release.sh
-    - echo "DONE!"
-    - echo "Running tests..."
+    - cd test
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+    - ./tests -s
   dependencies:
     - build-ubuntu-2004
   needs: ["build-ubuntu-2004"]
