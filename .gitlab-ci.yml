@@ -58,7 +58,7 @@ build-WINDOWS:
       - build/ur_rtde-install.exe
     expire_in: 2 days
   tags:
-    - windows
+    - sdur-windows
 
 ############################################
 #                  Test                    #
@@ -138,7 +138,7 @@ examples-ubuntu-2004:
     - cmake .. -G "Visual Studio 16 2019" -A x64
     - msbuild ur_rtde_examples.sln /property:Configuration=RelWithDebInfo 
   tags:
-    - windows
+    - sdur-windows
   dependencies:
     - build-WINDOWS
   needs: ["build-WINDOWS"]   
