@@ -71,18 +71,23 @@ polyscope-5.11.1.108318:
     - docker:dind
   before_script:
     - apt-get update 2>&1 >/dev/null
+    - apt-get install build-essential -y
     - apt-get install doctest-dev -y
+    - apt-get install cmake -y
+    - apt-get install libboost-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev -y
     - 'export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"'
     - docker network create --subnet=192.168.56.0/24 static_test_net
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker run --rm -d --net static_test_net --ip 192.168.56.101 -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v "${DIR}/ci/.vol":/ursim/programs --privileged registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim
   script:
-    - sleep 60
+    - echo "Preparing tests"
     - cd test
     - mkdir build
     - cd build
     - cmake ..
     - make
+    - echo "Waiting for UR simulator to be ready..."
+    - sleep 30
     - ./tests -s
   dependencies:
     - build-ubuntu-2004
