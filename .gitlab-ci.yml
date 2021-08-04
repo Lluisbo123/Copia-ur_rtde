@@ -90,7 +90,7 @@ polyscope-5.11.1.108318:
     - cmake ..
     - make
     - echo "Waiting for UR simulator to be ready..."
-    - sleep 30
+    - sleep 50
     - ./tests -s
   dependencies:
     - build-ubuntu-2004

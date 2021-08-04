@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
   // Power and brake release the robot through dashboard client
   db_client = std::make_shared<DashboardClient>("192.168.56.101", 29999, true);
-  db_client->connect();
+  db_client->connect(5000);
   db_client->brakeRelease();
 
   // Wait for the brakes to release
