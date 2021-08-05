@@ -1,4 +1,4 @@
-    # HEADER_BEGIN
+# HEADER_BEGIN
     global reg_offset_float = # float register offset
     global reg_offset_int = # int register offset
     global force_mode_type = 2
@@ -768,13 +768,13 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
         return cmd != 255
     end
 
-    # HEADER_END
+# HEADER_END
 
-    # RTDE_CONTROL_LOOP_BEGIN
+# NODE_CONTROL_LOOP_BEGINS
 
-    #
-    # RTDE Control script - Main loop
-    #
+    ###################################
+    # RTDE Control script - Main loop #
+    ###################################
 
     textmsg("RTDE Control Script Loaded (11.05.2021-15:29)")
 
@@ -809,4 +809,4 @@ $V35force_mode_set_damping(0.025)
         sync()
     end
     textmsg("RTDE Control Script Terminated")
-    # RTDE_CONTROL_LOOP_END
+# NODE_CONTROL_LOOP_ENDS
