@@ -5,8 +5,9 @@
 &nbsp;
 <div align="center">
 
-[![build status](https://gitlab.com/sdurobotics/ur_rtde/badges/master/pipeline.svg)](https://gitlab.com/sdurobotics/ur_rtde/commits/master)
+[![build status](https://gitlab.com/sdurobotics/ur_rtde/badges/master/pipeline.svg)](https://gitlab.com/sdurobotics/ur_rtde/-/pipelines/latest)
 [![pypi](https://badgen.net/pypi/v/ur_rtde)](https://pypi.org/project/ur-rtde/)
+[![pypi](https://gitlab.com/sdurobotics/ur_rtde/-/jobs/artifacts/master/raw/ps-5-11-1-108318.svg?job=polyscope-5.11.1.108318)](https://gitlab.com/sdurobotics/ur_rtde/-/pipelines/latest)
 [![Gitter](https://badges.gitter.im/ur_rtde/community.svg)](https://gitter.im/ur_rtde/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 </div>
 
