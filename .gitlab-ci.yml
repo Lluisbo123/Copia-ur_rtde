@@ -13,21 +13,26 @@ stages:
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-  script:
+  before_script:
     - apt-get update 2>&1 >/dev/null
     - apt-get install python3-pip -y --no-install-recommends
     - pip3 install anybadge
-    - mkdir public
-    - anybadge -l PolyScope -v 5.11.1.108318 -c red -f ./public/ps-5-11-1-108318.svg
+
+  script:
     - mkdir build
     - cd build
     - cmake -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=ON ..
     - make
+
+  after_script:
+    - mkdir public
+    - anybadge -l PolyScope -v 5.11.1.108318 -c red -f ./public/ps-5-11-1-108318.svg
+
   artifacts:
     paths:
       - ./build
       - ./include
-      - ./public/ps-5-11-1-108318.svg
+      - public
     expire_in: 2 day
     when: on_success
 
