@@ -17,6 +17,7 @@ stages:
     - apt-get update 2>&1 >/dev/null
     - apt-get install python3-pip -y --no-install-recommends
     - pip3 install anybadge
+    - mkdir public
     - anybadge -l PolyScope -v 5.11.1.108318 -c red -f ./public/ps-5-11-1-108318.svg
     - mkdir build
     - cd build
@@ -193,6 +194,7 @@ test_status:
     - apt-get update 2>&1 >/dev/null
     - apt-get install python3-pip -y --no-install-recommends
     - pip3 install anybadge
+    - mkdir public
     - anybadge -l PolyScope -v 5.11.1.108318 -c green -f ./public/ps-5-11-1-108318.svg
   needs: ["polyscope-5.11.1.108318"]  
   tags: 
