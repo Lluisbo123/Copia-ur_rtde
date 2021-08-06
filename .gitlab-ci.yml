@@ -187,22 +187,6 @@ sphinx_html:
   tags:
     - linux
 
-test_status:
-  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-2004
-  stage: deploy
-  script: 
-    - apt-get update 2>&1 >/dev/null
-    - apt-get install python3-pip -y --no-install-recommends
-    - pip3 install anybadge
-    - mkdir public
-    - anybadge -l PolyScope -v 5.11.1.108318 -c green -f ./public/ps-5-11-1-108318.svg
-  needs: ["polyscope-5.11.1.108318"]  
-  tags: 
-    - linux
-  artifacts:
-    paths:
-      - ./public/ps-5-11-1-108318.svg
-
 pages:
   stage: deploy
   variables:
@@ -214,8 +198,11 @@ pages:
     - sphinx_html
   image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-1804-doc
   script:
+    - pip3 install anybadge
     - mv build/doc/html/_static/googled5bfdc1684e49924.html build/doc/html/googled5bfdc1684e49924.html
     - mv build/doc/html public
+    - anybadge -l PolyScope -v 5.11.1.108318 -c green -f ./public/ps-5-11-1-108318.svg
+    
   artifacts:
     paths:
       - public
