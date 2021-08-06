@@ -14,6 +14,10 @@ stages:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
+    - apt-get update 2>&1 >/dev/null
+    - apt-get install python3-pip -y --no-install-recommends
+    - pip3 install anybadge
+    - anybadge -l PolyScope -v 5.11.1.108318 -c red -f ./public/ps-5-11-1-108318.svg
     - mkdir build
     - cd build
     - cmake -DPYTHON_BINDINGS:BOOL=OFF -DUSE_WERROR:BOOL=ON ..
@@ -22,6 +26,7 @@ stages:
     paths:
       - ./build
       - ./include
+      - ./public/ps-5-11-1-108318.svg
     expire_in: 2 day
     when: on_success
 
@@ -81,7 +86,7 @@ polyscope-5.11.1.108318:
     - 'export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"'
     - docker network create --subnet=192.168.56.0/24 static_test_net
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker run --rm -d --net static_test_net --ip 192.168.56.101 -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v "${DIR}/ci/.vol":/ursim/programs --privileged registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim
+    - docker run --rm -d --net static_test_net --ip 192.168.56.101 -p 5900:5900 -p 29999:29999 -p 30001-30004:30001-30004 -v "${DIR}/ci/.vol":/ursim/programs --privileged registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ursim-5.11.1.108318
   script:
     - echo "Preparing tests"
     - cd test
@@ -97,7 +102,6 @@ polyscope-5.11.1.108318:
   needs: ["build-ubuntu-2004"]
   tags:
     - docker
-
 
 .bash-examples:
   stage: test
@@ -181,6 +185,21 @@ sphinx_html:
     expire_in: 2 days
   tags:
     - linux
+
+test_status:
+  image: registry.gitlab.com/sdurobotics/docker-images/ur_rtde-build:ubuntu-2004
+  stage: deploy
+  script: 
+    - apt-get update 2>&1 >/dev/null
+    - apt-get install python3-pip -y --no-install-recommends
+    - pip3 install anybadge
+    - anybadge -l PolyScope -v 5.11.1.108318 -c green -f ./public/ps-5-11-1-108318.svg
+  needs: ["polyscope-5.11.1.108318"]  
+  tags: 
+    - linux
+  artifacts:
+    paths:
+      - ./public/ps-5-11-1-108318.svg
 
 pages:
   stage: deploy
