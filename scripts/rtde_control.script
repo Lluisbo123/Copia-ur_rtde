@@ -736,25 +736,25 @@ $V36        pose_to_output_float_registers(0, tcp_offset)
               textmsg("is_steady done")
         elif cmd == 51:
               textmsg("move_until_contact")
-              xd = q_from_input_float_registers(0)
-              contact_dir = pose_from_input_float_registers(6)
-              acc = read_input_float_reg(12)
-              while True:
-                 step_back = tool_contact(direction=contact_dir)
-                 if step_back <= 0:
-                    # Continue moving with specified speed vector
-                    speedl(xd, acc, t=get_steptime())
-                 else:
-                    # Contact detected!
-                    # Get q for when the contact was first seen
-                    q = get_actual_joint_positions_history(step_back)
-                    # Stop the movement
-                    stopl(3)
-                    # Move to the initial contact point
-                    movel(q)
-                    break
-                 end
-              end
+$V54          xd = q_from_input_float_registers(0)
+$V54          contact_dir = pose_from_input_float_registers(6)
+$V54          acc = read_input_float_reg(12)
+$V54          while True:
+$V54             step_back = tool_contact(direction=contact_dir)
+$V54             if step_back <= 0:
+$V54                # Continue moving with specified speed vector
+$V54                speedl(xd, acc, t=get_steptime())
+$V54             else:
+$V54                # Contact detected!
+$V54                # Get q for when the contact was first seen
+$V54                q = get_actual_joint_positions_history(step_back)
+$V54                # Stop the movement
+$V54                stopl(3)
+$V54                # Move to the initial contact point
+$V54                movel(q)
+$V54                break
+$V54             end
+$V54          end
               textmsg("move_until_contact done")
 
         elif cmd == 255:
