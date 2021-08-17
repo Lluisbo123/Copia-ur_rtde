@@ -99,9 +99,9 @@ polyscope-5.11.1.108318:
   after_script:
     - >
       if [ $CI_JOB_STATUS == 'success' ]; then
-        anybadge -l PolyScope -v 5.11.1.108318 -c green -f ps-5-11-1-108318.svg
+        anybadge -l PolyScope-5.11.1 -v passed -c green -f ps-5-11-1-108318.svg
       else
-        anybadge -l PolyScope -v 5.11.1.108318 -c red -f ps-5-11-1-108318.svg
+        anybadge -l PolyScope-5.11.1 -v failed -c red -f ps-5-11-1-108318.svg
       fi
   dependencies:
     - build-ubuntu-2004
