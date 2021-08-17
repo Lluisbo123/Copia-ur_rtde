@@ -156,12 +156,12 @@ bool RTDEIOInterface::setConfigurableDigitalOut(std::uint8_t output_id, bool sig
 
   if (signal_level)
   {
-    robot_cmd.configurable_digital_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
-    robot_cmd.configurable_digital_out_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.configurable_digital_out_mask_ = static_cast<uint8_t>(1u << output_id);
+    robot_cmd.configurable_digital_out_ = static_cast<uint8_t>(1u << output_id);
   }
   else
   {
-    robot_cmd.configurable_digital_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.configurable_digital_out_mask_ = static_cast<uint8_t>(1u << output_id);
     robot_cmd.configurable_digital_out_ = 0;
   }
 
@@ -176,12 +176,12 @@ bool RTDEIOInterface::setStandardDigitalOut(std::uint8_t output_id, bool signal_
 
   if (signal_level)
   {
-    robot_cmd.std_digital_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
-    robot_cmd.std_digital_out_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.std_digital_out_mask_ = static_cast<uint8_t>(1u << output_id);
+    robot_cmd.std_digital_out_ = static_cast<uint8_t>(1u << output_id);
   }
   else
   {
-    robot_cmd.std_digital_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.std_digital_out_mask_ = static_cast<uint8_t>(1u << output_id);
     robot_cmd.std_digital_out_ = 0;
   }
 
@@ -196,12 +196,12 @@ bool RTDEIOInterface::setToolDigitalOut(std::uint8_t output_id, bool signal_leve
 
   if (signal_level)
   {
-    robot_cmd.std_tool_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
-    robot_cmd.std_tool_out_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.std_tool_out_mask_ = static_cast<uint8_t>(1u << output_id);
+    robot_cmd.std_tool_out_ = static_cast<uint8_t>(1u << output_id);
   }
   else
   {
-    robot_cmd.std_tool_out_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+    robot_cmd.std_tool_out_mask_ = static_cast<uint8_t>(1u << output_id);
     robot_cmd.std_tool_out_ = 0;
   }
 
@@ -223,7 +223,7 @@ bool RTDEIOInterface::setAnalogOutputVoltage(std::uint8_t output_id, double volt
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SET_STD_ANALOG_OUT;
   robot_cmd.recipe_id_ = 5;
-  robot_cmd.std_analog_output_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+  robot_cmd.std_analog_output_mask_ = static_cast<uint8_t>(1u << output_id);
   robot_cmd.std_analog_output_type_ = 1;  // set output type to voltage
   if (output_id == 0)
     robot_cmd.std_analog_output_0_ = voltage_ratio;
@@ -237,7 +237,7 @@ bool RTDEIOInterface::setAnalogOutputCurrent(std::uint8_t output_id, double curr
   RTDE::RobotCommand robot_cmd;
   robot_cmd.type_ = RTDE::RobotCommand::Type::SET_STD_ANALOG_OUT;
   robot_cmd.recipe_id_ = 5;
-  robot_cmd.std_analog_output_mask_ = static_cast<uint8_t>(std::pow(2.0, output_id));
+  robot_cmd.std_analog_output_mask_ = static_cast<uint8_t>(1u << output_id);
   robot_cmd.std_analog_output_type_ = 0;  // set output type to current
   if (output_id == 0)
     robot_cmd.std_analog_output_0_ = current_ratio;
