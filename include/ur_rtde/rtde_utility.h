@@ -3,6 +3,9 @@
 #define RTDE_RTDE_UTILITY_H
 
 #include <ur_rtde/rtde_export.h>
+#include <string>
+#include <algorithm>
+#include <cctype>
 #include <cstdint>
 #include <vector>
 #include <iomanip>
@@ -261,6 +264,11 @@ class RTDEUtility
   bool isWithinBounds(const T& value, const T& low, const T& high)
   {
     return (low <= value && value <= high);
+  }
+
+  static bool isNumber(const std::string& s)
+  {
+    return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
   }
 };
 

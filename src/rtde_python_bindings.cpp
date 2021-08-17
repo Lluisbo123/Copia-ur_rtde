@@ -392,6 +392,7 @@ PYBIND11_MODULE(dashboard_client, m)
       .def("isProgramSaved", &DashboardClient::isProgramSaved, py::call_guard<py::gil_scoped_release>())
       .def("isInRemoteControl", &DashboardClient::isInRemoteControl, py::call_guard<py::gil_scoped_release>())
       .def("setUserRole", &DashboardClient::setUserRole, py::call_guard<py::gil_scoped_release>())
+      .def("getSerialNumber", &DashboardClient::getSerialNumber, py::call_guard<py::gil_scoped_release>())
       .def("__repr__", [](const DashboardClient &a) { return "<dashboard_client.DashboardClient>"; });
 }
 };  // namespace dashboard_client

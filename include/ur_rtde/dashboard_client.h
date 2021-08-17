@@ -156,7 +156,7 @@ class DashboardClient
   RTDE_EXPORT void addToLog(const std::string &message);
 
   /**
-   * Returns the save state of the active program.
+   * @brief Returns the save state of the active program.
    */
   RTDE_EXPORT bool isProgramSaved();
 
@@ -166,7 +166,14 @@ class DashboardClient
    * is disabled or robot is in local control it returns false.
    */
   RTDE_EXPORT bool isInRemoteControl();
+
   RTDE_EXPORT void setUserRole(const UserRole &role);
+
+  /**
+   *  @brief Returns serial number of the robot. (Serial number like "20175599999")
+   *  @returns serial number as a std::string
+   */
+  RTDE_EXPORT std::string getSerialNumber();
 
  private:
   /**

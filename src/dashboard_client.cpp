@@ -1,4 +1,5 @@
 #include <ur_rtde/dashboard_client.h>
+#include <ur_rtde/rtde_utility.h>
 
 #include <boost/array.hpp>
 #include <boost/asio/connect.hpp>
@@ -13,14 +14,17 @@
 #include <regex>
 
 using boost::asio::ip::tcp;
-using boost::lambda::var;
 using boost::lambda::_1;
+using boost::lambda::var;
 
 namespace ur_rtde
 {
 DashboardClient::DashboardClient(std::string hostname, int port, bool verbose)
-    : hostname_(std::move(hostname)), port_(port), verbose_(verbose),
-      conn_state_(ConnectionState::DISCONNECTED), deadline_(io_service_)
+    : hostname_(std::move(hostname)),
+      port_(port),
+      verbose_(verbose),
+      conn_state_(ConnectionState::DISCONNECTED),
+      deadline_(io_service_)
 {
   // No deadline is required until the first socket operation is started. We
   // set the deadline to positive infinity so that the actor takes no action
@@ -91,7 +95,7 @@ void DashboardClient::loadURP(const std::string &urp_name)
   auto result = receive();
   if (strstr(result.c_str(), "Loading program:") == nullptr)
   {
-	  throw std::runtime_error(result);
+    throw std::runtime_error(result);
   }
 }
 
@@ -102,7 +106,7 @@ void DashboardClient::play()
   auto result = receive();
   if (result != "Starting program")
   {
-	  throw std::runtime_error(result);
+    throw std::runtime_error(result);
   }
 }
 
@@ -113,7 +117,7 @@ void DashboardClient::stop()
   auto result = receive();
   if (result != "Stopped")
   {
-	  throw std::runtime_error(result);
+    throw std::runtime_error(result);
   }
 }
 
@@ -124,7 +128,7 @@ void DashboardClient::pause()
   auto result = receive();
   if (result != "Pausing program")
   {
-	  throw std::runtime_error(result);
+    throw std::runtime_error(result);
   }
 }
 
@@ -216,7 +220,7 @@ void DashboardClient::unlockProtectiveStop()
   auto result = receive();
   if (result != "Protective stop releasing")
   {
-	  throw std::logic_error("Unlock protective stop failure: " + result);
+    throw std::logic_error("Unlock protective stop failure: " + result);
   }
 }
 
@@ -227,7 +231,7 @@ std::string DashboardClient::receive()
   size_t buflen = socket_->read_some(boost::asio::buffer(recv_buffer_), error_);
   if (error_.value() != 0)
   {
-	  throw std::runtime_error("Dashboard client receive function failed with error: " + error_.message());
+    throw std::runtime_error("Dashboard client receive function failed with error: " + error_.message());
   }
   return std::string(recv_buffer_.elems, buflen - 1);  // -1 is removing newline
 }
@@ -247,7 +251,6 @@ std::string DashboardClient::getRobotModel()
   auto state_str = receive();
   return state_str;
 }
-
 
 std::string DashboardClient::getLoadedProgram()
 {
@@ -343,6 +346,30 @@ void DashboardClient::restartSafety()
   receive();
 }
 
+std::string DashboardClient::getSerialNumber()
+{
+  PolyScopeVersion polyscope_version(polyscopeVersion());
+  if (polyscope_version.major == 5 && polyscope_version.minor > 5)
+  {
+    std::string get_serial_str = "get serial number\n";
+    send(get_serial_str);
+    auto result_str = receive();
+    if (ur_rtde::RTDEUtility::isNumber(result_str))
+    {
+      return result_str;
+    }
+    else
+    {
+      throw std::runtime_error("getSerialNumber() function did not return a number. The following was returned: " +
+                               result_str);
+    }
+  }
+  else
+  {
+    throw std::runtime_error("getSerialNumber() function is not supported on the dashboard server for PolyScope "
+                             "versions less than 5.6.0");
+  }
+}
 
 void DashboardClient::check_deadline()
 {
