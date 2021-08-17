@@ -99,19 +99,19 @@ used))doc";
 static const char *__doc_ur_rtde_RTDEControlInterface_forceModeStop = R"doc(Resets the robot mode from force mode to normal operation.)doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface_getActualJointPositionsHistory =
-R"doc(Detects when a contact between the tool and an object happens.
+R"doc(Returns the actual past angular positions of all joints.
 
-Parameter ``direction``:
-    The first three elements are interpreted as a 3D vector (in the
-    robot base coordinate system) giving the direction in which
-    contacts should be detected. If all elements of the list are zero,
-    contacts from all directions are considered.
+This function returns the angular positions as reported by the function "get_actual_joint_positions()" which
+indicates the number of controller time steps occurring before the current time step.
+
+An exception is thrown if indexing goes beyond the buffer size.
+
+Parameter ``steps``:
+    The number of controller time steps required to go back. 0 corresponds to "get_actual_joint_positions()".
 
 Returns:
-    The returned value is the number of time steps back to just before
-    the contact have started. A value larger than 0 means that a
-    contact is detected. A value of 0 means no contact. Returns an
-    empty vector in case of an error.)doc";
+    The joint angular position vector in rad : [Base, Shoulder, Elbow, Wrist1, Wrist2, Wrist3] that was
+    actual at the provided number of steps before the current time step.)doc";
 
 static const char *__doc_ur_rtde_RTDEControlInterface_getForwardKinematics =
 R"doc(Calculate the forward kinematic transformation (joint space -> tool
