@@ -484,7 +484,7 @@
             if is_servoing == 0:
                 is_servoing = 1
                 if servoc_thrd == 0:
-                    global servo_thrd = run servoc_thread()
+                    global servoc_thrd = run servoc_thread()
                 end
             end
 
