@@ -104,10 +104,10 @@ class get_pybind_include(object):
 
 setup(
     name="ur_rtde",
-    version="1.4.4",
+    version="1.4.5",
     author="Anders Prier Lindvig",
     author_email="anpl@mmmi.sdu.dk",
-    description="Python interface for sending and receiving data to/from a UR robot using the Real-Time Data Exchange (RTDE) interface of the robot",
+    description="A Python interface for controlling and receiving data from a UR robot using the Real-Time Data Exchange (RTDE) interface of the robot. ",
     long_description=long_description,
     long_description_content_type="text/markdown",
     ext_modules=[CMakeExtension('ur_rtde')],
@@ -118,7 +118,6 @@ setup(
     options={'build': {'build_base': 'build-setuptools'}},
     url="https://gitlab.com/sdurobotics/ur_rtde",
     classifiers=[
-        "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
